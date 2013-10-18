@@ -2,6 +2,9 @@
 #include "testApp.h"
 
 //========================================================================
+#ifdef TARGET_WINRT
+[Platform::MTAThread]
+#endif
 int main( ){
 
 	ofSetupOpenGL(1024,768, OF_WINDOW);			// <-------- setup the GL context

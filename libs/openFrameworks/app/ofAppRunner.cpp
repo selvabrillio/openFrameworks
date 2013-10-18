@@ -22,7 +22,7 @@
 
 // TODO: closing seems wonky.
 // adding this for vc2010 compile: error C3861: 'closeQuicktime': identifier not found
-#if defined (TARGET_WIN32) || defined(TARGET_OSX)
+#if defined (TARGET_WIN32) || defined(TARGET_OSX ) || defined (TARGET_WINRT)
 	#include "ofQtUtils.h"
 #endif
 
@@ -224,8 +224,10 @@ void ofExitCallback(){
 
 	ofNotifyExit();
 
+#ifndef TARGET_WINRT
 	ofRemoveAllURLRequests();
 	ofStopURLLoader();
+#endif
 	Poco::Net::SSLManager::instance().shutdown();
 
     ofRemoveListener(ofEvents().setup,OFSAptr.get(),&ofBaseApp::setup,OF_EVENT_ORDER_APP);
@@ -340,7 +342,7 @@ void ofExit(int status){
 
 //--------------------------------------
 void ofSleepMillis(int millis){
-	#ifdef TARGET_WIN32
+	#if defined (TARGET_WIN32) || defined (TARGET_WINRT)
 		Sleep(millis);			//windows sleep in milliseconds
 	#else
 		usleep(millis * 1000);	//mac sleep in microseconds - cooler :)

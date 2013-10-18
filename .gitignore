@@ -26,6 +26,7 @@ apps/*
 *.pyc
 .svn/
 *.log
+[Bb]in/
 
 # IDE-specific ignore patterns
 

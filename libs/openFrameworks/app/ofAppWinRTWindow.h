@@ -59,10 +59,9 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		//	virtual HGLRC getWGLContext(){return 0;}
 		//	virtual HWND getWin32Window(){return 0;}
 		//#endif
-	private:
 		void display();
-		bool createWin32Window();
-		static LRESULT WINAPI windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	private:
+		//static LRESULT WINAPI windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 		//ESContext esContext;
 

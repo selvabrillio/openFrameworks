@@ -59,6 +59,7 @@ enum ofTargetPlatform{
 	#if WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_APP)
 		#define TARGET_WINRT
 		#define TARGET_OPENGLES
+		#define USE_PROGRAMMABLE_GL
 	#else
 		#define TARGET_WIN32
 	#endif

@@ -5,11 +5,196 @@
 #include "ofLog.h"
 #include <Windows.h>
 
+#include <agile.h>
+#include <ppltasks.h>
+
+ref class WinRTHandler sealed : public Windows::ApplicationModel::Core::IFrameworkView
+{
+public:
+	// IFrameworkView Methods.
+	virtual void Initialize(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView);
+	virtual void SetWindow(Windows::UI::Core::CoreWindow^ window);
+	virtual void Load(Platform::String^ entryPoint);
+	virtual void Run();
+	virtual void Uninitialize();
+
+protected:
+	// Event Handlers.
+	void OnActivated(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView, Windows::ApplicationModel::Activation::IActivatedEventArgs^ args);
+	void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ args);
+	void OnResuming(Platform::Object^ sender, Platform::Object^ args);
+	void OnWindowClosed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CoreWindowEventArgs^ args);
+	void OnVisibilityChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::VisibilityChangedEventArgs^ args);
+	void OnPointerPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
+	void OnPointerMoved(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
+	void OnPointerReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
+
+internal:
+	WinRTHandler(ofAppWinRTWindow *_window);
+
+	ofAppWinRTWindow *window;
+};
+
+ref class Direct3DApplicationSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
+{
+public:
+	virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView();
+
+internal:
+	Direct3DApplicationSource(ofAppWinRTWindow *_window) : window(_window) {}
+
+	ofAppWinRTWindow *window;
+};
+
+using namespace Windows::ApplicationModel;
+using namespace Windows::ApplicationModel::Core;
+using namespace Windows::ApplicationModel::Activation;
+using namespace Windows::UI::Core;
+using namespace Windows::System;
+using namespace Windows::Foundation;
+using namespace Windows::Graphics::Display;
+using namespace concurrency;
+
+WinRTHandler::WinRTHandler(ofAppWinRTWindow * _window) : window(_window)
+{
+}
+
+void WinRTHandler::Initialize(CoreApplicationView^ applicationView)
+{
+	applicationView->Activated +=
+		ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &WinRTHandler::OnActivated);
+
+	CoreApplication::Suspending +=
+		ref new EventHandler<SuspendingEventArgs^>(this, &WinRTHandler::OnSuspending);
+
+	CoreApplication::Resuming +=
+		ref new EventHandler<Platform::Object^>(this, &WinRTHandler::OnResuming);
+}
+
+void WinRTHandler::SetWindow(CoreWindow^ window)
+{
+    // Specify the orientation of your application here
+    // The choices are DisplayOrientations::Portrait or DisplayOrientations::Landscape or DisplayOrientations::LandscapeFlipped
+	DisplayProperties::AutoRotationPreferences = DisplayOrientations::Portrait | DisplayOrientations::Landscape | DisplayOrientations::LandscapeFlipped;
+
+	window->VisibilityChanged +=
+		ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &WinRTHandler::OnVisibilityChanged);
+
+	window->Closed += 
+		ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &WinRTHandler::OnWindowClosed);
+
+	window->PointerPressed +=
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &WinRTHandler::OnPointerPressed);
+
+	window->PointerMoved +=
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &WinRTHandler::OnPointerMoved);
+
+	window->PointerReleased +=
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &WinRTHandler::OnPointerReleased);
+}
+
+void WinRTHandler::Load(Platform::String^ entryPoint)
+{
+}
+
+void WinRTHandler::Run()
+{
+	ofNotifySetup();
+	while(true){
+		ofNotifyUpdate();
+		window->display();
+	}
+}
+
+void WinRTHandler::Uninitialize()
+{
+}
+
+void WinRTHandler::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
+{
+}
+
+void WinRTHandler::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
+{
+}
+
+static void rotateMouseXY(ofOrientation orientation, double &x, double &y) {
+	int savedY;
+	switch(orientation) {
+		case OF_ORIENTATION_180:
+			x = ofGetWidth() - x;
+			y = ofGetHeight() - y;
+			break;
+
+		case OF_ORIENTATION_90_RIGHT:
+			savedY = y;
+			y = x;
+			x = ofGetWidth()-savedY;
+			break;
+
+		case OF_ORIENTATION_90_LEFT:
+			savedY = y;
+			y = ofGetHeight() - x;
+			x = savedY;
+			break;
+
+		case OF_ORIENTATION_DEFAULT:
+		default:
+			break;
+	}
+}
+
+void WinRTHandler::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
+{
+}
+
+void WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
+{
+}
+
+void WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
+{
+}
+
+void WinRTHandler::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
+{
+}
+
+void WinRTHandler::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
+{
+	// Save app state asynchronously after requesting a deferral. Holding a deferral
+	// indicates that the application is busy performing suspending operations. Be
+	// aware that a deferral may not be held indefinitely. After about five seconds,
+	// the app will be forced to exit.
+	SuspendingDeferral^ deferral = args->SuspendingOperation->GetDeferral();
+	//m_renderer->ReleaseResourcesForSuspending();
+
+	create_task([this, deferral]()
+	{
+		// Insert your code here.
+
+		deferral->Complete();
+	});
+}
+ 
+void WinRTHandler::OnResuming(Platform::Object^ sender, Platform::Object^ args)
+{
+	// Restore any data or state that was unloaded on suspend. By default, data
+	// and state are persisted when resuming from suspend. Note that this event
+	// does not occur if the app was previously terminated.
+	// m_renderer->CreateWindowSizeDependentResources();
+}
+
+IFrameworkView^ Direct3DApplicationSource::CreateView()
+{
+	return ref new WinRTHandler(window);
+}
+
 void ofGLReadyCallback();
 
 ofAppWinRTWindow::ofAppWinRTWindow():ofAppBaseWindow(){
 	//esInitContext(&esContext);
-	hWnd = NULL;
+	hWnd = nullptr;
 
 	eglDisplay = NULL;
 	eglContext = NULL;
@@ -60,10 +245,9 @@ void ofAppWinRTWindow::setupOpenGL(int w, int h, int screenMode){
 	//	return;
 	//}
 
-	if(!createWin32Window())
-		return;
+	hWnd = WINRT_EGL_WINDOW(Windows::UI::Core::CoreWindow::GetForCurrentThread());
 
-	display = eglGetDisplay(GetDC(hWnd));
+	display = eglGetDisplay(EGL_D3D11_ONLY_DISPLAY_ANGLE);
 	if(display == EGL_NO_DISPLAY){
 		ofLogError("ofAppWinRTWindow") << "couldn't get EGL display";
 		return;
@@ -106,6 +290,8 @@ void ofAppWinRTWindow::setupOpenGL(int w, int h, int screenMode){
 		return;
 	}
 
+
+
 	eglDisplay = display;
 	eglSurface = surface;
 	eglContext = context;
@@ -118,26 +304,13 @@ void ofAppWinRTWindow::initializeWindow(){
 
 void ofAppWinRTWindow::runAppViaInfiniteLoop(ofBaseApp * appPtr){
 	ofAppPtr = appPtr;
+	auto direct3DApplicationSource = ref new Direct3DApplicationSource(this);
+	CoreApplication::Run(direct3DApplicationSource);
 	ofNotifySetup();
 	float t = 0;
 	while(true){
 		ofNotifyUpdate();
-
-		MSG msg = { 0 };
-		int gotMsg;
-		while(gotMsg = PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)){
-			if(msg.message == WM_QUIT){
-				break;
-			}
-			else{
-				TranslateMessage(&msg); 
-				DispatchMessage(&msg); 
-			}
-		}
-		if(msg.message == WM_QUIT) break;
-		//display();
-		InvalidateRect(hWnd, NULL, FALSE);
-		//UpdateWindow(hWnd);
+		display();
 	}
 }
 
@@ -202,184 +375,104 @@ void ofAppWinRTWindow::display(void){
 	}
 }
 
-bool ofAppWinRTWindow::createWin32Window()
-{
-	WNDCLASS wndclass = {0}; 
-	DWORD    wStyle   = 0;
-	RECT     windowRect;
-	HINSTANCE hInstance = GetModuleHandle(NULL);
-
-	wndclass.style         = CS_OWNDC;
-	wndclass.lpfnWndProc   = windowProc; 
-	wndclass.hInstance     = hInstance; 
-	wndclass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH); 
-	wndclass.hCursor = LoadCursor (NULL, IDC_ARROW);
-	wndclass.lpszClassName = TEXT("opengles2.0");
-
-	if (!RegisterClass (&wndclass) ) 
-		return FALSE; 
-
-	wStyle = WS_TILEDWINDOW;
-
-	// Adjust the window rectangle so that the client area has
-	// the correct number of pixels
-	windowRect.left = 0;
-	windowRect.top = 0;
-	windowRect.right = windowWidth;
-	windowRect.bottom = windowHeight;
-
-	AdjustWindowRect ( &windowRect, wStyle, FALSE );
-
-	hWnd = CreateWindow(
-		TEXT("opengles2.0"),
-		TEXT(" "),
-		wStyle,
-		0,
-		0,
-		windowRect.right - windowRect.left,
-		windowRect.bottom - windowRect.top,
-		NULL,
-		NULL,
-		hInstance,
-		NULL);
-
-	if(!hWnd)
-	{
-		ofLogError("ofAppWinRTWindow") << "failed to create window";
-		return false;
-	}
-
-	SetWindowLongPtr(hWnd, GWL_USERDATA, (LONG)this);
-
-	ShowWindow(hWnd, TRUE);
-
-	return true;
-}
-
-static void rotateMouseXY(ofOrientation orientation, double &x, double &y) {
-	int savedY;
-	switch(orientation) {
-		case OF_ORIENTATION_180:
-			x = ofGetWidth() - x;
-			y = ofGetHeight() - y;
-			break;
-
-		case OF_ORIENTATION_90_RIGHT:
-			savedY = y;
-			y = x;
-			x = ofGetWidth()-savedY;
-			break;
-
-		case OF_ORIENTATION_90_LEFT:
-			savedY = y;
-			y = ofGetHeight() - x;
-			x = savedY;
-			break;
-
-		case OF_ORIENTATION_DEFAULT:
-		default:
-			break;
-	}
-}
-
-LRESULT WINAPI ofAppWinRTWindow::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	LRESULT  lRet = 0;
-	ofAppWinRTWindow * window = (ofAppWinRTWindow *)GetWindowLongPtr(hWnd, GWL_USERDATA);
-
-	switch (uMsg) 
-	{ 
-		case WM_CREATE:
-			break;
-
-		case WM_SIZE:
-			window->windowWidth = LOWORD(lParam);
-			window->windowHeight = HIWORD(lParam);
-			ofNotifyWindowResized(LOWORD(lParam), HIWORD(lParam));
-			InvalidateRect(hWnd, NULL, FALSE);
-			//UpdateWindow(hWnd);
-			break;
-
-		case WM_SIZING:
-		case WM_MOVING:
-			{
-				RECT rect = *(RECT *)lParam;
-				ofNotifyWindowResized(rect.right - rect.left, rect.bottom - rect.top);
-				InvalidateRect(hWnd, NULL, FALSE);
-				//UpdateWindow(hWnd);
-			}
-			break;
-
-		case WM_PAINT:
-			{
-				window->display();
-				ValidateRect(hWnd, NULL);
-			}
-			break;
-
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			OF_EXIT_APP(0);
-			break; 
-
-		case WM_KEYDOWN:
-			{
-				POINT      point;
-				GetCursorPos( &point );
-				ofNotifyKeyPressed(wParam);
-			}
-			break;
-
-		case WM_KEYUP:
-			ofNotifyKeyReleased(wParam);
-			break;
-
-		case WM_LBUTTONDOWN:
-			window->bMousePressed = true;
-			ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_LEFT);
-			break;
-
-		case WM_MBUTTONDOWN:
-			ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_MIDDLE);
-			window->bMousePressed = true;
-			break;
-
-		case WM_RBUTTONDOWN:
-			ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_RIGHT);
-			window->bMousePressed = true;
-			break;
-
-		case WM_LBUTTONUP:
-			ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_LEFT);
-			window->bMousePressed = false;
-			break;
-
-		case WM_MBUTTONUP:
-			ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_MIDDLE);
-			window->bMousePressed = false;
-			break;
-
-		case WM_RBUTTONUP:
-			ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_RIGHT);
-			window->bMousePressed = false;
-			break;
-
-		case WM_MOUSEMOVE:
-			{
-				double x = LOWORD(lParam);
-				double y = HIWORD(lParam);
-				rotateMouseXY(ofGetOrientation(), x, y);
-				if(window->bMousePressed)
-					ofNotifyMouseDragged(x, y, window->mouseInUse);
-				else
-					ofNotifyMouseMoved(x, y);
-			}
-			break;
-
-		default: 
-			lRet = DefWindowProc (hWnd, uMsg, wParam, lParam); 
-			break; 
-	} 
-
-	return lRet;
-}
+//LRESULT WINAPI ofAppWinRTWindow::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+//{
+//	LRESULT  lRet = 0;
+//	ofAppWinRTWindow * window = (ofAppWinRTWindow *)GetWindowLongPtr(hWnd, GWL_USERDATA);
+//
+//	switch (uMsg) 
+//	{ 
+//		case WM_CREATE:
+//			break;
+//
+//		case WM_SIZE:
+//			window->windowWidth = LOWORD(lParam);
+//			window->windowHeight = HIWORD(lParam);
+//			ofNotifyWindowResized(LOWORD(lParam), HIWORD(lParam));
+//			InvalidateRect(hWnd, NULL, FALSE);
+//			//UpdateWindow(hWnd);
+//			break;
+//
+//		case WM_SIZING:
+//		case WM_MOVING:
+//			{
+//				RECT rect = *(RECT *)lParam;
+//				ofNotifyWindowResized(rect.right - rect.left, rect.bottom - rect.top);
+//				InvalidateRect(hWnd, NULL, FALSE);
+//				//UpdateWindow(hWnd);
+//			}
+//			break;
+//
+//		case WM_PAINT:
+//			{
+//				window->display();
+//				ValidateRect(hWnd, NULL);
+//			}
+//			break;
+//
+//		case WM_DESTROY:
+//			PostQuitMessage(0);
+//			OF_EXIT_APP(0);
+//			break; 
+//
+//		case WM_KEYDOWN:
+//			{
+//				POINT      point;
+//				GetCursorPos( &point );
+//				ofNotifyKeyPressed(wParam);
+//			}
+//			break;
+//
+//		case WM_KEYUP:
+//			ofNotifyKeyReleased(wParam);
+//			break;
+//
+//		case WM_LBUTTONDOWN:
+//			window->bMousePressed = true;
+//			ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_LEFT);
+//			break;
+//
+//		case WM_MBUTTONDOWN:
+//			ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_MIDDLE);
+//			window->bMousePressed = true;
+//			break;
+//
+//		case WM_RBUTTONDOWN:
+//			ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_RIGHT);
+//			window->bMousePressed = true;
+//			break;
+//
+//		case WM_LBUTTONUP:
+//			ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_LEFT);
+//			window->bMousePressed = false;
+//			break;
+//
+//		case WM_MBUTTONUP:
+//			ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_MIDDLE);
+//			window->bMousePressed = false;
+//			break;
+//
+//		case WM_RBUTTONUP:
+//			ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_RIGHT);
+//			window->bMousePressed = false;
+//			break;
+//
+//		case WM_MOUSEMOVE:
+//			{
+//				double x = LOWORD(lParam);
+//				double y = HIWORD(lParam);
+//				rotateMouseXY(ofGetOrientation(), x, y);
+//				if(window->bMousePressed)
+//					ofNotifyMouseDragged(x, y, window->mouseInUse);
+//				else
+//					ofNotifyMouseMoved(x, y);
+//			}
+//			break;
+//
+//		default: 
+//			lRet = DefWindowProc (hWnd, uMsg, wParam, lParam); 
+//			break; 
+//	} 
+//
+//	return lRet;
+//}
