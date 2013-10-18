@@ -1,11 +1,21 @@
 #include "ofTrueTypeFont.h"
 //--------------------------
 
+#ifdef TARGET_WINRT
+#define generic GenericFromFreeTypeLibrary
+#define internal InternalFromFreeTypeLibrary
+#endif
+
 #include "ft2build.h"
 #include "freetype2/freetype/freetype.h"
 #include "freetype2/freetype/ftglyph.h"
 #include "freetype2/freetype/ftoutln.h"
 #include "freetype2/freetype/fttrigon.h"
+
+#ifdef TARGET_WINRT
+#undef generic
+#undef internal
+#endif
 
 #ifdef TARGET_LINUX
 #include <fontconfig/fontconfig.h>
