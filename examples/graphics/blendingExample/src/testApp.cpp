@@ -1,5 +1,5 @@
 #include "testApp.h"
-
+static GLuint anus;
 //--------------------------------------------------------------
 void testApp::setup(){	 
     alpha = 0;
@@ -34,21 +34,21 @@ void testApp::draw(){
 	ofSetHexColor(0xffffff);
 	vagRounded.drawString(eventString, 98,198);
 	
-	//ofSetColor(255,122,220);
-	//vagRounded.drawString(eventString, 100,200);
-	//
-	//ofSetHexColor(0xffffff);
-	//vagRounded.drawString(timeString, 98,98);
-	//
-	//ofSetColor(255,122,220);
-	//vagRounded.drawString(timeString, 100,100);
+	ofSetColor(255,122,220);
+	vagRounded.drawString(eventString, 100,200);
+	
+	ofSetHexColor(0xffffff);
+	vagRounded.drawString(timeString, 98,98);
+	
+	ofSetColor(255,122,220);
+	vagRounded.drawString(timeString, 100,100);
 
- //   ofSetColor(255, 255, 255,255);
- //   
- //   
- //   ofEnableBlendMode(blendMode);
- //   
- //   rainbow.draw(mouseX, mouseY);
+    ofSetColor(255, 255, 255,255);
+    
+    
+    ofEnableBlendMode(blendMode);
+    
+    rainbow.draw(mouseX, mouseY);
     
     ofDisableBlendMode();
 }

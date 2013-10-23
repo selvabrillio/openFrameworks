@@ -5,7 +5,7 @@
 #ifdef TARGET_WINRT
 [Platform::MTAThread]
 #endif
-int main( ){
+int main(Platform::Array<Platform::String^>^){
 
 	ofSetupOpenGL(1024,768, OF_WINDOW);			// <-------- setup the GL context
 

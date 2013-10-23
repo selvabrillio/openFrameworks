@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="blendingExample_winrt_TemporaryKey.pfx" />
+    <None Include="D3Dcompiler_46.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
@@ -32,5 +33,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\testApp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="bin\data\rainbow.tiff">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="bin\data\vag.ttf">
+      <Filter>Assets</Filter>
+    </Font>
   </ItemGroup>
 </Project>

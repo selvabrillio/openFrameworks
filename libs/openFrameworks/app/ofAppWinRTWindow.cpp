@@ -8,6 +8,8 @@
 #include <agile.h>
 #include <ppltasks.h>
 
+void ofGLReadyCallback();
+
 ref class WinRTHandler sealed : public Windows::ApplicationModel::Core::IFrameworkView
 {
 public:
@@ -29,10 +31,19 @@ protected:
 	void OnPointerMoved(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
 	void OnPointerReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
 
-internal:
-	WinRTHandler(ofAppWinRTWindow *_window);
+private:
+	// EGL stuff
+	//ESContext esContext;
+	//EGLNativeWindowType hWnd;
+	//EGLDisplay eglDisplay;
+	//EGLContext eglContext;
+	//EGLSurface eglSurface;
+	bool m_windowClosed;
+	bool m_windowVisible;
 
-	ofAppWinRTWindow *window;
+internal:
+	WinRTHandler(ofAppWinRTWindow *window) : appWindow(window) {}
+	ofAppWinRTWindow *appWindow;
 };
 
 ref class Direct3DApplicationSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
@@ -41,9 +52,8 @@ public:
 	virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView();
 
 internal:
-	Direct3DApplicationSource(ofAppWinRTWindow *_window) : window(_window) {}
-
-	ofAppWinRTWindow *window;
+	Direct3DApplicationSource(ofAppWinRTWindow *window) : appWindow(window) {}
+	ofAppWinRTWindow *appWindow;
 };
 
 using namespace Windows::ApplicationModel;
@@ -55,12 +65,10 @@ using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
 using namespace concurrency;
 
-WinRTHandler::WinRTHandler(ofAppWinRTWindow * _window) : window(_window)
-{
-}
-
 void WinRTHandler::Initialize(CoreApplicationView^ applicationView)
 {
+	m_windowClosed = false;
+	m_windowVisible = true;
 	applicationView->Activated +=
 		ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &WinRTHandler::OnActivated);
 
@@ -75,7 +83,7 @@ void WinRTHandler::SetWindow(CoreWindow^ window)
 {
     // Specify the orientation of your application here
     // The choices are DisplayOrientations::Portrait or DisplayOrientations::Landscape or DisplayOrientations::LandscapeFlipped
-	DisplayProperties::AutoRotationPreferences = DisplayOrientations::Portrait | DisplayOrientations::Landscape | DisplayOrientations::LandscapeFlipped;
+	//DisplayProperties::AutoRotationPreferences = DisplayOrientations::Portrait | DisplayOrientations::Landscape | DisplayOrientations::LandscapeFlipped;
 
 	window->VisibilityChanged +=
 		ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &WinRTHandler::OnVisibilityChanged);
@@ -91,6 +99,91 @@ void WinRTHandler::SetWindow(CoreWindow^ window)
 
 	window->PointerReleased +=
 		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &WinRTHandler::OnPointerReleased);
+
+	// setup EGL
+	EGLint configAttribList[] = {
+		EGL_RED_SIZE,       8,
+		EGL_GREEN_SIZE,     8,
+		EGL_BLUE_SIZE,      8,
+		EGL_ALPHA_SIZE,     8,
+		EGL_DEPTH_SIZE,     8,
+		EGL_STENCIL_SIZE,   8,
+		EGL_SAMPLE_BUFFERS, 0,
+		EGL_NONE
+	};
+	EGLint surfaceAttribList[] = {
+		EGL_NONE, EGL_NONE
+	};
+
+	EGLint numConfigs;
+	EGLint majorVersion;
+	EGLint minorVersion;
+	EGLDisplay display;
+	EGLContext context;
+	EGLSurface surface;
+	EGLConfig config;
+	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
+
+	//if(!esCreateWindow(&esContext, L"openFrameworks", w, h, ES_WINDOW_RGB | ES_WINDOW_DEPTH))
+	//{
+	//	ofLogError("ofAppWinRTWindow") << "couldn't create window";
+	//	return;
+	//}
+
+	appWindow->hWnd = WINRT_EGL_WINDOW(window);
+
+	display = eglGetDisplay(EGL_D3D11_ONLY_DISPLAY_ANGLE);
+	if(display == EGL_NO_DISPLAY){
+		ofLogError("ofAppWinRTWindow") << "couldn't get EGL display";
+		return;
+	}
+
+	if(!eglInitialize(display, &majorVersion, &minorVersion)){
+		ofLogError("ofAppWinRTWindow") << "failed to initialize EGL";
+		return;
+	}
+
+	// Get configs
+	if ( !eglGetConfigs(display, NULL, 0, &numConfigs) ){
+		ofLogError("ofAppWinRTWindow") << "failed to get configurations";
+		return;
+	}
+
+	// Choose config
+	if(!eglChooseConfig(display, configAttribList, &config, 1, &numConfigs)){
+		ofLogError("ofAppWinRTWindow") << "failed to choose configuration";
+		return;
+	}
+
+	// Create a surface
+	surface = eglCreateWindowSurface(display, config, (EGLNativeWindowType)appWindow->hWnd, surfaceAttribList);
+	if(surface == EGL_NO_SURFACE){
+		ofLogError("ofAppWinRTWindow") << "failed to create EGL window surface";
+		return;
+	}
+
+	// Create a GL context
+	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
+	if(context == EGL_NO_CONTEXT){
+		ofLogError("ofAppWinRTWindow") << "failed to create EGL context";
+		return;
+	}   
+
+	// Make the context current
+	if (!eglMakeCurrent(display, surface, surface, context)){
+		ofLogError("ofAppWinRTWindow") << "failed to make EGL context current";
+		return;
+	}
+
+	appWindow->eglDisplay = display;
+	appWindow->eglSurface = surface;
+	appWindow->eglContext = context;
+
+	ofGLReadyCallback();
+
+	//esInitContext(&esContext);
+	//esContext.hWnd = WINRT_EGL_WINDOW(window);
+ //   esCreateWindow ( &esContext, TEXT("Cocos2d-x"), 0, 0, ES_WINDOW_RGB | ES_WINDOW_ALPHA | ES_WINDOW_DEPTH | ES_WINDOW_STENCIL );
 }
 
 void WinRTHandler::Load(Platform::String^ entryPoint)
@@ -100,9 +193,19 @@ void WinRTHandler::Load(Platform::String^ entryPoint)
 void WinRTHandler::Run()
 {
 	ofNotifySetup();
-	while(true){
-		ofNotifyUpdate();
-		window->display();
+	while(!m_windowClosed){
+		if(m_windowVisible)
+		{
+			ofNotifyUpdate();
+			appWindow->display();
+			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+			//glClear(GL_COLOR_BUFFER_BIT);
+			//eglSwapBuffers(appWindow->eglDisplay, appWindow->eglSurface);
+		}
+		else
+		{
+			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
+		}
 	}
 }
 
@@ -158,6 +261,7 @@ void WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
 
 void WinRTHandler::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
 {
+	CoreWindow::GetForCurrentThread()->Activate();
 }
 
 void WinRTHandler::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
@@ -187,14 +291,12 @@ void WinRTHandler::OnResuming(Platform::Object^ sender, Platform::Object^ args)
 
 IFrameworkView^ Direct3DApplicationSource::CreateView()
 {
-	return ref new WinRTHandler(window);
+	return ref new WinRTHandler(appWindow);
 }
-
-void ofGLReadyCallback();
 
 ofAppWinRTWindow::ofAppWinRTWindow():ofAppBaseWindow(){
 	//esInitContext(&esContext);
-	hWnd = nullptr;
+	//hWnd = nullptr;
 
 	eglDisplay = NULL;
 	eglContext = NULL;
@@ -213,90 +315,8 @@ ofAppWinRTWindow::~ofAppWinRTWindow(){
 }
 
 void ofAppWinRTWindow::setupOpenGL(int w, int h, int screenMode){
-	EGLint configAttribList[] = {
-		EGL_RED_SIZE,       8,
-		EGL_GREEN_SIZE,     8,
-		EGL_BLUE_SIZE,      8,
-		EGL_ALPHA_SIZE,     8,
-		EGL_DEPTH_SIZE,     8,
-		EGL_STENCIL_SIZE,   8,
-		EGL_SAMPLE_BUFFERS, 0,
-		EGL_NONE
-	};
-	EGLint surfaceAttribList[] = {
-		EGL_NONE, EGL_NONE
-	};
-
-	EGLint numConfigs;
-	EGLint majorVersion;
-	EGLint minorVersion;
-	EGLDisplay display;
-	EGLContext context;
-	EGLSurface surface;
-	EGLConfig config;
-	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
-
-	windowWidth = w;
-	windowHeight = h;
-
-	//if(!esCreateWindow(&esContext, L"openFrameworks", w, h, ES_WINDOW_RGB | ES_WINDOW_DEPTH))
-	//{
-	//	ofLogError("ofAppWinRTWindow") << "couldn't create window";
-	//	return;
-	//}
-
-	hWnd = WINRT_EGL_WINDOW(Windows::UI::Core::CoreWindow::GetForCurrentThread());
-
-	display = eglGetDisplay(EGL_D3D11_ONLY_DISPLAY_ANGLE);
-	if(display == EGL_NO_DISPLAY){
-		ofLogError("ofAppWinRTWindow") << "couldn't get EGL display";
-		return;
-	}
-
-	if(!eglInitialize(display, &majorVersion, &minorVersion)){
-		ofLogError("ofAppWinRTWindow") << "failed to initialize EGL";
-		return;
-	}
-
-	// Get configs
-	if ( !eglGetConfigs(display, NULL, 0, &numConfigs) ){
-		ofLogError("ofAppWinRTWindow") << "failed to get configurations";
-		return;
-	}
-
-	// Choose config
-	if(!eglChooseConfig(display, configAttribList, &config, 1, &numConfigs)){
-		ofLogError("ofAppWinRTWindow") << "failed to choose configuration";
-		return;
-	}
-
-	// Create a surface
-	surface = eglCreateWindowSurface(display, config, (EGLNativeWindowType)hWnd, surfaceAttribList);
-	if(surface == EGL_NO_SURFACE){
-		ofLogError("ofAppWinRTWindow") << "failed to create EGL window surface";
-		return;
-	}
-
-	// Create a GL context
-	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
-	if(context == EGL_NO_CONTEXT){
-		ofLogError("ofAppWinRTWindow") << "failed to create EGL context";
-		return;
-	}   
-
-	// Make the context current
-	if (!eglMakeCurrent(display, surface, surface, context)){
-		ofLogError("ofAppWinRTWindow") << "failed to make EGL context current";
-		return;
-	}
-
-
-
-	eglDisplay = display;
-	eglSurface = surface;
-	eglContext = context;
-
-	ofGLReadyCallback();
+	windowWidth = 1600;
+	windowHeight = 900;
 }
 
 void ofAppWinRTWindow::initializeWindow(){
@@ -306,8 +326,8 @@ void ofAppWinRTWindow::runAppViaInfiniteLoop(ofBaseApp * appPtr){
 	ofAppPtr = appPtr;
 	auto direct3DApplicationSource = ref new Direct3DApplicationSource(this);
 	CoreApplication::Run(direct3DApplicationSource);
-	ofNotifySetup();
-	float t = 0;
+	//ofNotifySetup();
+	//float t = 0;
 	while(true){
 		ofNotifyUpdate();
 		display();

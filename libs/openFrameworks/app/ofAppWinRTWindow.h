@@ -1,11 +1,11 @@
 #pragma once
 
 #include "ofBaseApp.h"
-//#include "../../angleproject/samples/gles2_book/Common/esUtil.h"
 
 #include "ofAppBaseWindow.h"
 #include "ofThread.h"
 #include "ofAppRunner.h"
+
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
@@ -60,16 +60,17 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		//	virtual HWND getWin32Window(){return 0;}
 		//#endif
 		void display();
-	private:
-		//static LRESULT WINAPI windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-		//ESContext esContext;
-
+		
 		// EGL stuff
 		EGLNativeWindowType hWnd;
 		EGLDisplay eglDisplay;
 		EGLContext eglContext;
 		EGLSurface eglSurface;
+	private:
+		//static LRESULT WINAPI windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+		//ESContext esContext;
+
 
 		// Window dimensions
 		int windowWidth;
