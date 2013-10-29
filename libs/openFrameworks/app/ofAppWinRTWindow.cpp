@@ -30,6 +30,8 @@ protected:
 	void OnPointerPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
 	void OnPointerMoved(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
 	void OnPointerReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
+	void OnKeyPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args);
+	void OnKeyReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args);
 
 private:
 	// EGL stuff
@@ -99,6 +101,12 @@ void WinRTHandler::SetWindow(CoreWindow^ window)
 
 	window->PointerReleased +=
 		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &WinRTHandler::OnPointerReleased);
+		
+	window->KeyDown +=
+		ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &WinRTHandler::OnKeyPressed);
+		
+	window->KeyUp +=
+		ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &WinRTHandler::OnKeyReleased);
 
 	// setup EGL
 	EGLint configAttribList[] = {
@@ -211,6 +219,7 @@ void WinRTHandler::Run()
 
 void WinRTHandler::Uninitialize()
 {
+	OF_EXIT_APP(0);
 }
 
 void WinRTHandler::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
@@ -249,14 +258,44 @@ static void rotateMouseXY(ofOrientation orientation, double &x, double &y) {
 
 void WinRTHandler::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
 {
+	appWindow->bMousePressed = true;
+	int button;
+	if(args->CurrentPoint->Properties->IsLeftButtonPressed)
+		button = OF_MOUSE_BUTTON_LEFT;
+	else if(args->CurrentPoint->Properties->IsMiddleButtonPressed)
+		button = OF_MOUSE_BUTTON_MIDDLE;
+	else if(args->CurrentPoint->Properties->IsRightButtonPressed)
+		button = OF_MOUSE_BUTTON_RIGHT;
+	else
+		return;
+	ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), button);
 }
 
 void WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
 {
+	double x = args->CurrentPoint->Position.X;
+	double y = args->CurrentPoint->Position.Y;
+	rotateMouseXY(ofGetOrientation(), x, y);
+	if(appWindow->bMousePressed)
+		ofNotifyMouseDragged(x, y, appWindow->mouseInUse);
+	else
+		ofNotifyMouseMoved(x, y);
 }
 
 void WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
 {
+	ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_LEFT);
+	appWindow->bMousePressed = false;
+}
+
+void WinRTHandler::OnKeyPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args)
+{
+	ofNotifyKeyPressed((int)args->VirtualKey);
+}
+
+void WinRTHandler::OnKeyReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args)
+{
+	ofNotifyKeyReleased((int)args->VirtualKey);
 }
 
 void WinRTHandler::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)

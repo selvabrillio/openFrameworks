@@ -66,6 +66,10 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		EGLDisplay eglDisplay;
 		EGLContext eglContext;
 		EGLSurface eglSurface;
+
+		int mouseInUse;
+		bool bEnableSetupScreen;
+		bool bMousePressed;
 	private:
 		//static LRESULT WINAPI windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -79,8 +83,5 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 
 		ofBaseApp *  ofAppPtr;
 
-		int mouseInUse;
-		bool bEnableSetupScreen;
-		bool bMousePressed;
 };
 
