@@ -39,10 +39,10 @@ public:
     ofConePrimitive cone;
     ofBoxPrimitive box;
     
-    //ofLight pointLight;
-    //ofLight pointLight2;
-    //ofLight pointLight3;
-    //ofMaterial material;
+    ofLight pointLight;
+    ofLight pointLight2;
+    ofLight pointLight3;
+    ofMaterial material;
     
     // place to store the sides of the box //
     ofVboMesh boxSides[ofBoxPrimitive::SIDES_TOTAL];

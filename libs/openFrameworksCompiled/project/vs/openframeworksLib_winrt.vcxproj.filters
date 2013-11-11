@@ -255,6 +255,12 @@
     <ClInclude Include="..\..\..\openFrameworks\ThreadEmulation\ThreadEmulation.h">
       <Filter>libs\openFrameworks\ThreadEmulation</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofLight.h">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofMaterial.h">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppRunner.cpp">
@@ -430,6 +436,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\ThreadEmulation\ThreadEmulation.cpp">
       <Filter>libs\openFrameworks\ThreadEmulation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofLight.cpp">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofMaterial.cpp">
+      <Filter>libs\openFrameworks\gl</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

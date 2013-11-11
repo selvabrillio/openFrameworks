@@ -18,6 +18,7 @@ static bool normalsEnabled=false;
 
 //----------------------------------------
 void ofEnableLighting() {
+#ifndef TARGET_WINRT
 	glEnable(GL_LIGHTING);
 #ifndef TARGET_OPENGLES  //TODO: fix this
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
@@ -30,14 +31,17 @@ void ofEnableLighting() {
 	// performance when drawing lots of primitives
 	normalsEnabled = glIsEnabled( GL_NORMALIZE );
 	glEnable(GL_NORMALIZE);
+#endif
 }
 
 //----------------------------------------
 void ofDisableLighting() {
+#ifndef TARGET_WINRT
 	glDisable(GL_LIGHTING);
 	if(!normalsEnabled){
 		glDisable(GL_NORMALIZE);
 	}
+#endif
 }
 
 //----------------------------------------
@@ -56,19 +60,27 @@ void ofDisableSeparateSpecularLight(){
 
 //----------------------------------------
 bool ofGetLightingEnabled() {
+#ifndef TARGET_WINRT
 	return glIsEnabled(GL_LIGHTING);
+#else
+	return false;
+#endif
 }
 
 //----------------------------------------
 void ofSetSmoothLighting(bool b) {
+#ifndef TARGET_WINRT
 	if (b) glShadeModel(GL_SMOOTH);
 	else glShadeModel(GL_FLAT);
+#endif
 }
 
 //----------------------------------------
 void ofSetGlobalAmbientColor(const ofColor& c) {
+#ifndef TARGET_WINRT
 	GLfloat cc[] = {c.r/255.f, c.g/255.f, c.b/255.f, c.a/255.f};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, cc);
+#endif
 }
 
 //----------------------------------------
@@ -124,8 +136,10 @@ static void release(ofLight & light){
 			light.setDiffuseColor(ofColor(255,255,255,255));
 			light.setSpecularColor(ofColor(255,255,255,255));
 		}
+#ifndef TARGET_WINRT
 		GLfloat cc[] = {0,0,1, 0};
 		glLightfv(GL_LIGHT0 + id, GL_POSITION, cc);
+#endif
 
 		light.disable();
 		getActiveLights()[id] = false;
@@ -237,14 +251,18 @@ void ofLight::enable() {
     onPositionChanged(); // update the position //
 	onOrientationChanged();
 	ofEnableLighting();
+#ifndef TARGET_WINRT
 	glEnable(GL_LIGHT0 + glIndex);
+#endif
 }
 
 //----------------------------------------
 void ofLight::disable() {
+#ifndef TARGET_WINRT
 	if(glIndex!=-1) {
 		glDisable(GL_LIGHT0 + glIndex);
 	}
+#endif
 }
 
 //----------------------------------------
@@ -286,7 +304,9 @@ bool ofLight::getIsSpotlight() {
 //----------------------------------------
 void ofLight::setSpotlightCutOff( float spotCutOff ) {
     this->spotCutOff = CLAMP(spotCutOff, 0, 90);
+#ifndef TARGET_WINRT
 	glLightf(GL_LIGHT0 + glIndex, GL_SPOT_CUTOFF, this->spotCutOff );
+#endif
 }
 
 //----------------------------------------
@@ -300,7 +320,9 @@ float ofLight::getSpotlightCutOff() {
 //----------------------------------------
 void ofLight::setSpotConcentration( float exponent ) {
     this->exponent = CLAMP(exponent, 0, 128);
+#ifndef TARGET_WINRT
 	glLightf(GL_LIGHT0 + glIndex, GL_SPOT_EXPONENT, this->exponent);
+#endif
 }
 
 //----------------------------------------
@@ -331,9 +353,11 @@ void ofLight::setAttenuation( float constant, float linear, float quadratic ) {
     attenuation_quadratic   = quadratic;
     
     if(glIndex==-1) return;
+#ifndef TARGET_WINRT
 	glLightf(GL_LIGHT0 + glIndex, GL_CONSTANT_ATTENUATION, attenuation_constant);
 	glLightf(GL_LIGHT0 + glIndex, GL_LINEAR_ATTENUATION, attenuation_linear);
 	glLightf(GL_LIGHT0 + glIndex, GL_QUADRATIC_ATTENUATION, attenuation_quadratic);
+#endif
 }
 
 //----------------------------------------
@@ -360,21 +384,27 @@ int ofLight::getType() {
 void ofLight::setAmbientColor(const ofFloatColor& c) {
 	ambientColor = c;
     if(glIndex==-1) return;
+#ifndef TARGET_WINRT
 	glLightfv(GL_LIGHT0 + glIndex, GL_AMBIENT, &ambientColor.r);
+#endif
 }
 
 //----------------------------------------
 void ofLight::setDiffuseColor(const ofFloatColor& c) {
 	diffuseColor = c;
     if(glIndex==-1) return;
+#ifndef TARGET_WINRT
 	glLightfv(GL_LIGHT0 + glIndex, GL_DIFFUSE, &diffuseColor.r);
+#endif
 }
 
 //----------------------------------------
 void ofLight::setSpecularColor(const ofFloatColor& c) {
 	specularColor = c;
     if(glIndex==-1) return;
+#ifndef TARGET_WINRT
 	glLightfv(GL_LIGHT0 + glIndex, GL_SPECULAR, &specularColor.r);
+#endif
 }
 
 //----------------------------------------
@@ -412,6 +442,7 @@ void ofLight::customDraw() {
 
 //----------------------------------------
 void ofLight::onPositionChanged() {
+#ifndef TARGET_WINRT
 	// TODO: (tig) fix this.  this breaks udpate() thread safety (openGL should not be called in update() but only draw() ),
 	// since this method will most likely be called during update()
 	// if the light is parented and the parent node changes position during update().
@@ -423,10 +454,12 @@ void ofLight::onPositionChanged() {
 		GLfloat cc[] = {getGlobalPosition().x, getGlobalPosition().y, getGlobalPosition().z, 1};
 		glLightfv(GL_LIGHT0 + glIndex, GL_POSITION, cc);
 	}
+#endif
 }
 
 //----------------------------------------
 void ofLight::onOrientationChanged() {
+#ifndef TARGET_WINRT
 	// TODO: (tig) fix this.  this breaks udpate() thread safety (openGL should not be called in update() but only draw() ),
 	// since this method will most likely be called during update()
 	// if the light is parented and the parent node changes orientation during update().
@@ -449,4 +482,5 @@ void ofLight::onOrientationChanged() {
 			glLightfv(GL_LIGHT0 + glIndex, GL_SPOT_DIRECTION, spot_direction);
 		}
 	}
+#endif
 }
