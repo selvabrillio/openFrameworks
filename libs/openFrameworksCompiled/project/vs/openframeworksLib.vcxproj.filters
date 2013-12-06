@@ -255,6 +255,15 @@
     <ClInclude Include="..\..\..\openFrameworks\app\ofAppWinRTWindow.h">
       <Filter>libs\openFrameworks\app</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofLight.h">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofMaterial.h">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClInclude>
+=======
+>>>>>>> d85d691adb0bfdde5ed6b04b152f3f35d4ccf66c
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppRunner.cpp">
@@ -434,5 +443,14 @@
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppWinRTWindow.cpp">
       <Filter>libs\openFrameworks\app</Filter>
     </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofLight.cpp">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofMaterial.cpp">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClCompile>
+=======
+>>>>>>> d85d691adb0bfdde5ed6b04b152f3f35d4ccf66c
   </ItemGroup>
 </Project>

@@ -52,6 +52,7 @@ xcuserdata
 *.ilk
 *.aps
 ipch/
+*.bsc
 
 #Eclipse
 .metadata

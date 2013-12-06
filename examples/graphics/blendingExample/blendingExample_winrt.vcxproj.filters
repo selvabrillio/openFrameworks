@@ -26,6 +26,19 @@
   <ItemGroup>
     <None Include="blendingExample_winrt_TemporaryKey.pfx" />
     <None Include="D3Dcompiler_46.dll" />
+    <None Include="..\..\..\export\vs\fmodexMetroarm.dll" />
+    <None Include="..\..\..\export\vs\fmodexMetroLarm.dll" />
+    <None Include="..\..\..\export\vs\FreeImage.dll" />
+    <None Include="..\..\..\export\vs\FreeImaged.dll" />
+    <None Include="..\..\..\export\vs\IEShims.dll" />
+    <None Include="..\..\..\export\vs\Assimp32.dll" />
+    <None Include="..\..\..\export\vs\fmodex.dll" />
+    <None Include="..\..\..\export\vs\fmodexL.dll" />
+    <None Include="..\..\..\export\vs\FreeType-6.dll" />
+    <None Include="..\..\..\export\vs\glut32.dll" />
+    <None Include="..\..\..\export\vs\libeay32.dll" />
+    <None Include="..\..\..\export\vs\ssleay32.dll" />
+    <None Include="..\..\..\export\vs\Zlib.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />

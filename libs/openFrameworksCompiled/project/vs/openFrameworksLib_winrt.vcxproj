@@ -101,6 +101,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
+    <OutDir>..\..\lib\vs\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
@@ -150,12 +153,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\angleproject\samples\gles2_book\common;..\..\..\..\..\angleproject\include;..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\gl\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level1</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -237,7 +240,9 @@
     <ClInclude Include="..\..\..\openFrameworks\gl\ofVboMesh.h" />
     <ClInclude Include="..\..\..\openFrameworks\graphics\of3dGraphics.h" />
     <ClInclude Include="..\..\..\openFrameworks\graphics\ofBitmapFont.h" />
-    <ClInclude Include="..\..\..\openFrameworks\graphics\ofCairoRenderer.h" />
+    <ClInclude Include="..\..\..\openFrameworks\graphics\ofCairoRenderer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\..\openFrameworks\graphics\ofGraphics.h" />
     <ClInclude Include="..\..\..\openFrameworks\graphics\ofImage.h" />
     <ClInclude Include="..\..\..\openFrameworks\graphics\ofPath.h" />
@@ -311,7 +316,9 @@
     <ClCompile Include="..\..\..\openFrameworks\gl\ofVboMesh.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\graphics\of3dGraphics.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\graphics\ofBitmapFont.cpp" />
-    <ClCompile Include="..\..\..\openFrameworks\graphics\ofCairoRenderer.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\graphics\ofCairoRenderer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\graphics\ofGraphics.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\graphics\ofImage.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\graphics\ofPath.cpp" />
@@ -343,11 +350,14 @@
     <ClCompile Include="..\..\..\openFrameworks\utils\ofThread.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\utils\ofURLFileLoader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\utils\ofUtils.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\utils\ofXml.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\video\ofDirectShowGrabber.cpp" />
-    <ClCompile Include="..\..\..\openFrameworks\video\ofQtUtils.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\video\ofQtUtils.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\video\ofQuickTimeGrabber.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\video\ofQuickTimePlayer.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\video\ofVideoGrabber.cpp" />

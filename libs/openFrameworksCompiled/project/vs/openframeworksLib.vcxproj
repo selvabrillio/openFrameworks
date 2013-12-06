@@ -48,7 +48,11 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\..\..\angleproject\samples\gles2_book\common;..\..\..\..\..\angleproject\include;..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\gl\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+<<<<<<< HEAD
+      <PreprocessorDefinitions>WINAPI_FAMILY_PARTITION=0;USE_PROGRAMMABLE_GL;WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+=======
       <PreprocessorDefinitions>USE_PROGRAMMABLE_GL;WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+>>>>>>> d85d691adb0bfdde5ed6b04b152f3f35d4ccf66c
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -82,6 +86,11 @@
     <ClInclude Include="..\..\..\openFrameworks\gl\ofFbo.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofGLUtils.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.h" />
+<<<<<<< HEAD
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofLight.h" />
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofMaterial.h" />
+=======
+>>>>>>> d85d691adb0bfdde5ed6b04b152f3f35d4ccf66c
     <ClInclude Include="..\..\..\openFrameworks\gl\ofShader.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofTexture.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofVbo.h" />
@@ -155,6 +164,11 @@
     <ClCompile Include="..\..\..\openFrameworks\gl\ofFbo.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofGLUtils.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.cpp" />
+<<<<<<< HEAD
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofLight.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofMaterial.cpp" />
+=======
+>>>>>>> d85d691adb0bfdde5ed6b04b152f3f35d4ccf66c
     <ClCompile Include="..\..\..\openFrameworks\gl\ofShader.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofTexture.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofVbo.cpp" />

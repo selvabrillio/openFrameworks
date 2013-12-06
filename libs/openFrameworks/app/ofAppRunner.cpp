@@ -227,8 +227,8 @@ void ofExitCallback(){
 #ifndef TARGET_WINRT
 	ofRemoveAllURLRequests();
 	ofStopURLLoader();
-#endif
 	Poco::Net::SSLManager::instance().shutdown();
+#endif
 
     ofRemoveListener(ofEvents().setup,OFSAptr.get(),&ofBaseApp::setup,OF_EVENT_ORDER_APP);
     ofRemoveListener(ofEvents().update,OFSAptr.get(),&ofBaseApp::update,OF_EVENT_ORDER_APP);
@@ -253,7 +253,7 @@ void ofExitCallback(){
 	#endif
 
 	// try to close quicktime, for non-linux systems:
-	#if defined(OF_VIDEO_CAPTURE_QUICKTIME) || defined(OF_VIDEO_PLAYER_QUICKTIME)
+	#if (defined(OF_VIDEO_CAPTURE_QUICKTIME) || defined(OF_VIDEO_PLAYER_QUICKTIME)) && !defined(TARGET_WINRT)
 	closeQuicktime();
 	#endif
 

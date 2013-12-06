@@ -7,7 +7,7 @@
 #include "ofRendererCollection.h"
 #include "ofGLProgrammableRenderer.h"
 #include "ofGLRenderer.h"
-#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
+#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID) && !defined(TARGET_WINRT)
 #include "ofCairoRenderer.h"
 #endif
 
@@ -62,7 +62,7 @@ void ofSetCurrentRenderer(const string & rendererType,bool setDefaults){
 		ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLProgrammableRenderer),setDefaults);
 	//}else if(rendererType==ofGLRenderer::TYPE){
 	//	ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLRenderer),setDefaults);
-#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
+#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID) && !defined(TARGET_WINRT)
 	}else if(rendererType==ofCairoRenderer::TYPE){
 		ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofCairoRenderer),setDefaults);
 #endif
@@ -101,13 +101,16 @@ ofPtr<ofBaseRenderer> & ofGetCurrentRenderer(){
 #include "ofCairoRenderer.h"
 #include "ofGLRenderer.h"
 
+#if !defined(TARGET_WINRT)
 static ofPtr<ofCairoRenderer> cairoScreenshot;
+#endif
 static ofPtr<ofBaseRenderer> storedRenderer;
 static ofPtr<ofRendererCollection> rendererCollection;
 static bool bScreenShotStarted = false;
 
 //-----------------------------------------------------------------------------------
 void ofBeginSaveScreenAsPDF(string filename, bool bMultipage, bool b3D, ofRectangle viewport){
+#if !defined(TARGET_WINRT)
 	if( bScreenShotStarted )ofEndSaveScreenAsPDF();
 	
 	storedRenderer = ofGetCurrentRenderer();
@@ -121,10 +124,12 @@ void ofBeginSaveScreenAsPDF(string filename, bool bMultipage, bool b3D, ofRectan
 	
 	ofSetCurrentRenderer(rendererCollection,true);
 	bScreenShotStarted = true;
+#endif
 }
 
 //-----------------------------------------------------------------------------------
 void ofEndSaveScreenAsPDF(){
+#if !defined(TARGET_WINRT)
 	if( bScreenShotStarted ){
 
 		if( cairoScreenshot ){
@@ -139,6 +144,7 @@ void ofEndSaveScreenAsPDF(){
 		
 		bScreenShotStarted = false;
 	}
+#endif
 }
 
 #endif
