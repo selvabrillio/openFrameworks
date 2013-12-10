@@ -39,6 +39,18 @@
     <None Include="..\..\..\export\vs\libeay32.dll" />
     <None Include="..\..\..\export\vs\ssleay32.dll" />
     <None Include="..\..\..\export\vs\Zlib.dll" />
+    <None Include="..\..\..\export\vs\hmmapi.dll" />
+    <None Include="..\..\..\export\vs\iedvtool.dll" />
+    <None Include="..\..\..\export\vs\ieproxy.dll" />
+    <None Include="..\..\..\export\vs\jsdbgui.dll" />
+    <None Include="..\..\..\export\vs\jsdebuggeride.dll" />
+    <None Include="..\..\..\export\vs\JSProfilerCore.dll" />
+    <None Include="..\..\..\export\vs\jsprofilerui.dll" />
+    <None Include="..\..\..\export\vs\msdbg2.dll" />
+    <None Include="..\..\..\export\vs\networkinspection.dll" />
+    <None Include="..\..\..\export\vs\pdm.dll" />
+    <None Include="..\..\..\export\vs\pdmproxy100.dll" />
+    <None Include="..\..\..\export\vs\sqmapi.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
