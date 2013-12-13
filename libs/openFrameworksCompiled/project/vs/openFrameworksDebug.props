@@ -13,7 +13,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\libs\glut\lib\vs;..\..\..\libs\glfw\lib\vs;..\..\..\libs\rtAudio\lib\vs;..\..\..\libs\FreeImage\lib\vs;..\..\..\libs\freetype\lib\vs;..\..\..\libs\quicktime\lib\vs;..\..\..\libs\fmodex\lib\vs;..\..\..\libs\videoInput\lib\vs;..\..\..\libs\cairo\lib\vs;..\..\..\libs\glew\lib\vs;..\..\..\libs\glu\lib\vs;..\..\..\libs\openssl\lib\vs;..\..\..\libs\Poco\lib\vs;..\..\..\libs\tess2\lib\vs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PocoFoundationmdd.lib;libfreetype.lib;FreeImage.lib;fmodexMetro_vc.lib;tess2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;libfreetype.lib;FreeImage.lib;fmodexMetro_vc.lib;PocoFoundationmdd.lib;tess2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>PocoFoundationmdd.lib;atlthunk.lib;msvcrt;libcmt;LIBC;LIBCMTD</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>

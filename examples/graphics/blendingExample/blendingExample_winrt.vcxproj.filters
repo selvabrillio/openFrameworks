@@ -25,32 +25,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="blendingExample_winrt_TemporaryKey.pfx" />
-    <None Include="D3Dcompiler_46.dll" />
-    <None Include="..\..\..\export\vs\fmodexMetroarm.dll" />
-    <None Include="..\..\..\export\vs\fmodexMetroLarm.dll" />
-    <None Include="..\..\..\export\vs\FreeImage.dll" />
-    <None Include="..\..\..\export\vs\FreeImaged.dll" />
-    <None Include="..\..\..\export\vs\IEShims.dll" />
-    <None Include="..\..\..\export\vs\Assimp32.dll" />
-    <None Include="..\..\..\export\vs\fmodex.dll" />
-    <None Include="..\..\..\export\vs\fmodexL.dll" />
-    <None Include="..\..\..\export\vs\FreeType-6.dll" />
-    <None Include="..\..\..\export\vs\glut32.dll" />
-    <None Include="..\..\..\export\vs\libeay32.dll" />
-    <None Include="..\..\..\export\vs\ssleay32.dll" />
-    <None Include="..\..\..\export\vs\Zlib.dll" />
-    <None Include="..\..\..\export\vs\hmmapi.dll" />
-    <None Include="..\..\..\export\vs\iedvtool.dll" />
-    <None Include="..\..\..\export\vs\ieproxy.dll" />
-    <None Include="..\..\..\export\vs\jsdbgui.dll" />
-    <None Include="..\..\..\export\vs\jsdebuggeride.dll" />
-    <None Include="..\..\..\export\vs\JSProfilerCore.dll" />
-    <None Include="..\..\..\export\vs\jsprofilerui.dll" />
-    <None Include="..\..\..\export\vs\msdbg2.dll" />
-    <None Include="..\..\..\export\vs\networkinspection.dll" />
-    <None Include="..\..\..\export\vs\pdm.dll" />
-    <None Include="..\..\..\export\vs\pdmproxy100.dll" />
-    <None Include="..\..\..\export\vs\sqmapi.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
