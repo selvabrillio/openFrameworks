@@ -7,6 +7,7 @@
  *
  */
 
+
 #include "ofLight.h"
 #include "ofConstants.h"
 #include "ofLog.h"
@@ -53,6 +54,7 @@ void ofEnableSeparateSpecularLight(){
 
 //----------------------------------------
 void ofDisableSeparateSpecularLight(){
+    
 #ifndef TARGET_OPENGLES
 	glLightModeli (GL_LIGHT_MODEL_COLOR_CONTROL,GL_SINGLE_COLOR);
 #endif

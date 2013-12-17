@@ -1,3 +1,4 @@
+
 # OF-specific ignore patterns
 
 openFrameworks.a
@@ -26,7 +27,6 @@ apps/*
 *.pyc
 .svn/
 *.log
-[Bb]in/
 
 # IDE-specific ignore patterns
 
@@ -52,7 +52,6 @@ xcuserdata
 *.ilk
 *.aps
 ipch/
-*.bsc
 
 #Eclipse
 .metadata
@@ -86,3 +85,4 @@ Desktop.ini
 
 # Miscellaneous
 .mailmap
+
