@@ -45,6 +45,9 @@
     <ClInclude Include="..\..\..\openFrameworks\ofMain.h">
       <Filter>libs\openFrameworks</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\app\ofAppGlutWindow.h">
+      <Filter>libs\openFrameworks\app</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\openFrameworks\app\ofAppRunner.h">
       <Filter>libs\openFrameworks\app</Filter>
     </ClInclude>
@@ -141,7 +144,16 @@
     <ClInclude Include="..\..\..\openFrameworks\gl\ofFbo.h">
       <Filter>libs\openFrameworks\gl</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofGLRenderer.h">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\openFrameworks\gl\ofGLUtils.h">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofLight.h">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofMaterial.h">
       <Filter>libs\openFrameworks\gl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\openFrameworks\gl\ofShader.h">
@@ -246,26 +258,20 @@
     <ClInclude Include="..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.h">
       <Filter>libs\openFrameworks\gl</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\app\ofAppGLFWWindow.h">
+      <Filter>libs\openFrameworks\app</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\openFrameworks\app\ofAppNoWindow.h">
       <Filter>libs\openFrameworks\app</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\openFrameworks\utils\ofXml.h">
       <Filter>libs\openFrameworks\utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\openFrameworks\app\ofAppWinRTWindow.h">
-      <Filter>libs\openFrameworks\app</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="..\..\..\openFrameworks\gl\ofLight.h">
-      <Filter>libs\openFrameworks\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\openFrameworks\gl\ofMaterial.h">
-      <Filter>libs\openFrameworks\gl</Filter>
-    </ClInclude>
-=======
->>>>>>> d85d691adb0bfdde5ed6b04b152f3f35d4ccf66c
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\openFrameworks\app\ofAppGlutWindow.cpp">
+      <Filter>libs\openFrameworks\app</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppRunner.cpp">
       <Filter>libs\openFrameworks\app</Filter>
     </ClCompile>
@@ -333,6 +339,15 @@
       <Filter>libs\openFrameworks\3d</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\gl\ofFbo.cpp">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofGLRenderer.cpp">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofLight.cpp">
+      <Filter>libs\openFrameworks\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofMaterial.cpp">
       <Filter>libs\openFrameworks\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\gl\ofShader.cpp">
@@ -434,23 +449,14 @@
     <ClCompile Include="..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.cpp">
       <Filter>libs\openFrameworks\gl</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\app\ofAppGLFWWindow.cpp">
+      <Filter>libs\openFrameworks\app</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppNoWindow.cpp">
       <Filter>libs\openFrameworks\app</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\utils\ofXml.cpp">
       <Filter>libs\openFrameworks\utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\openFrameworks\app\ofAppWinRTWindow.cpp">
-      <Filter>libs\openFrameworks\app</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="..\..\..\openFrameworks\gl\ofLight.cpp">
-      <Filter>libs\openFrameworks\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\openFrameworks\gl\ofMaterial.cpp">
-      <Filter>libs\openFrameworks\gl</Filter>
-    </ClCompile>
-=======
->>>>>>> d85d691adb0bfdde5ed6b04b152f3f35d4ccf66c
   </ItemGroup>
 </Project>
