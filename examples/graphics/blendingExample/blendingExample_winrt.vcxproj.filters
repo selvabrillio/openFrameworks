@@ -19,28 +19,35 @@
     <Image Include="Assets\SplashScreen.png">
       <Filter>Assets</Filter>
     </Image>
+    <Filter Include="data">
+      <UniqueIdentifier>{b78bd7c9-7e51-47bd-a99a-1423a036d012}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="blendingExample_winrt_TemporaryKey.pfx" />
+    <None Include="..\..\..\export\vs\FreeImaged.dll" />
+    <None Include="..\..\..\export\vs\libEGL.dll" />
+    <None Include="..\..\..\export\vs\libGLESv2.dll" />
+    <None Include="..\..\..\export\vs\fmodex.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ofApp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ofApp.h" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="blendingExample_winrt_TemporaryKey.pfx" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\testApp.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\testApp.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="bin\data\rainbow.tiff">
-      <Filter>Assets</Filter>
+    <Image Include="data\rainbow.tiff">
+      <Filter>data</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Font Include="bin\data\vag.ttf">
-      <Filter>Assets</Filter>
+    <Font Include="data\vag.ttf">
+      <Filter>data</Filter>
     </Font>
   </ItemGroup>
 </Project>

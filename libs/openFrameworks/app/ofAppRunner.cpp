@@ -17,7 +17,7 @@
 #include "ofGLProgrammableRenderer.h"
 #include "ofTrueTypeFont.h"
 #include "ofURLFileLoader.h"
-#include "Poco/Net/SSLManager.h"
+//#include "Poco/Net/SSLManager.h"
 
 
 // TODO: closing seems wonky.

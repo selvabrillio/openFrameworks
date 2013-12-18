@@ -10,8 +10,10 @@
 	#include <tchar.h>
 	#include <iostream>
 	#include <string.h>
+#if !defined( TARGET_WINRT )
 	#include <setupapi.h>
 	#include <regstr.h>
+#endif
 	#define MAX_SERIAL_PORTS 256
 	 #include <winioctl.h>
 	#ifdef __MINGW32__
