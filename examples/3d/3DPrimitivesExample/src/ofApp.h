@@ -29,7 +29,7 @@ public:
     bool bSplitFaces;
     
     ofImage texture;
-    ofVideoGrabber vidGrabber;
+    //ofVideoGrabber vidGrabber;
     int mode;
     
     ofSpherePrimitive sphere;
