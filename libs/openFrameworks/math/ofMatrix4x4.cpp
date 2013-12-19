@@ -857,8 +857,8 @@ void ofMatrix4x4::makeFrustumMatrix(double left, double right,
     // note transpose of ofMatrix4x4 wr.t OpenGL documentation, since the OSG use post multiplication rather than pre.
     double A = (right+left)/(right-left);
     double B = (top+bottom)/(top-bottom);
-    double C = -(zFar+zNear)/(zFar-zNear);
-    double D = -2.0*zFar*zNear/(zFar-zNear);
+    double C = -(zFar)/(zFar-zNear);
+    double D = -zFar*zNear/(zFar-zNear);
     SET_ROW(0, 2.0*zNear/(right-left),                    0.0, 0.0,  0.0 )
     SET_ROW(1,                    0.0, 2.0*zNear/(top-bottom), 0.0,  0.0 )
     SET_ROW(2,                      A,                      B,   C, -1.0 )
