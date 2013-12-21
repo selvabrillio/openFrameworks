@@ -10,7 +10,7 @@ void ofApp::setup(){
     ofDisableArbTex();
     texture.loadImage("of.png");
     texture.getTextureReference().setTextureWrap( GL_REPEAT, GL_REPEAT );
-    vidGrabber.initGrabber(640, 480, true);
+    //vidGrabber.initGrabber(640, 480, true);
     
     bFill       = true;
     bWireframe  = true;
@@ -66,9 +66,9 @@ void ofApp::update() {
     );
     
 	//ofSetWindowTitle("Framerate: "+ofToString(ofGetFrameRate(), 0));
-    if(mode == 2 || ofGetElapsedTimef() < 10) {
-        vidGrabber.update();
-    }
+    //if(mode == 2 || ofGetElapsedTimef() < 10) {
+    //    vidGrabber.update();
+    //}
 }
 
 //--------------------------------------------------------------
@@ -96,7 +96,7 @@ void ofApp::draw() {
     ofDrawSphere(ofGetWidth()/2, ofGetHeight()/2, ofGetWidth());
     
     if(mode == 1 || mode == 3) texture.getTextureReference().bind();
-    if(mode == 2) vidGrabber.getTextureReference().bind();
+    //if(mode == 2) vidGrabber.getTextureReference().bind();
     
     
     // Plane //
@@ -350,7 +350,7 @@ void ofApp::draw() {
     }
     
     if(mode == 1 || mode == 3) texture.getTextureReference().unbind();
-    if(mode == 2) vidGrabber.getTextureReference().unbind();
+    //if(mode == 2) vidGrabber.getTextureReference().unbind();
     
     material.end();
     ofDisableLighting();
@@ -438,10 +438,10 @@ void ofApp::keyPressed(int key) {
 		case 'f':
 			ofToggleFullscreen();
 			break;
-        case 's':
+        case 'S':
             bFill = !bFill;
             break;
-        case 'w':
+        case 'W':
             bWireframe = !bWireframe;
             break;
         case '1':
@@ -481,10 +481,10 @@ void ofApp::keyPressed(int key) {
             cone.setResolution(20, 9, 3);
             box.setResolution(12);
             break;
-        case 'n':
+        case 'N':
             bDrawNormals = !bDrawNormals;
             break;
-        case OF_KEY_RIGHT:
+        case 'V':
             mode++;
             if(mode > 3) mode = 0;
             if(mode==3){
@@ -492,7 +492,7 @@ void ofApp::keyPressed(int key) {
                 sphere.setMode( OF_PRIMITIVE_TRIANGLES );
             }
             break;
-        case OF_KEY_LEFT:
+        case 'C':
             mode--;
             if(mode < 0) mode = 3;
             if(mode==3){
@@ -500,16 +500,16 @@ void ofApp::keyPressed(int key) {
                 sphere.setMode( OF_PRIMITIVE_TRIANGLES );
             }
             break;
-        case 'a':
+        case 'A':
             bDrawAxes = !bDrawAxes;
             break;
-        case 'l':
+        case 'L':
             bDrawLights = !bDrawLights;
             break;
-        case 't':
+        case 'T':
             bInfoText=!bInfoText;
             break;
-        case 'z':
+        case 'Z':
             bSplitFaces = !bSplitFaces;
             
             if(mode == 3) bSplitFaces = false;
@@ -564,14 +564,14 @@ void ofApp::keyPressed(int key) {
         cone.mapTexCoordsFromTexture( texture.getTextureReference() );
     }
     
-    if(mode == 2) {
-        plane.resizeToTexture( vidGrabber.getTextureReference(), .5 );
-        box.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-        sphere.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-        icoSphere.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-        cylinder.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-        cone.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-    }
+    //if(mode == 2) {
+    //    plane.resizeToTexture( vidGrabber.getTextureReference(), .5 );
+    //    box.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+    //    sphere.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+    //    icoSphere.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+    //    cylinder.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+    //    cone.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+    //}
     
     // 
     if( mode == 3 ) {
