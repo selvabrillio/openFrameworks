@@ -13,7 +13,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\libs\angle\lib\vs;..\..\..\libs\glut\lib\vs;..\..\..\libs\glfw\lib\vs;..\..\..\libs\rtAudio\lib\vs;..\..\..\libs\FreeImage\lib\vs;..\..\..\libs\freetype\lib\vs;..\..\..\libs\quicktime\lib\vs;..\..\..\libs\fmodex\lib\vs;..\..\..\libs\videoInput\lib\vs;..\..\..\libs\cairo\lib\vs;..\..\..\libs\glew\lib\vs;..\..\..\libs\glu\lib\vs;..\..\..\libs\openssl\lib\vs;..\..\..\libs\Poco\lib\vs;..\..\..\libs\tess2\lib\vs;..\..\..\libs\openFrameworksCompiled\lib\vs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openFrameworksLib_winrt_release.lib;kernel32.lib;libEGL.lib;libGLESv2.lib;libfreetype.lib;FreeImage.lib;fmodex_vc.lib;PocoFoundationmd.lib;tess2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>openFrameworksLib_winrt_release.lib;kernel32.lib;libEGL.lib;libGLESv2.lib;libfreetype.lib;FreeImage.lib;fmodexMetro_vc.lib;PocoFoundationmd.lib;tess2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>PocoFoundationmd.lib;atlthunk.lib;LIBC.lib;LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
