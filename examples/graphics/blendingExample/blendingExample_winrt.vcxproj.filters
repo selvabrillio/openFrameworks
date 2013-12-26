@@ -27,8 +27,8 @@
     <None Include="blendingExample_winrt_TemporaryKey.pfx" />
     <None Include="..\..\..\export\vs\libEGL.dll" />
     <None Include="..\..\..\export\vs\libGLESv2.dll" />
-    <None Include="..\..\..\export\vs\fmodex.dll" />
     <None Include="..\..\..\export\vs\FreeImage.dll" />
+    <None Include="..\..\..\export\vs\fmodexMetro.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />

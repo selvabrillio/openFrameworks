@@ -139,7 +139,7 @@
     <Image Include="data\rainbow.tiff" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\export\vs\fmodex.dll">
+    <None Include="..\..\..\export\vs\fmodexMetro.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
