@@ -261,6 +261,9 @@
     <ClInclude Include="..\..\..\openFrameworks\gl\ofMaterial.h">
       <Filter>libs\openFrameworks\gl</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\video\ofWinrtVideoGrabber.h">
+      <Filter>libs\openFrameworks\video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppRunner.cpp">
@@ -442,6 +445,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\gl\ofMaterial.cpp">
       <Filter>libs\openFrameworks\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\video\ofWinrtVideoGrabber.cpp">
+      <Filter>libs\openFrameworks\video</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

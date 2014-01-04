@@ -307,7 +307,7 @@ typedef TESSindex ofIndexType;
 			#define OF_VIDEO_CAPTURE_QTKIT
         #endif
 
-	#elif defined (TARGET_WIN32) || defined (TARGET_WINRT)
+	#elif defined (TARGET_WIN32)
 
 		// comment out this following line, if you'd like to use the
 		// quicktime capture interface on windows
@@ -321,6 +321,10 @@ typedef TESSindex ofIndexType;
 		#else
 			#define OF_VIDEO_CAPTURE_QUICKTIME
 		#endif
+
+	#elif defined (TARGET_WINRT)
+
+		#define OF_VIDEO_CAPTURE_WINRT
 
 	#elif defined(TARGET_ANDROID)
 

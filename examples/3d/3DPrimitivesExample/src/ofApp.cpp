@@ -10,7 +10,7 @@ void ofApp::setup(){
     ofDisableArbTex();
     texture.loadImage("of.png");
     texture.getTextureReference().setTextureWrap( GL_REPEAT, GL_REPEAT );
-    //vidGrabber.initGrabber(640, 480, true);
+    vidGrabber.initGrabber(640, 480, true);
     
     bFill       = true;
     bWireframe  = true;
@@ -66,9 +66,9 @@ void ofApp::update() {
     );
     
 	//ofSetWindowTitle("Framerate: "+ofToString(ofGetFrameRate(), 0));
-    //if(mode == 2 || ofGetElapsedTimef() < 10) {
-    //    vidGrabber.update();
-    //}
+    if(mode == 2 || ofGetElapsedTimef() < 10) {
+        vidGrabber.update();
+    }
 }
 
 //--------------------------------------------------------------
@@ -96,7 +96,7 @@ void ofApp::draw() {
     ofDrawSphere(ofGetWidth()/2, ofGetHeight()/2, ofGetWidth());
     
     if(mode == 1 || mode == 3) texture.getTextureReference().bind();
-    //if(mode == 2) vidGrabber.getTextureReference().bind();
+    if(mode == 2) vidGrabber.getTextureReference().bind();
     
     
     // Plane //
@@ -350,7 +350,7 @@ void ofApp::draw() {
     }
     
     if(mode == 1 || mode == 3) texture.getTextureReference().unbind();
-    //if(mode == 2) vidGrabber.getTextureReference().unbind();
+    if(mode == 2) vidGrabber.getTextureReference().unbind();
     
     material.end();
     ofDisableLighting();
@@ -564,14 +564,14 @@ void ofApp::keyPressed(int key) {
         cone.mapTexCoordsFromTexture( texture.getTextureReference() );
     }
     
-    //if(mode == 2) {
-    //    plane.resizeToTexture( vidGrabber.getTextureReference(), .5 );
-    //    box.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-    //    sphere.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-    //    icoSphere.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-    //    cylinder.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-    //    cone.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
-    //}
+    if(mode == 2) {
+        plane.resizeToTexture( vidGrabber.getTextureReference(), .5 );
+        box.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+        sphere.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+        icoSphere.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+        cylinder.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+        cone.mapTexCoordsFromTexture( vidGrabber.getTextureReference() );
+    }
     
     // 
     if( mode == 3 ) {
