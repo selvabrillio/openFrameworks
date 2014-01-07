@@ -37,10 +37,10 @@ Android.mk
 /*/*/*.workspace
 
 #Visual Studio
-/*/*/*.sln
-/*/*/*.vcxproj
+#/*/*/*.sln
+#/*/*/*.vcxproj
 /*/*/*.vcxproj.user
-/*/*/*.vcxproj.filters
+#/*/*/*.vcxproj.filters
 /*/*/icon.rc
 
 #Eclipse
