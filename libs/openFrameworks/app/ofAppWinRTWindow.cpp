@@ -293,12 +293,18 @@ void WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
 
 void WinRTHandler::OnKeyPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args)
 {
-	ofNotifyKeyPressed((int)args->VirtualKey);
+	int key = (int)args->VirtualKey;
+	if (key >= 'A' && key <= 'Z')
+		key += 'a' - 'A';
+	ofNotifyKeyPressed(key);
 }
 
 void WinRTHandler::OnKeyReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args)
 {
-	ofNotifyKeyReleased((int)args->VirtualKey);
+	int key = (int)args->VirtualKey;
+	if (key >= 'A' && key <= 'Z')
+		key += 'a' - 'A';
+	ofNotifyKeyReleased(key);
 }
 
 void WinRTHandler::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
