@@ -67,6 +67,10 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		EGLContext eglContext;
 		EGLSurface eglSurface;
 
+		// Window dimensions
+		int windowWidth;
+		int windowHeight;
+
 		int mouseInUse;
 		bool bEnableSetupScreen;
 		bool bMousePressed;
@@ -76,9 +80,6 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		//ESContext esContext;
 
 
-		// Window dimensions
-		int windowWidth;
-		int windowHeight;
 		ofOrientation orientation;
 
 		ofBaseApp *  ofAppPtr;

@@ -187,6 +187,9 @@ void WinRTHandler::SetWindow(CoreWindow^ window)
 	appWindow->eglSurface = surface;
 	appWindow->eglContext = context;
 
+	appWindow->windowWidth = window->Bounds.Width;
+	appWindow->windowHeight = window->Bounds.Height;
+
 	ofGLReadyCallback();
 
 	//esInitContext(&esContext);
@@ -354,8 +357,8 @@ ofAppWinRTWindow::~ofAppWinRTWindow(){
 }
 
 void ofAppWinRTWindow::setupOpenGL(int w, int h, int screenMode){
-	windowWidth = 1600;
-	windowHeight = 900;
+	windowWidth = w;
+	windowHeight = h;
 }
 
 void ofAppWinRTWindow::initializeWindow(){
@@ -367,10 +370,10 @@ void ofAppWinRTWindow::runAppViaInfiniteLoop(ofBaseApp * appPtr){
 	CoreApplication::Run(direct3DApplicationSource);
 	//ofNotifySetup();
 	//float t = 0;
-	while(true){
-		ofNotifyUpdate();
-		display();
-	}
+	//while(true){
+	//	ofNotifyUpdate();
+	//	display();
+	//}
 }
 
 ofPoint	ofAppWinRTWindow::getWindowSize(){
