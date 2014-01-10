@@ -200,6 +200,9 @@ bool ofFmodSoundPlayer::loadSound(string fileName, bool stream){
 	int fmodFlags =  FMOD_SOFTWARE;
 	if(stream)fmodFlags =  FMOD_SOFTWARE | FMOD_CREATESTREAM;
 
+#ifdef TARGET_WINRT
+	fileName = "ms-appx:///" + fileName; //needed for fmod's winrt implementation
+#endif
 	result = FMOD_System_CreateSound(sys, fileName.c_str(),  fmodFlags, NULL, &sound);
 
 	if (result != FMOD_OK){
