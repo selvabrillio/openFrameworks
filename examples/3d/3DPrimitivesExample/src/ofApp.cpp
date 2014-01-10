@@ -438,10 +438,10 @@ void ofApp::keyPressed(int key) {
 		case 'f':
 			ofToggleFullscreen();
 			break;
-        case 'S':
+        case 's':
             bFill = !bFill;
             break;
-        case 'W':
+        case 'w':
             bWireframe = !bWireframe;
             break;
         case '1':
@@ -481,10 +481,10 @@ void ofApp::keyPressed(int key) {
             cone.setResolution(20, 9, 3);
             box.setResolution(12);
             break;
-        case 'N':
+        case 'n':
             bDrawNormals = !bDrawNormals;
             break;
-        case 'V':
+        case 'v':
             mode++;
             if(mode > 3) mode = 0;
             if(mode==3){
@@ -492,7 +492,7 @@ void ofApp::keyPressed(int key) {
                 sphere.setMode( OF_PRIMITIVE_TRIANGLES );
             }
             break;
-        case 'C':
+        case 'c':
             mode--;
             if(mode < 0) mode = 3;
             if(mode==3){
@@ -500,16 +500,16 @@ void ofApp::keyPressed(int key) {
                 sphere.setMode( OF_PRIMITIVE_TRIANGLES );
             }
             break;
-        case 'A':
+        case 'a':
             bDrawAxes = !bDrawAxes;
             break;
-        case 'L':
+        case 'l':
             bDrawLights = !bDrawLights;
             break;
-        case 'T':
+        case 't':
             bInfoText=!bInfoText;
             break;
-        case 'Z':
+        case 'z':
             bSplitFaces = !bSplitFaces;
             
             if(mode == 3) bSplitFaces = false;
