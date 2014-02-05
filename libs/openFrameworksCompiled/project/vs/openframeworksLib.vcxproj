@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -47,8 +47,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\..\..\angleproject\samples\gles2_book\common;..\..\..\..\..\angleproject\include;..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\gl\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WINAPI_FAMILY_PARTITION=0;USE_PROGRAMMABLE_GL;WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\gl\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -76,14 +76,15 @@
     <ClInclude Include="..\..\..\openFrameworks\3d\ofMesh.h" />
     <ClInclude Include="..\..\..\openFrameworks\3d\ofNode.h" />
     <ClInclude Include="..\..\..\openFrameworks\app\ofAppBaseWindow.h" />
+    <ClInclude Include="..\..\..\openFrameworks\app\ofAppGLFWWindow.h" />
     <ClInclude Include="..\..\..\openFrameworks\app\ofAppNoWindow.h" />
-    <ClInclude Include="..\..\..\openFrameworks\app\ofAppWinRTWindow.h" />
     <ClInclude Include="..\..\..\openFrameworks\app\ofBaseApp.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofFbo.h" />
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofGLRenderer.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofGLUtils.h" />
-    <ClInclude Include="..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofLight.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofMaterial.h" />
+    <ClInclude Include="..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofShader.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofTexture.h" />
     <ClInclude Include="..\..\..\openFrameworks\gl\ofVbo.h" />
@@ -108,6 +109,7 @@
     <ClInclude Include="..\..\..\openFrameworks\math\ofVec4f.h" />
     <ClInclude Include="..\..\..\openFrameworks\math\ofVectorMath.h" />
     <ClInclude Include="..\..\..\openFrameworks\ofMain.h" />
+    <ClInclude Include="..\..\..\openFrameworks\app\ofAppGlutWindow.h" />
     <ClInclude Include="..\..\..\openFrameworks\app\ofAppRunner.h" />
     <ClInclude Include="..\..\..\openFrameworks\sound\ofBaseSoundPlayer.h" />
     <ClInclude Include="..\..\..\openFrameworks\sound\ofBaseSoundStream.h" />
@@ -150,15 +152,17 @@
     <ClCompile Include="..\..\..\openFrameworks\3d\ofEasyCam.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\3d\ofMesh.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\3d\ofNode.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\app\ofAppGLFWWindow.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\app\ofAppGlutWindow.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppNoWindow.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppRunner.cpp" />
-    <ClCompile Include="..\..\..\openFrameworks\app\ofAppWinRTWindow.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\events\ofEvents.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofFbo.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofGLRenderer.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofGLUtils.cpp" />
-    <ClCompile Include="..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofLight.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofMaterial.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofShader.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofTexture.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\gl\ofVbo.cpp" />
@@ -203,8 +207,12 @@
     <ClCompile Include="..\..\..\openFrameworks\video\ofQuickTimePlayer.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\video\ofVideoGrabber.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\video\ofVideoPlayer.cpp" />
-    <ClCompile Include="..\..\..\openFrameworks\communication\ofArduino.cpp" />
-    <ClCompile Include="..\..\..\openFrameworks\communication\ofSerial.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\communication\ofArduino.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\communication\ofSerial.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

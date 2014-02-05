@@ -1,7 +1,9 @@
 #include "ofImage.h"
 #include "ofAppRunner.h"
 #include "ofTypes.h"
-//#include "ofURLFileLoader.h"
+#ifndef TARGET_WINRT
+	#include "ofURLFileLoader.h"
+#endif
 #include "ofGraphics.h"
 #include "FreeImage.h"
 

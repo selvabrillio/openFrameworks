@@ -56,10 +56,14 @@ enum ofTargetPlatform{
 // 		http://www.ogre3d.org/docs/api/html/OgrePlatform_8h-source.html
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
-	#if WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_APP)
-		#define TARGET_WINRT 1
-		#define TARGET_OPENGLES
-		#define USE_PROGRAMMABLE_GL
+	#ifdef WINAPI_FAMILY_PARTITION
+		#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+			#define TARGET_WIN32
+		#else
+			#define TARGET_WINRT 1
+			#define TARGET_OPENGLES
+			//#define USE_PROGRAMMABLE_GL
+		#endif
 	#else
 		#define TARGET_WIN32
 	#endif

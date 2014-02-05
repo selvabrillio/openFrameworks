@@ -17,7 +17,9 @@
 #include "ofGLProgrammableRenderer.h"
 #include "ofTrueTypeFont.h"
 #include "ofURLFileLoader.h"
-//#include "Poco/Net/NetSSL.h"
+#ifndef TARGET_WINRT
+	#include "Poco/Net/NetSSL.h"
+#endif
 
 
 // TODO: closing seems wonky.
@@ -44,8 +46,10 @@ static ofPtr<ofAppBaseWindow> 		window;
 	#include "ofAppAndroidWindow.h"
 #elif defined(TARGET_RASPBERRY_PI)
 	#include "ofAppEGLWindow.h"
-#else
+#elif defined(TARGET_WINRT)
 	#include "ofAppWinRTWindow.h"
+#else
+	#include "ofAppGLFWWindow.h"
 #endif
 
 // this is hacky only to provide bw compatibility, a shared_ptr should always be initialized using a shared_ptr
@@ -207,8 +211,10 @@ void ofSetupOpenGL(int w, int h, int screenMode){
 		window = ofPtr<ofAppBaseWindow>(new ofAppAndroidWindow());
 	#elif defined(TARGET_RASPBERRY_PI)
 		window = ofPtr<ofAppBaseWindow>(new ofAppEGLWindow());
-    #else
+    #elif defined(TARGET_WINRT)
 		window = ofPtr<ofAppBaseWindow>(new ofAppWinRTWindow());
+	#else
+		window = ofPtr<ofAppBaseWindow>(new ofAppGLFWWindow());
 	#endif
 
 	ofSetupOpenGL(window,w,h,screenMode);

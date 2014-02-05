@@ -69,7 +69,7 @@
 #ifdef OPENSSL_SYS_WIN32
 /* Needed for struct timeval */
 #include <winsock.h>
-#if WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_APP)
+#if !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 struct timeval {
     long    tv_sec;         /* seconds */
     long    tv_usec;        /* and microseconds */

@@ -44,9 +44,11 @@
 #include "Poco/Runnable.h"
 #include "Poco/UnWindows.h"
 
-#if WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_APP)
-	#include "ThreadEmulation/ThreadEmulation.h"
-	using namespace ThreadEmulation;
+#ifdef WINAPI_FAMILY_PARTITION
+	#if !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+		#include "ThreadEmulation/ThreadEmulation.h"
+		using namespace ThreadEmulation;
+	#endif
 #endif
 
 namespace Poco {
