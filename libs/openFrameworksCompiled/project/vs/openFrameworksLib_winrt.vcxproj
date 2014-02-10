@@ -96,13 +96,13 @@
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\..\lib\vs\</OutDir>
     <IntDir>obj\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)_debug</TargetName>
+    <TargetName>$(ProjectName)_win32_debug</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\..\lib\vs\</OutDir>
     <IntDir>obj\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)_release</TargetName>
+    <TargetName>$(ProjectName)_win32_release</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
