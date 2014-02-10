@@ -20,16 +20,42 @@
     <Filter Include="data">
       <UniqueIdentifier>{d116db66-68bd-46ab-bad5-42dd9652d8c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="arm dlls">
+      <UniqueIdentifier>{ac5ca8e4-4d5c-4625-a8ed-ba74da42d4e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win32 dlls">
+      <UniqueIdentifier>{c5db222d-9a3c-47b7-b50e-b45dd7bdd3a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="3DPrimitivesExample_winrt_TemporaryKey.pfx" />
-    <None Include="..\..\..\export\vs\libEGL.dll" />
-    <None Include="..\..\..\export\vs\libGLESv2.dll" />
-    <None Include="..\..\..\export\vs\FreeImage.dll" />
-    <None Include="..\..\..\export\vs\fmodexMetro.dll" />
+    <None Include="..\..\..\export\vs\winrt_win32\fmodexMetro.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_win32\FreeImage.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_win32\libEGL.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_win32\libGLESv2.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_arm\fmodexMetroarm.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_arm\FreeImage.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_arm\libEGL.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_arm\libGLESv2.dll">
+      <Filter>arm dlls</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
