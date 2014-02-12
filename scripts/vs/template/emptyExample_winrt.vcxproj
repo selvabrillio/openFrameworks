@@ -250,6 +250,11 @@
   <ItemGroup>
     <ClInclude Include="src\ofApp.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksLib_winrt.vcxproj">
+      <Project>{2327f49f-4274-4100-9ecd-08dd1fd8d54a}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ImageContentTask.targets" />
