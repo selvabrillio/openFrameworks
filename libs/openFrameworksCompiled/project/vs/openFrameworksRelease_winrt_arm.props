@@ -13,7 +13,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\libs\angle\lib\vs\winrt_arm;..\..\..\libs\rtAudio\lib\vs;..\..\..\libs\FreeImage\lib\vs\winrt_arm;..\..\..\libs\freetype\lib\vs\winrt_arm;..\..\..\libs\fmodex\lib\vs;..\..\..\libs\cairo\lib\vs;..\..\..\libs\openssl\lib\vs;..\..\..\libs\Poco\lib\vs\winrt_arm;..\..\..\libs\tess2\lib\vs\winrt_arm;..\..\..\libs\openFrameworksCompiled\lib\vs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openFrameworksLib_winrt_arm_release.lib;kernel32.lib;libEGL.lib;libGLESv2.lib;libfreetype.lib;FreeImage.lib;fmodexMetroarm_vc.lib;PocoFoundationmd.lib;tess2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;libEGL.lib;libGLESv2.lib;libfreetype.lib;FreeImage.lib;fmodexMetroarm_vc.lib;PocoFoundationmd.lib;tess2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>PocoFoundationmd.lib;atlthunk.lib;LIBC.lib;LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>

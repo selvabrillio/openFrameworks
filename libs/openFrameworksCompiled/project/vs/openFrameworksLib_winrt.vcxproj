@@ -126,7 +126,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\angle\include;..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\gl\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_PROGRAMMABLE_GL;WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level1</WarningLevel>
@@ -144,7 +144,7 @@
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\..\angle\include;..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_PROGRAMMABLE_GL;WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level1</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -160,7 +160,7 @@
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\..\..\..\angleproject\include;..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\gl\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_PROGRAMMABLE_GL;WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level1</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -176,7 +176,7 @@
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\..\..\..\angleproject\include;..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_PROGRAMMABLE_GL;WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level1</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -192,7 +192,7 @@
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_PROGRAMMABLE_GL;WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level1</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -208,7 +208,7 @@
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\..\openFrameworks;..\..\..\openFrameworks\graphics;..\..\..\openFrameworks\app;..\..\..\openFrameworks\sound;..\..\..\openFrameworks\utils;..\..\..\openFrameworks\communication;..\..\..\openFrameworks\video;..\..\..\openFrameworks\types;..\..\..\openFrameworks\math;..\..\..\openFrameworks\3d;..\..\..\openFrameworks\gl;..\..\..\openFrameworks\events;..\..\..\glut\include;..\..\..\rtAudio\include;..\..\..\quicktime\include;..\..\..\freetype\include;..\..\..\freetype\include\freetype2;..\..\..\freeImage\include;..\..\..\fmodex\include;..\..\..\videoInput\include;..\..\..\glew\include\;..\..\..\glu\include;..\..\..\tess2\include;..\..\..\cairo\include\cairo;..\..\..\poco\include;..\..\..\glfw\include;..\..\..\openssl\include;..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_PROGRAMMABLE_GL;WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level1</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

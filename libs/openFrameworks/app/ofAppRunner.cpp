@@ -13,7 +13,9 @@
 #include "ofEvents.h"
 #include "ofMath.h"
 #include "ofGraphics.h"
-#include "ofGLRenderer.h"
+#ifndef TARGET_WINRT
+	#include "ofGLRenderer.h"
+#endif
 #include "ofGLProgrammableRenderer.h"
 #include "ofTrueTypeFont.h"
 #include "ofURLFileLoader.h"

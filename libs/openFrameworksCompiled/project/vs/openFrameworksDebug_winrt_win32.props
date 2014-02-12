@@ -13,7 +13,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\libs\angle\lib\vs\winrt_win32;..\..\..\libs\rtAudio\lib\vs;..\..\..\libs\FreeImage\lib\vs\winrt_win32;..\..\..\libs\freetype\lib\vs\winrt_win32;..\..\..\libs\fmodex\lib\vs;..\..\..\libs\videoInput\lib\vs;..\..\..\libs\cairo\lib\vs;..\..\..\libs\openssl\lib\vs;..\..\..\libs\Poco\lib\vs\winrt_win32;..\..\..\libs\tess2\lib\vs\winrt_win32;..\..\..\libs\openFrameworksCompiled\lib\vs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>openFrameworksLib_winrt_win32_debug.lib;kernel32.lib;libEGL.lib;libGLESv2.lib;libfreetype.lib;FreeImage.lib;fmodexMetro_vc.lib;PocoFoundationmdd.lib;tess2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;libEGL.lib;libGLESv2.lib;libfreetype.lib;FreeImage.lib;fmodexMetro_vc.lib;PocoFoundationmdd.lib;tess2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>PocoFoundationmdd.lib;atlthunk.lib;msvcrt;libcmt;LIBC;LIBCMTD</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
