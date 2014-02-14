@@ -1,7 +1,9 @@
 #pragma once
 
 #include "ofBaseTypes.h"
-#ifndef TARGET_WINRT
+#ifdef TARGET_WINRT
+  #include "ofGLProgrammableRenderer.h"
+#else
 	#include "ofGLRenderer.h"
 #endif
 
@@ -19,7 +21,7 @@ public:
 			 }
 		 }
 #ifdef TARGET_WINRT
-		 //return ofPtr<ofGLProgrammableRenderer>();
+		 return ofPtr<ofGLProgrammableRenderer>();
 #else
 		 return ofPtr<ofGLRenderer>();
 #endif
