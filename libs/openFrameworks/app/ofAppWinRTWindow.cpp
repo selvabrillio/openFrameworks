@@ -263,13 +263,13 @@ void WinRTHandler::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
 {
 	appWindow->bMousePressed = true;
 	int button;
-	if(args->CurrentPoint->Properties->IsLeftButtonPressed)
+  if (args->CurrentPoint->Properties->IsLeftButtonPressed)
 		button = OF_MOUSE_BUTTON_LEFT;
-	else if(args->CurrentPoint->Properties->IsMiddleButtonPressed)
-		button = OF_MOUSE_BUTTON_MIDDLE;
-	else if(args->CurrentPoint->Properties->IsRightButtonPressed)
-		button = OF_MOUSE_BUTTON_RIGHT;
-	else
+  else if (args->CurrentPoint->Properties->IsMiddleButtonPressed)
+    button = OF_MOUSE_BUTTON_MIDDLE;
+  else if (args->CurrentPoint->Properties->IsRightButtonPressed)
+    button = OF_MOUSE_BUTTON_RIGHT;
+  else
 		return;
 	ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), button);
 }
@@ -287,7 +287,16 @@ void WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
 
 void WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
 {
-	ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_LEFT);
+  int button;
+  if (args->CurrentPoint->Properties->PointerUpdateKind == Windows::UI::Input::PointerUpdateKind::LeftButtonReleased)
+    button = OF_MOUSE_BUTTON_LEFT;
+  else if (args->CurrentPoint->Properties->PointerUpdateKind == Windows::UI::Input::PointerUpdateKind::MiddleButtonReleased)
+    button = OF_MOUSE_BUTTON_MIDDLE;
+  else if (args->CurrentPoint->Properties->PointerUpdateKind == Windows::UI::Input::PointerUpdateKind::RightButtonReleased)
+    button = OF_MOUSE_BUTTON_RIGHT;
+  else
+    return;
+  ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), button);
 	appWindow->bMousePressed = false;
 }
 
