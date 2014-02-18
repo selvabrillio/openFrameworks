@@ -300,20 +300,238 @@ void WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
 	appWindow->bMousePressed = false;
 }
 
-void WinRTHandler::OnKeyPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args)
+static int TranslateWinrtKey(CoreWindow^ sender, KeyEventArgs^ args)
 {
-	int key = (int)args->VirtualKey;
-	if (key >= 'A' && key <= 'Z')
+	int key;
+	VirtualKey virtualKey = args->VirtualKey;
+
+	switch (virtualKey) {
+		case VirtualKey::Escape:
+			key = OF_KEY_ESC;
+			break;
+		case VirtualKey::F1:
+			key = OF_KEY_F1;
+			break;
+		case VirtualKey::F2:
+			key = OF_KEY_F2;
+			break;
+		case VirtualKey::F3:
+			key = OF_KEY_F3;
+			break;
+		case VirtualKey::F4:
+			key = OF_KEY_F4;
+			break;
+		case VirtualKey::F5:
+			key = OF_KEY_F5;
+			break;
+		case VirtualKey::F6:
+			key = OF_KEY_F6;
+			break;
+		case VirtualKey::F7:
+			key = OF_KEY_F7;
+			break;
+		case VirtualKey::F8:
+			key = OF_KEY_F8;
+			break;
+		case VirtualKey::F9:
+			key = OF_KEY_F9;
+			break;
+		case VirtualKey::F10:
+			key = OF_KEY_F10;
+			break;
+		case VirtualKey::F11:
+			key = OF_KEY_F11;
+			break;
+		case VirtualKey::F12:
+			key = OF_KEY_F12;
+			break;
+		case VirtualKey::Left:
+			key = OF_KEY_LEFT;
+			break;
+		case VirtualKey::Right:
+			key = OF_KEY_RIGHT;
+			break;
+		case VirtualKey::Up:
+			key = OF_KEY_UP;
+			break;
+		case VirtualKey::Down:
+			key = OF_KEY_DOWN;
+			break;
+		case VirtualKey::PageUp:
+			key = OF_KEY_PAGE_UP;
+			break;
+		case VirtualKey::PageDown:
+			key = OF_KEY_PAGE_DOWN;
+			break;
+		case VirtualKey::Home:
+			key = OF_KEY_HOME;
+			break;
+		case VirtualKey::End:
+			key = OF_KEY_END;
+			break;
+		case VirtualKey::Insert:
+			key = OF_KEY_INSERT;
+			break;
+		case VirtualKey::LeftShift:
+			key = OF_KEY_LEFT_SHIFT;
+			break;
+		case VirtualKey::LeftControl:
+			key = OF_KEY_LEFT_CONTROL;
+			break;
+		//case VirtualKey::LeftAlt:
+		//	key = OF_KEY_LEFT_ALT;
+		//	break;
+		case VirtualKey::LeftWindows:
+			key = OF_KEY_LEFT_SUPER;
+			break;
+		case VirtualKey::RightShift:
+			key = OF_KEY_RIGHT_SHIFT;
+			break;
+		case VirtualKey::RightControl:
+			key = OF_KEY_RIGHT_CONTROL;
+			break;
+		//case GLFW_KEY_RIGHT_ALT:
+		//	key = OF_KEY_RIGHT_ALT;
+		//	break;
+		case VirtualKey::RightWindows:
+			key = OF_KEY_RIGHT_SUPER;
+            break;
+		case VirtualKey::Back:
+			key = OF_KEY_BACKSPACE;
+			break;
+		case VirtualKey::Delete:
+			key = OF_KEY_DEL;
+			break;
+		case VirtualKey::Enter:
+			key = OF_KEY_RETURN;
+			break;
+		case VirtualKey::Tab:
+			key = OF_KEY_TAB;
+			break;   
+		case VirtualKey::Shift:
+			key = OF_KEY_SHIFT;
+			break;
+		case (VirtualKey)186:
+			key = ';';
+			break;
+		case (VirtualKey)192:
+			key = '`';
+			break;
+		case (VirtualKey)187:
+			key = '=';
+			break;
+		case (VirtualKey)222:
+			key = '\'';
+			break;
+		case (VirtualKey)188:
+			key = ',';
+			break;
+		case (VirtualKey)190:
+			key = '.';
+			break;
+		case (VirtualKey)191:
+			key = '/';
+			break;
+		case (VirtualKey)219:
+			key = '[';
+			break;
+		case (VirtualKey)221:
+			key = ']';
+			break;
+		case (VirtualKey)220:
+			key = '\\';
+			break;
+		default:
+			key = (int)args->VirtualKey;
+			break;
+	}
+
+	//handle the special capital cases
+	if(ofGetKeyPressed(OF_KEY_SHIFT))
+	{
+		switch(virtualKey)
+		{
+			case VirtualKey::Number0:
+				key = ')';
+				break;
+			case VirtualKey::Number1:
+				key = '!';
+				break;
+			case VirtualKey::Number2:
+				key = '@';
+				break;
+			case VirtualKey::Number3:
+				key = '#';
+				break;
+			case VirtualKey::Number4:
+				key = '$';
+				break;
+			case VirtualKey::Number5:
+				key = '%';
+				break;
+			case VirtualKey::Number6:
+				key = '^';
+				break;
+			case VirtualKey::Number7:
+				key = '&';
+				break;
+			case VirtualKey::Number8:
+				key = '*';
+				break;
+			case VirtualKey::Number9:
+				key = '(';
+				break;
+			case VirtualKey::Subtract:
+				key = '_';
+				break;
+			case (VirtualKey)186:
+				key = ':';
+				break;
+			case (VirtualKey)192:
+				key = '~';
+				break;
+			case (VirtualKey)187:
+				key = '+';
+				break;
+			case (VirtualKey)222:
+				key = '"';
+				break;
+			case (VirtualKey)188:
+				key = '<';
+				break;
+			case (VirtualKey)190:
+				key = '>';
+				break;
+			case (VirtualKey)191:
+				key = '?';
+				break;
+			case (VirtualKey)219:
+				key = '{';
+				break;
+			case (VirtualKey)221:
+				key = '}';
+				break;
+			case (VirtualKey)220:
+				key = '|';
+				break;
+		}
+	}
+	
+	//winrt spits out capital letters by default so convert keys to lower case if shift isn't held
+	if (key >= 'A' && key <= 'Z' && !ofGetKeyPressed(OF_KEY_SHIFT))
 		key += 'a' - 'A';
-	ofNotifyKeyPressed(key);
+
+	return key;
 }
 
-void WinRTHandler::OnKeyReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args)
+void WinRTHandler::OnKeyPressed(CoreWindow^ sender, KeyEventArgs^ args)
 {
-	int key = (int)args->VirtualKey;
-	if (key >= 'A' && key <= 'Z')
-		key += 'a' - 'A';
-	ofNotifyKeyReleased(key);
+	ofNotifyKeyPressed(TranslateWinrtKey(sender, args));
+}
+
+void WinRTHandler::OnKeyReleased(CoreWindow^ sender, KeyEventArgs^ args)
+{
+	ofNotifyKeyReleased(TranslateWinrtKey(sender, args));
 }
 
 void WinRTHandler::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
