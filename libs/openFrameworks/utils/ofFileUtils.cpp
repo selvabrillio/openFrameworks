@@ -14,7 +14,7 @@
 #ifdef TARGET_WINRT
 using namespace Windows::Storage;
 
-static string WinrtLocalDirPath(const string& path)
+string WinrtLocalDirPath(const string& path)
 {
 	StorageFolder^ localDir = ApplicationData::Current->LocalFolder;
 	Platform::String^ localDirPath = localDir->Path;

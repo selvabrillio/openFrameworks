@@ -3,6 +3,10 @@
 #include "ofConstants.h"
 #include "Poco/File.h"
 
+#ifdef TARGET_WINRT
+string WinrtLocalDirPath(const string& path);
+#endif
+
 //----------------------------------------------------------
 // ofBuffer
 //----------------------------------------------------------
