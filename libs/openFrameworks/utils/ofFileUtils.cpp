@@ -11,6 +11,19 @@
  #include <limits.h>        /* PATH_MAX */
 #endif
 
+#ifdef TARGET_WINRT
+using namespace Windows::Storage;
+
+static string WinrtLocalDirPath(const string& path)
+{
+	StorageFolder^ localDir = ApplicationData::Current->LocalFolder;
+	Platform::String^ localDirPath = localDir->Path;
+	string tempPath(localDirPath->Begin(), localDirPath->End());
+	string fileName = "\\" + ofFilePath::getFileName(path, false); //in case path is absolute;
+	return tempPath + fileName;
+}
+#endif
+
 
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
@@ -223,6 +236,13 @@ istream & operator>>(istream & istr, ofBuffer & buf){
 ofBuffer ofBufferFromFile(const string & path, bool binary){
 	ios_base::openmode mode = binary ? ifstream::binary : ios_base::in;
 	ifstream istr(ofToDataPath(path, true).c_str(), mode);
+#ifdef TARGET_WINRT
+	//look for the file in the local directory
+	if(!istr.is_open())
+	{
+		istr.open(WinrtLocalDirPath(ofToDataPath(path, true)).c_str(), mode);
+	}
+#endif
 	ofBuffer buffer(istr);
 	istr.close();
 	return buffer;
@@ -231,7 +251,11 @@ ofBuffer ofBufferFromFile(const string & path, bool binary){
 //--------------------------------------------------
 bool ofBufferToFile(const string & path, ofBuffer & buffer, bool binary){
 	ios_base::openmode mode = binary ? ofstream::binary : ios_base::out;
+#ifdef TARGET_WINRT
+	ofstream ostr(WinrtLocalDirPath(ofToDataPath(path, true)).c_str(), mode);
+#else
 	ofstream ostr(ofToDataPath(path, true).c_str(), mode);
+#endif
 	bool ret = buffer.writeTo(ostr);
 	ostr.close();
 	return ret;
@@ -339,6 +363,13 @@ bool ofFile::openStream(Mode _mode, bool _binary){
 bool ofFile::open(string _path, Mode _mode, bool binary){
 	close();
 	myFile = File(ofToDataPath(_path));
+#ifdef TARGET_WINRT
+	//check the local directory
+	if(!myFile.exists())
+	{
+		myFile = File(WinrtLocalDirPath(ofToDataPath(_path)));
+	}
+#endif
 	return openStream(_mode, binary);
 }
 
@@ -803,6 +834,10 @@ bool ofFile::doesFileExist(string fPath,  bool bRelativeToData){
 		fPath = ofToDataPath(fPath);
 	}
 	File file(fPath);
+#ifdef TARGET_WINRT
+	if(fPath.empty() || !file.exists())
+		file = File(WinrtLocalDirPath((bRelativeToData) ? ofToDataPath(fPath) : fPath));
+#endif
 	return !fPath.empty() && file.exists();
 }
 
