@@ -191,11 +191,7 @@ static bool loadImage(ofPixels_<PixelType> & pix, string fileName){
 	}
 #endif
 	
-#ifdef TARGET_WINRT
-	fileName = WinrtLocalDirPath(fileName);
-#else
 	fileName = ofToDataPath(fileName);
-#endif
 	bool bLoaded = false;
 	FIBITMAP * bmp = NULL;
 
@@ -210,6 +206,13 @@ static bool loadImage(ofPixels_<PixelType> & pix, string fileName){
 
 		if (bmp != NULL){
 			bLoaded = true;
+		}
+		else{
+			fileName = WinrtLocalDirPath(fileName);
+			bmp = FreeImage_Load(fif, fileName.c_str(), 0);
+			if (bmp != NULL){
+				bLoaded = true;
+			}
 		}
 	}
 	
