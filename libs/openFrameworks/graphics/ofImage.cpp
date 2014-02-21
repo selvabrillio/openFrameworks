@@ -3,6 +3,8 @@
 #include "ofTypes.h"
 #ifndef TARGET_WINRT
 	#include "ofURLFileLoader.h"
+#else
+	#include <ppltasks.h>
 #endif
 #include "ofGraphics.h"
 #include "FreeImage.h"
@@ -207,6 +209,7 @@ static bool loadImage(ofPixels_<PixelType> & pix, string fileName){
 		if (bmp != NULL){
 			bLoaded = true;
 		}
+#ifdef TARGET_WINRT
 		else{
 			fileName = WinrtLocalDirPath(fileName);
 			bmp = FreeImage_Load(fif, fileName.c_str(), 0);
@@ -214,6 +217,7 @@ static bool loadImage(ofPixels_<PixelType> & pix, string fileName){
 				bLoaded = true;
 			}
 		}
+#endif
 	}
 	
 	//-----------------------------
@@ -403,6 +407,20 @@ static void saveImage(ofPixels_<PixelType> & pix, string fileName, ofImageQualit
 	if (bmp != NULL){
 		FreeImage_Unload(bmp);
 	}
+	
+#ifdef TARGET_WINRT
+	//copy image file to the pictures folder for the user to get access to more easily outside the app
+	using namespace Windows::Storage;
+	fileName = ofFilePath::getFileName(fileName, false);
+	StorageFolder^ localFolder = ApplicationData::Current->LocalFolder;
+	wstring wFileName;
+	wFileName.assign(fileName.begin(), fileName.end());
+	concurrency::create_task(localFolder->GetFileAsync(ref new Platform::String(wFileName.c_str()))).then(
+	[](StorageFile^ file)
+	{
+		file->CopyAsync(KnownFolders::PicturesLibrary, file->Name, NameCollisionOption::ReplaceExisting);
+	});
+#endif
 }
 
 //----------------------------------------------------------------
