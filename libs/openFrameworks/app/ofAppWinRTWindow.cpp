@@ -32,6 +32,7 @@ protected:
 	void OnPointerReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::PointerEventArgs^ args);
 	void OnKeyPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args);
 	void OnKeyReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args);
+	void OnWindowSizeChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args);
 
 private:
 	// EGL stuff
@@ -107,6 +108,9 @@ void WinRTHandler::SetWindow(CoreWindow^ window)
 		
 	window->KeyUp +=
 		ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &WinRTHandler::OnKeyReleased);
+
+	window->SizeChanged +=
+		ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &WinRTHandler::OnWindowSizeChanged);
 
 	// setup EGL
 	EGLint configAttribList[] = {
@@ -562,6 +566,15 @@ void WinRTHandler::OnResuming(Platform::Object^ sender, Platform::Object^ args)
 	// and state are persisted when resuming from suspend. Note that this event
 	// does not occur if the app was previously terminated.
 	// m_renderer->CreateWindowSizeDependentResources();
+}
+
+void WinRTHandler::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
+{
+	appWindow->windowWidth = args->Size.Width;
+	appWindow->windowHeight = args->Size.Height;
+	char buffer[128];
+	sprintf(buffer, "width = %i\nheight = %i\n\n", appWindow->windowWidth, appWindow->windowHeight);
+	OutputDebugStringA(buffer);
 }
 
 IFrameworkView^ Direct3DApplicationSource::CreateView()
