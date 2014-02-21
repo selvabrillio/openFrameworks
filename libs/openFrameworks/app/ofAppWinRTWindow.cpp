@@ -570,11 +570,11 @@ void WinRTHandler::OnResuming(Platform::Object^ sender, Platform::Object^ args)
 
 void WinRTHandler::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
 {
-	appWindow->windowWidth = args->Size.Width;
-	appWindow->windowHeight = args->Size.Height;
-	char buffer[128];
-	sprintf(buffer, "width = %i\nheight = %i\n\n", appWindow->windowWidth, appWindow->windowHeight);
-	OutputDebugStringA(buffer);
+	int w = args->Size.Width;
+	int h = args->Size.Height;
+	appWindow->windowWidth = w;
+	appWindow->windowHeight = h;
+	ofNotifyWindowResized(w, h);
 }
 
 IFrameworkView^ Direct3DApplicationSource::CreateView()
