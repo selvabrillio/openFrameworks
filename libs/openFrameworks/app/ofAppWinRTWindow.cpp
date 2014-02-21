@@ -669,14 +669,7 @@ void ofAppWinRTWindow::display(void){
 
 	ofNotifyDraw();
 
-	if (bClearAuto == false){
-		// on a PC resizing a window with this method of accumulation (essentially single buffering)
-		// is BAD, so we clear on resize events.
-		ofClear(bgPtr[0]*255,bgPtr[1]*255,bgPtr[2]*255, bgPtr[3]*255);
-		eglSwapBuffers(eglDisplay, eglSurface);
-	} else {
-		eglSwapBuffers(eglDisplay, eglSurface);
-	}
+	eglSwapBuffers(eglDisplay, eglSurface);
 
 	if(renderer){
 		renderer->finishRender();
