@@ -411,15 +411,17 @@ static void saveImage(ofPixels_<PixelType> & pix, string fileName, ofImageQualit
 #ifdef TARGET_WINRT
 	//copy image file to the pictures folder for the user to get access to more easily outside the app
 	using namespace Windows::Storage;
+	using namespace concurrency;
 	fileName = ofFilePath::getFileName(fileName, false);
 	StorageFolder^ localFolder = ApplicationData::Current->LocalFolder;
 	wstring wFileName;
 	wFileName.assign(fileName.begin(), fileName.end());
-	concurrency::create_task(localFolder->GetFileAsync(ref new Platform::String(wFileName.c_str()))).then(
+	create_task(localFolder->GetFileAsync(ref new Platform::String(wFileName.c_str())), task_continuation_context::use_arbitrary()).then(
 	[](StorageFile^ file)
 	{
 		file->CopyAsync(KnownFolders::PicturesLibrary, file->Name, NameCollisionOption::ReplaceExisting);
-	});
+	}, task_continuation_context::use_arbitrary());
+
 #endif
 }
 
