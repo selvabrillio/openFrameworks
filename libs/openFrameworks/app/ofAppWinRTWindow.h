@@ -8,6 +8,7 @@
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+#include "common/winrtangle.h"
 
 class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 	public:
@@ -62,27 +63,22 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		void display();
 		
 		// EGL stuff
-		EGLNativeWindowType hWnd;
-		EGLDisplay eglDisplay;
-		EGLContext eglContext;
-		EGLSurface eglSurface;
-
-		// Window dimensions
-		int windowWidth;
-		int windowHeight;
+		//EGLDisplay eglDisplay;
+		//EGLContext eglContext;
+		//EGLSurface eglSurface;
 
 		int mouseInUse;
 		bool bEnableSetupScreen;
 		bool bMousePressed;
+		
+		ref class WinRTHandler;
 	private:
-		//static LRESULT WINAPI windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-		//ESContext esContext;
-
-
 		ofOrientation orientation;
-
-		ofBaseApp *  ofAppPtr;
-
+		ofBaseApp * ofAppPtr;
+		WinRTHandler ^ winrtHandler;
+		
+		// Window dimensions
+		int windowWidth;
+		int windowHeight;
 };
 

@@ -10,7 +10,7 @@
 
 void ofGLReadyCallback();
 
-ref class WinRTHandler sealed : public Windows::ApplicationModel::Core::IFrameworkView
+ref class ofAppWinRTWindow::WinRTHandler sealed : public Windows::ApplicationModel::Core::IFrameworkView
 {
 public:
 	// IFrameworkView Methods.
@@ -35,18 +35,22 @@ protected:
 	void OnWindowSizeChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args);
 
 private:
-	// EGL stuff
-	//ESContext esContext;
-	//EGLNativeWindowType hWnd;
-	//EGLDisplay eglDisplay;
-	//EGLContext eglContext;
-	//EGLSurface eglSurface;
+	ofAppWinRTWindow *appWindow;
+	Platform::Agile<Windows::UI::Core::CoreWindow> m_window;
+	Microsoft::WRL::ComPtr<IWinrtEglWindow> m_eglWindow;
 	bool m_windowClosed;
 	bool m_windowVisible;
 
 internal:
-	WinRTHandler(ofAppWinRTWindow *window) : appWindow(window) {}
-	ofAppWinRTWindow *appWindow;
+	WinRTHandler(ofAppWinRTWindow *window) : appWindow(window) {window->winrtHandler = this;}
+	
+	// EGL stuff
+	EGLDisplay m_eglDisplay;
+	EGLContext m_eglContext;
+	EGLSurface m_eglSurface;
+
+	//int m_windowWidth;
+	//int m_windowHeight;
 };
 
 ref class Direct3DApplicationSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
@@ -68,7 +72,7 @@ using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
 using namespace concurrency;
 
-void WinRTHandler::Initialize(CoreApplicationView^ applicationView)
+void ofAppWinRTWindow::WinRTHandler::Initialize(CoreApplicationView^ applicationView)
 {
 	m_windowClosed = false;
 	m_windowVisible = true;
@@ -82,8 +86,10 @@ void WinRTHandler::Initialize(CoreApplicationView^ applicationView)
 		ref new EventHandler<Platform::Object^>(this, &WinRTHandler::OnResuming);
 }
 
-void WinRTHandler::SetWindow(CoreWindow^ window)
+void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 {
+	m_window = window;
+
     // Specify the orientation of your application here
     // The choices are DisplayOrientations::Portrait or DisplayOrientations::Landscape or DisplayOrientations::LandscapeFlipped
 	//DisplayProperties::AutoRotationPreferences = DisplayOrientations::Portrait | DisplayOrientations::Landscape | DisplayOrientations::LandscapeFlipped;
@@ -136,15 +142,14 @@ void WinRTHandler::SetWindow(CoreWindow^ window)
 	EGLConfig config;
 	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
 
-	//if(!esCreateWindow(&esContext, L"openFrameworks", w, h, ES_WINDOW_RGB | ES_WINDOW_DEPTH))
-	//{
-	//	ofLogError("ofAppWinRTWindow") << "couldn't create window";
-	//	return;
-	//}
+	ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_11_0;
+	HRESULT hr = CreateWinrtEglWindow(WINRT_EGL_IUNKNOWN(m_window.Get()), featureLevel, m_eglWindow.GetAddressOf());
+	if(FAILED(hr)){
+		ofLogError("ofAppWinRTWindow") << "couldn't create EGL window";
+		return;
+	}
 
-	appWindow->hWnd = WINRT_EGL_WINDOW(window);
-
-	display = eglGetDisplay(EGL_D3D11_ONLY_DISPLAY_ANGLE);
+	display = eglGetDisplay(m_eglWindow);
 	if(display == EGL_NO_DISPLAY){
 		ofLogError("ofAppWinRTWindow") << "couldn't get EGL display";
 		return;
@@ -168,7 +173,7 @@ void WinRTHandler::SetWindow(CoreWindow^ window)
 	}
 
 	// Create a surface
-	surface = eglCreateWindowSurface(display, config, (EGLNativeWindowType)appWindow->hWnd, surfaceAttribList);
+	surface = eglCreateWindowSurface(display, config, m_eglWindow, surfaceAttribList);
 	if(surface == EGL_NO_SURFACE){
 		ofLogError("ofAppWinRTWindow") << "failed to create EGL window surface";
 		return;
@@ -187,9 +192,9 @@ void WinRTHandler::SetWindow(CoreWindow^ window)
 		return;
 	}
 
-	appWindow->eglDisplay = display;
-	appWindow->eglSurface = surface;
-	appWindow->eglContext = context;
+	m_eglDisplay = display;
+	m_eglSurface = surface;
+	m_eglContext = context;
 
 	appWindow->windowWidth = window->Bounds.Width;
 	appWindow->windowHeight = window->Bounds.Height;
@@ -201,11 +206,11 @@ void WinRTHandler::SetWindow(CoreWindow^ window)
  //   esCreateWindow ( &esContext, TEXT("Cocos2d-x"), 0, 0, ES_WINDOW_RGB | ES_WINDOW_ALPHA | ES_WINDOW_DEPTH | ES_WINDOW_STENCIL );
 }
 
-void WinRTHandler::Load(Platform::String^ entryPoint)
+void ofAppWinRTWindow::WinRTHandler::Load(Platform::String^ entryPoint)
 {
 }
 
-void WinRTHandler::Run()
+void ofAppWinRTWindow::WinRTHandler::Run()
 {
 	ofNotifySetup();
 	while(!m_windowClosed){
@@ -224,16 +229,16 @@ void WinRTHandler::Run()
 	}
 }
 
-void WinRTHandler::Uninitialize()
+void ofAppWinRTWindow::WinRTHandler::Uninitialize()
 {
 	OF_EXIT_APP(0);
 }
 
-void WinRTHandler::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
 {
 }
 
-void WinRTHandler::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
 {
 }
 
@@ -263,7 +268,7 @@ static void rotateMouseXY(ofOrientation orientation, double &x, double &y) {
 	}
 }
 
-void WinRTHandler::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
 {
 	appWindow->bMousePressed = true;
 	int button;
@@ -278,7 +283,7 @@ void WinRTHandler::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
 	ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), button);
 }
 
-void WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
 {
 	double x = args->CurrentPoint->Position.X;
 	double y = args->CurrentPoint->Position.Y;
@@ -289,7 +294,7 @@ void WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
 		ofNotifyMouseMoved(x, y);
 }
 
-void WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
 {
   int button;
   if (args->CurrentPoint->Properties->PointerUpdateKind == Windows::UI::Input::PointerUpdateKind::LeftButtonReleased)
@@ -528,22 +533,22 @@ static int TranslateWinrtKey(CoreWindow^ sender, KeyEventArgs^ args)
 	return key;
 }
 
-void WinRTHandler::OnKeyPressed(CoreWindow^ sender, KeyEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnKeyPressed(CoreWindow^ sender, KeyEventArgs^ args)
 {
 	ofNotifyKeyPressed(TranslateWinrtKey(sender, args));
 }
 
-void WinRTHandler::OnKeyReleased(CoreWindow^ sender, KeyEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnKeyReleased(CoreWindow^ sender, KeyEventArgs^ args)
 {
 	ofNotifyKeyReleased(TranslateWinrtKey(sender, args));
 }
 
-void WinRTHandler::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
 {
 	CoreWindow::GetForCurrentThread()->Activate();
 }
 
-void WinRTHandler::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
 {
 	// Save app state asynchronously after requesting a deferral. Holding a deferral
 	// indicates that the application is busy performing suspending operations. Be
@@ -560,7 +565,7 @@ void WinRTHandler::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ a
 	});
 }
  
-void WinRTHandler::OnResuming(Platform::Object^ sender, Platform::Object^ args)
+void ofAppWinRTWindow::WinRTHandler::OnResuming(Platform::Object^ sender, Platform::Object^ args)
 {
 	// Restore any data or state that was unloaded on suspend. By default, data
 	// and state are persisted when resuming from suspend. Note that this event
@@ -568,7 +573,7 @@ void WinRTHandler::OnResuming(Platform::Object^ sender, Platform::Object^ args)
 	// m_renderer->CreateWindowSizeDependentResources();
 }
 
-void WinRTHandler::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
+void ofAppWinRTWindow::WinRTHandler::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
 {
 	int w = args->Size.Width;
 	int h = args->Size.Height;
@@ -579,16 +584,13 @@ void WinRTHandler::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEven
 
 IFrameworkView^ Direct3DApplicationSource::CreateView()
 {
-	return ref new WinRTHandler(appWindow);
+	return ref new ofAppWinRTWindow::WinRTHandler(appWindow);
 }
 
 ofAppWinRTWindow::ofAppWinRTWindow():ofAppBaseWindow(){
-	//esInitContext(&esContext);
-	//hWnd = nullptr;
-
-	eglDisplay = NULL;
-	eglContext = NULL;
-	eglSurface = NULL;
+	//eglDisplay = NULL;
+	//eglContext = NULL;
+	//eglSurface = NULL;
 
 	windowWidth = windowHeight = 0;
 	orientation = OF_ORIENTATION_DEFAULT;
@@ -614,12 +616,6 @@ void ofAppWinRTWindow::runAppViaInfiniteLoop(ofBaseApp * appPtr){
 	ofAppPtr = appPtr;
 	auto direct3DApplicationSource = ref new Direct3DApplicationSource(this);
 	CoreApplication::Run(direct3DApplicationSource);
-	//ofNotifySetup();
-	//float t = 0;
-	//while(true){
-	//	ofNotifyUpdate();
-	//	display();
-	//}
 }
 
 ofPoint	ofAppWinRTWindow::getWindowSize(){
@@ -627,7 +623,7 @@ ofPoint	ofAppWinRTWindow::getWindowSize(){
 }
 
 ofPoint	ofAppWinRTWindow::getScreenSize(){
-	return ofPoint(windowWidth, windowHeight);
+	return getWindowSize();
 }
 
 void ofAppWinRTWindow::setOrientation(ofOrientation orientation){
@@ -657,10 +653,6 @@ void ofAppWinRTWindow::display(void){
 	float * bgPtr = ofBgColorPtr();
 	bool bClearAuto = ofbClearBg();
 
-	// to do non auto clear on PC for now - we do something like "single" buffering --
-	// it's not that pretty but it work for the most part
-	
-
 	if ( bClearAuto == true ){
 		ofClear(bgPtr[0]*255,bgPtr[1]*255,bgPtr[2]*255, bgPtr[3]*255);
 	}
@@ -669,111 +661,9 @@ void ofAppWinRTWindow::display(void){
 
 	ofNotifyDraw();
 
-	eglSwapBuffers(eglDisplay, eglSurface);
+	eglSwapBuffers(winrtHandler->m_eglDisplay, winrtHandler->m_eglSurface);
 
 	if(renderer){
 		renderer->finishRender();
 	}
 }
-
-//LRESULT WINAPI ofAppWinRTWindow::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-//{
-//	LRESULT  lRet = 0;
-//	ofAppWinRTWindow * window = (ofAppWinRTWindow *)GetWindowLongPtr(hWnd, GWL_USERDATA);
-//
-//	switch (uMsg) 
-//	{ 
-//		case WM_CREATE:
-//			break;
-//
-//		case WM_SIZE:
-//			window->windowWidth = LOWORD(lParam);
-//			window->windowHeight = HIWORD(lParam);
-//			ofNotifyWindowResized(LOWORD(lParam), HIWORD(lParam));
-//			InvalidateRect(hWnd, NULL, FALSE);
-//			//UpdateWindow(hWnd);
-//			break;
-//
-//		case WM_SIZING:
-//		case WM_MOVING:
-//			{
-//				RECT rect = *(RECT *)lParam;
-//				ofNotifyWindowResized(rect.right - rect.left, rect.bottom - rect.top);
-//				InvalidateRect(hWnd, NULL, FALSE);
-//				//UpdateWindow(hWnd);
-//			}
-//			break;
-//
-//		case WM_PAINT:
-//			{
-//				window->display();
-//				ValidateRect(hWnd, NULL);
-//			}
-//			break;
-//
-//		case WM_DESTROY:
-//			PostQuitMessage(0);
-//			OF_EXIT_APP(0);
-//			break; 
-//
-//		case WM_KEYDOWN:
-//			{
-//				POINT      point;
-//				GetCursorPos( &point );
-//				ofNotifyKeyPressed(wParam);
-//			}
-//			break;
-//
-//		case WM_KEYUP:
-//			ofNotifyKeyReleased(wParam);
-//			break;
-//
-//		case WM_LBUTTONDOWN:
-//			window->bMousePressed = true;
-//			ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_LEFT);
-//			break;
-//
-//		case WM_MBUTTONDOWN:
-//			ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_MIDDLE);
-//			window->bMousePressed = true;
-//			break;
-//
-//		case WM_RBUTTONDOWN:
-//			ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_RIGHT);
-//			window->bMousePressed = true;
-//			break;
-//
-//		case WM_LBUTTONUP:
-//			ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_LEFT);
-//			window->bMousePressed = false;
-//			break;
-//
-//		case WM_MBUTTONUP:
-//			ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_MIDDLE);
-//			window->bMousePressed = false;
-//			break;
-//
-//		case WM_RBUTTONUP:
-//			ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), OF_MOUSE_BUTTON_RIGHT);
-//			window->bMousePressed = false;
-//			break;
-//
-//		case WM_MOUSEMOVE:
-//			{
-//				double x = LOWORD(lParam);
-//				double y = HIWORD(lParam);
-//				rotateMouseXY(ofGetOrientation(), x, y);
-//				if(window->bMousePressed)
-//					ofNotifyMouseDragged(x, y, window->mouseInUse);
-//				else
-//					ofNotifyMouseMoved(x, y);
-//			}
-//			break;
-//
-//		default: 
-//			lRet = DefWindowProc (hWnd, uMsg, wParam, lParam); 
-//			break; 
-//	} 
-//
-//	return lRet;
-//}
