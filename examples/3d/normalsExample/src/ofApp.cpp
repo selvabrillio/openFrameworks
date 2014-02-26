@@ -108,7 +108,7 @@ void ofApp::draw(){
     vector<ofVec3f> v = mesh.getVertices();
     float normalLength = 50.;
     
-    if(!ofGetKeyPressed()){
+    if (!ofGetKeyPressed() && !ofGetMousePressed()){
         ofDisableLighting();
         ofSetColor(255,255,255,70);         
         for(unsigned int i=0; i < n.size() ;i++){

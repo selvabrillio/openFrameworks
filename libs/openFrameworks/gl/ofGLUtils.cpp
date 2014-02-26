@@ -565,12 +565,20 @@ bool ofIsGLProgrammableRenderer(){
 }
 
 ofPtr<ofBaseGLRenderer> ofGetGLRenderer(){
+#ifndef TARGET_WINRT
 	if(ofGetCurrentRenderer()->getType()==ofGLRenderer::TYPE || ofGetCurrentRenderer()->getType()==ofGLProgrammableRenderer::TYPE){
+#else
+	if (ofGetCurrentRenderer()->getType() == ofGLProgrammableRenderer::TYPE){
+#endif
 		return (ofPtr<ofBaseGLRenderer>&)ofGetCurrentRenderer();
 	}else if(ofGetCurrentRenderer()->getType()==ofRendererCollection::TYPE){
 		return ((ofPtr<ofRendererCollection>&)ofGetCurrentRenderer())->getGLRenderer();
 	}else{
+#ifdef TARGET_WINRT
+		return ofPtr<ofGLProgrammableRenderer>();
+#else
 		return ofPtr<ofGLRenderer>();
+#endif
 	}
 }
 

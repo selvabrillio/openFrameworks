@@ -7,7 +7,7 @@
 #include "ofRendererCollection.h"
 #include "ofGLProgrammableRenderer.h"
 #include "ofGLRenderer.h"
-#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
+#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID) && !defined(TARGET_WINRT)
 #include "ofCairoRenderer.h"
 #endif
 
@@ -17,7 +17,7 @@
 		#include <OpenGL/glu.h>
 	#endif
 
-	#ifdef TARGET_OPENGLES
+	#if defined (TARGET_OPENGLES) && !defined (TARGET_WINRT)
 		#include "glu.h"
 	#endif
 
@@ -31,13 +31,13 @@
 #endif
 
 
-#ifndef TARGET_WIN32
+#if !defined (TARGET_WIN32) && !defined (TARGET_WINRT)
     #define CALLBACK
 #endif
 
 #ifdef TARGET_WIN32
 	#define GLUT_BUILDING_LIB
-	#include "glut.h"
+	//#include "glut.h"
 #endif
 #ifdef TARGET_OSX
 	#include <GLUT/glut.h>
@@ -60,16 +60,16 @@ static ofVboMesh gradientMesh;
 void ofSetCurrentRenderer(const string & rendererType,bool setDefaults){
 	if(rendererType==ofGLProgrammableRenderer::TYPE){
 		ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLProgrammableRenderer),setDefaults);
-	}else if(rendererType==ofGLRenderer::TYPE){
-		ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLRenderer),setDefaults);
-#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
+	//}else if(rendererType==ofGLRenderer::TYPE){
+	//	ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLRenderer),setDefaults);
+#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID) && !defined(TARGET_WINRT)
 	}else if(rendererType==ofCairoRenderer::TYPE){
 		ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofCairoRenderer),setDefaults);
 #endif
 	}else{
 		ofLogError("ofGraphics") << "ofSetCurrentRenderer(): unknown renderer type " << rendererType << ", setting an ofGLRenderer";
 		ofLogError("ofGraphics") << "if you want to use a custom renderer, pass an ofPtr to a new instance of it";
-		ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLRenderer),setDefaults);
+		//ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLRenderer),setDefaults);
 	}
 }
 
@@ -101,13 +101,16 @@ ofPtr<ofBaseRenderer> & ofGetCurrentRenderer(){
 #include "ofCairoRenderer.h"
 #include "ofGLRenderer.h"
 
+#if !defined(TARGET_WINRT)
 static ofPtr<ofCairoRenderer> cairoScreenshot;
+#endif
 static ofPtr<ofBaseRenderer> storedRenderer;
 static ofPtr<ofRendererCollection> rendererCollection;
 static bool bScreenShotStarted = false;
 
 //-----------------------------------------------------------------------------------
 void ofBeginSaveScreenAsPDF(string filename, bool bMultipage, bool b3D, ofRectangle viewport){
+#if !defined(TARGET_WINRT)
 	if( bScreenShotStarted )ofEndSaveScreenAsPDF();
 	
 	storedRenderer = ofGetCurrentRenderer();
@@ -121,10 +124,12 @@ void ofBeginSaveScreenAsPDF(string filename, bool bMultipage, bool b3D, ofRectan
 	
 	ofSetCurrentRenderer(rendererCollection,true);
 	bScreenShotStarted = true;
+#endif
 }
 
 //-----------------------------------------------------------------------------------
 void ofEndSaveScreenAsPDF(){
+#if !defined(TARGET_WINRT)
 	if( bScreenShotStarted ){
 
 		if( cairoScreenshot ){
@@ -139,6 +144,7 @@ void ofEndSaveScreenAsPDF(){
 		
 		bScreenShotStarted = false;
 	}
+#endif
 }
 
 #endif

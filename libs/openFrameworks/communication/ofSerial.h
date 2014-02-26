@@ -10,8 +10,10 @@
 	#include <tchar.h>
 	#include <iostream>
 	#include <string.h>
+#if !defined( TARGET_WINRT )
 	#include <setupapi.h>
 	#include <regstr.h>
+#endif
 	#define MAX_SERIAL_PORTS 256
 	 #include <winioctl.h>
 	#ifdef __MINGW32__
@@ -64,7 +66,7 @@ class ofSerial {
 
 			bool 	bInited;
 
-			#ifdef TARGET_WIN32
+			#if defined (TARGET_WIN32) || defined (TARGET_WINRT)
 
 				char 		** portNamesShort;//[MAX_SERIAL_PORTS];
 				char 		** portNamesFriendly; ///[MAX_SERIAL_PORTS];
