@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>0f820432-05c3-4f10-9fec-5be0675e1864</UniqueIdentifier>
+    </Filter>
+    <Image Include="Assets\Logo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SmallLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Filter Include="arm dlls">
+      <UniqueIdentifier>{fbaa75c3-b087-481e-be24-d8a65e0ae7a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win32 dlls">
+      <UniqueIdentifier>{434e6d22-5f0f-42b4-b168-c6ad010aea91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{215f2036-4f21-4d32-ab34-fdb9c2cecc37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{d960e931-151f-4818-b154-8e094cb87c04}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.xaml.cpp" />
+    <ClCompile Include="DirectXPage.xaml.cpp" />
+    <ClCompile Include="AngleBase.cpp" />
+    <ClCompile Include="ofXamlAppMain.cpp" />
+    <ClCompile Include="src\ofApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.xaml.h" />
+    <ClInclude Include="DirectXPage.xaml.h" />
+    <ClInclude Include="AngleBase.h" />
+    <ClInclude Include="DirectXHelper.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="ofXamlAppMain.h" />
+    <ClInclude Include="src\ofApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="emptyExample_winrt_xaml_TemporaryKey.pfx" />
+    <None Include="..\..\..\export\vs\winrt_win32\fmodexMetro.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_win32\fmodexMetroL.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_win32\FreeImage.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_win32\libEGL.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_win32\libGLESv2.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_arm\fmodexMetroarm.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_arm\fmodexMetroLarm.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_arm\FreeImage.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_arm\libEGL.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\export\vs\winrt_arm\libGLESv2.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="DirectXPage.xaml" />
+    <Page Include="StandardStyles.xaml">
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+  </ItemGroup>
+</Project>
