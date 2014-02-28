@@ -15,7 +15,9 @@ void 		ofSetupOpenGL(ofAppBaseWindow * windowPtr, int w, int h, int screenMode);
 
 void 		ofRunApp(ofPtr<ofBaseApp> OFSA);
 void 		ofRunApp(ofBaseApp * OFSA = NULL); // will be deprecated
-
+#ifdef TARGET_WINRT
+void		ofRunAppXaml(ofPtr<ofBaseApp> OFSA);
+#endif
 
 ofBaseApp * ofGetAppPtr();
 void ofSetAppPtr(ofPtr<ofBaseApp> appPtr);
