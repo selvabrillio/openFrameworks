@@ -61,15 +61,13 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		//	virtual HWND getWin32Window(){return 0;}
 		//#endif
 		void display();
+
+		void SetWindowXaml(Windows::UI::Core::CoreWindow^ window);
 		
 		// EGL stuff
 		//EGLDisplay eglDisplay;
 		//EGLContext eglContext;
 		//EGLSurface eglSurface;
-
-		int mouseInUse;
-		bool bEnableSetupScreen;
-		bool bMousePressed;
 		
 		ref class WinRTHandler;
 	private:
@@ -80,5 +78,9 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		// Window dimensions
 		int windowWidth;
 		int windowHeight;
+
+		int mouseInUse;
+		bool bEnableSetupScreen;
+		bool bMousePressed;
 };
 

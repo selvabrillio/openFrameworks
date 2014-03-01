@@ -19,6 +19,7 @@ public:
 	virtual void Load(Platform::String^ entryPoint);
 	virtual void Run();
 	virtual void Uninitialize();
+	void SetWindowXaml(Windows::UI::Core::CoreWindow^ window);
 
 protected:
 	// Event Handlers.
@@ -204,6 +205,42 @@ void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 	//esInitContext(&esContext);
 	//esContext.hWnd = WINRT_EGL_WINDOW(window);
  //   esCreateWindow ( &esContext, TEXT("Cocos2d-x"), 0, 0, ES_WINDOW_RGB | ES_WINDOW_ALPHA | ES_WINDOW_DEPTH | ES_WINDOW_STENCIL );
+}
+
+void ofAppWinRTWindow::WinRTHandler::SetWindowXaml(Windows::UI::Core::CoreWindow^ window)
+{
+	m_window = window;
+
+    // Specify the orientation of your application here
+    // The choices are DisplayOrientations::Portrait or DisplayOrientations::Landscape or DisplayOrientations::LandscapeFlipped
+	//DisplayProperties::AutoRotationPreferences = DisplayOrientations::Portrait | DisplayOrientations::Landscape | DisplayOrientations::LandscapeFlipped;
+
+	window->VisibilityChanged +=
+		ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &WinRTHandler::OnVisibilityChanged);
+
+	window->Closed += 
+		ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &WinRTHandler::OnWindowClosed);
+
+	window->PointerPressed +=
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &WinRTHandler::OnPointerPressed);
+
+	window->PointerMoved +=
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &WinRTHandler::OnPointerMoved);
+
+	window->PointerReleased +=
+		ref new TypedEventHandler<CoreWindow^, PointerEventArgs^>(this, &WinRTHandler::OnPointerReleased);
+		
+	window->KeyDown +=
+		ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &WinRTHandler::OnKeyPressed);
+		
+	window->KeyUp +=
+		ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &WinRTHandler::OnKeyReleased);
+
+	window->SizeChanged +=
+		ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &WinRTHandler::OnWindowSizeChanged);
+		
+	appWindow->windowWidth = window->Bounds.Width;
+	appWindow->windowHeight = window->Bounds.Height;
 }
 
 void ofAppWinRTWindow::WinRTHandler::Load(Platform::String^ entryPoint)
@@ -666,4 +703,10 @@ void ofAppWinRTWindow::display(void){
 	if(renderer){
 		renderer->finishRender();
 	}
+}
+
+void ofAppWinRTWindow::SetWindowXaml(Windows::UI::Core::CoreWindow^ window)
+{
+	winrtHandler = ref new ofAppWinRTWindow::WinRTHandler(this);
+	winrtHandler->SetWindowXaml(window);
 }
