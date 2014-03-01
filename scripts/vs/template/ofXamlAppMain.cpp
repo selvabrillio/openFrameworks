@@ -58,6 +58,7 @@ void ofXamlAppMain::CreateGLResources()
 	Windows::Foundation::Rect bounds = m_window->Bounds;
 	ofSetupOpenGL(bounds.Width, bounds.Height, OF_WINDOW);
 	ofRunAppXaml(ofPtr<ofApp>(new ofApp()));
+	reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr())->SetWindowXaml(m_window.Get());
 	ofGLReadyCallback();
 	ofNotifySetup();
 }
