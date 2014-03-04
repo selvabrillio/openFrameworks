@@ -1,11 +1,21 @@
 #include "ofTrueTypeFont.h"
 //--------------------------
 
+#ifdef TARGET_WINRT
+#define generic GenericFromFreeTypeLibrary
+#define internal InternalFromFreeTypeLibrary
+#endif
+
 #include "ft2build.h"
 #include "freetype2/freetype/freetype.h"
 #include "freetype2/freetype/ftglyph.h"
 #include "freetype2/freetype/ftoutln.h"
 #include "freetype2/freetype/fttrigon.h"
+
+#ifdef TARGET_WINRT
+#undef generic
+#undef internal
+#endif
 
 #ifdef TARGET_LINUX
 #include <fontconfig/fontconfig.h>
@@ -1105,8 +1115,8 @@ void ofTrueTypeFont::bind(){
 
 		blend_enabled = glIsEnabled(GL_BLEND);
 		texture_2d_enabled = glIsEnabled(GL_TEXTURE_2D);
-		glGetIntegerv( GL_BLEND_SRC, &blend_src );
-		glGetIntegerv( GL_BLEND_DST, &blend_dst );
+		glGetIntegerv( GL_BLEND_SRC_ALPHA, &blend_src );
+		glGetIntegerv( GL_BLEND_DST_ALPHA, &blend_dst );
 
 	    // (b) enable our regular ALPHA blending!
 	    glEnable(GL_BLEND);

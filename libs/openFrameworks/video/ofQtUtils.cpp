@@ -1,6 +1,6 @@
 #include "ofQtUtils.h"
 
-#if defined (TARGET_WIN32) || (defined TARGET_OSX && !defined(MAC_OS_X_VERSION_10_7))
+#if defined (TARGET_WIN32) || (defined TARGET_OSX && !defined(MAC_OS_X_VERSION_10_7)) || defined (TARGET_WINRT)
 #include "ofUtils.h"
 #include "ofGraphics.h"
 static bool bQuicktimeInitialized = false;
@@ -15,7 +15,7 @@ void initializeQuicktime(){
 		// can gestalt help with versions, or is that only after init?
 
 		OSErr myErr 	= noErr;
-		#ifdef TARGET_WIN32
+		#if defined (TARGET_WIN32) || defined (TARGET_WINRT)
 			myErr = InitializeQTML(0);
 			if (myErr != noErr){
 				ofLogFatalError("ofQtUtils.h") << "------------------------------------------------------";
@@ -38,7 +38,7 @@ void initializeQuicktime(){
 void closeQuicktime(){
 	if (bQuicktimeInitialized == true){
 		ExitMovies();
-		#ifdef TARGET_WIN32
+		#if defined (TARGET_WIN32) || defined (TARGET_WINRT)
 			TerminateQTML();
 		#endif
 		bQuicktimeInitialized = false;

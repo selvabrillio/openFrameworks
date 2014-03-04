@@ -56,7 +56,17 @@ enum ofTargetPlatform{
 // 		http://www.ogre3d.org/docs/api/html/OgrePlatform_8h-source.html
 
 #if defined( __WIN32__ ) || defined( _WIN32 )
-	#define TARGET_WIN32
+	#ifdef WINAPI_FAMILY_PARTITION
+		#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+			#define TARGET_WIN32
+		#else
+			#define TARGET_WINRT 1
+			#define TARGET_OPENGLES
+			//#define USE_PROGRAMMABLE_GL
+		#endif
+	#else
+		#define TARGET_WIN32
+	#endif
 #elif defined( __APPLE_CC__)
 	#include <TargetConditionals.h>
 
@@ -140,6 +150,58 @@ enum ofTargetPlatform{
 	// problems)
 	// info: http://www.geisswerks.com/ryan/FAQS/timing.html
 
+#endif
+
+#ifdef TARGET_WINRT
+	//this is for TryEnterCriticalSection
+	//http://www.zeroc.com/forums/help-center/351-ice-1-2-tryentercriticalsection-problem.html
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT _WIN32_WINNT_WIN8
+	#endif
+	#define WIN32_LEAN_AND_MEAN
+
+	#if (_MSC_VER)
+		#define NOMINMAX		
+		//http://stackoverflow.com/questions/1904635/warning-c4003-and-errors-c2589-and-c2059-on-x-stdnumeric-limitsintmax
+	#endif
+
+	#include <windows.h>
+	#include <GLES2/gl2.h>
+	#include <GLES2/gl2ext.h>
+	#define __WINDOWS_DS__
+	#define __WINDOWS_MM__
+	#if (_MSC_VER)       // microsoft visual studio
+		#include <stdint.h>
+		#include <functional>
+		#pragma warning(disable : 4018)		// signed/unsigned mismatch (since vector.size() is a size_t)
+		#pragma warning(disable : 4068)		// unknown pragmas
+		#pragma warning(disable : 4101)		// unreferenced local variable
+		#pragma warning(disable : 4267)		// conversion from size_t to Size warning... possible loss of data
+		#pragma warning(disable : 4311)		// type cast pointer truncation (qt vp)
+		#pragma warning(disable : 4312)		// type cast conversion (in qt vp)
+		#pragma warning(disable : 4800)		// 'Boolean' : forcing value to bool 'true' or 'false'
+		// warnings: http://msdn.microsoft.com/library/2c8f766e.aspx
+	#endif
+
+	#define TARGET_LITTLE_ENDIAN			// intel cpu
+
+	// some gl.h files, like dev-c++, are old - this is pretty universal
+	//#ifndef GL_BGR_EXT
+	//#define GL_BGR_EXT 0x80E0
+	//#endif
+
+	// #define WIN32_HIGH_RES_TIMING
+
+	// note: this is experimental!
+	// uncomment to turn this on (only for windows machines)
+	// if you want to try setting the timer to be high resolution
+	// this could make camera grabbing and other low level
+	// operations quicker, but you must quit the app normally,
+	// ie, using "esc", rather than killing the process or closing
+	// the console window in order to set the timer resolution back
+	// to normal (since the high res timer might give the OS
+	// problems)
+	// info: http://www.geisswerks.com/ryan/FAQS/timing.html
 #endif
 
 #ifdef TARGET_OSX
@@ -269,6 +331,10 @@ typedef TESSindex ofIndexType;
 			#define OF_VIDEO_CAPTURE_QUICKTIME
 		#endif
 
+	#elif defined (TARGET_WINRT)
+
+		#define OF_VIDEO_CAPTURE_WINRT
+
 	#elif defined(TARGET_ANDROID)
 
 		#define OF_VIDEO_CAPTURE_ANDROID
@@ -304,7 +370,7 @@ typedef TESSindex ofIndexType;
 //------------------------------------------------ soundstream
 // check if any soundstream api is defined from the compiler
 #if !defined(OF_SOUNDSTREAM_PORTAUDIO) && !defined(OF_SOUNDSTREAM_RTAUDIO) && !defined(OF_SOUNDSTREAM_ANDROID)
-	#if defined(TARGET_LINUX) || defined(TARGET_WIN32) || defined(TARGET_OSX)
+	#if defined(TARGET_LINUX) || defined(TARGET_WIN32) || defined(TARGET_OSX) || defined(TARGET_WINRT)
 		#define OF_SOUNDSTREAM_RTAUDIO
 	#elif defined(TARGET_ANDROID)
 		#define OF_SOUNDSTREAM_ANDROID

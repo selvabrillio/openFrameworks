@@ -1,7 +1,11 @@
 #pragma once
 
 #include "ofBaseTypes.h"
-#include "ofGLRenderer.h"
+#ifdef TARGET_WINRT
+  #include "ofGLProgrammableRenderer.h"
+#else
+	#include "ofGLRenderer.h"
+#endif
 
 class ofRendererCollection: public ofBaseRenderer{
 public:
@@ -16,7 +20,11 @@ public:
 				 return (ofPtr<ofBaseGLRenderer>&)renderers[i];
 			 }
 		 }
+#ifdef TARGET_WINRT
+		 return ofPtr<ofGLProgrammableRenderer>();
+#else
 		 return ofPtr<ofGLRenderer>();
+#endif
 	 }
 
 	 bool rendersPathPrimitives(){return true;}

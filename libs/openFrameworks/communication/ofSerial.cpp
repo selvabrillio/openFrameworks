@@ -30,61 +30,61 @@ void ofSerial::enumerateWin32Ports(){
 
     // thanks joerg for fixes...
 
-	if (bPortsEnumerated == true) return;
+	//if (bPortsEnumerated == true) return;
 
-	HDEVINFO hDevInfo = NULL;
-	SP_DEVINFO_DATA DeviceInterfaceData;
-	int i = 0;
-	DWORD dataType, actualSize = 0;
-	unsigned char dataBuf[MAX_PATH + 1];
+	//HDEVINFO hDevInfo = NULL;
+	//SP_DEVINFO_DATA DeviceInterfaceData;
+	//int i = 0;
+	//DWORD dataType, actualSize = 0;
+	//unsigned char dataBuf[MAX_PATH + 1];
 
-	// Reset Port List
-	nPorts = 0;
-	// Search device set
-	hDevInfo = SetupDiGetClassDevs((struct _GUID *)&GUID_SERENUM_BUS_ENUMERATOR,0,0,DIGCF_PRESENT);
-	if ( hDevInfo ){
-      while (TRUE){
-         ZeroMemory(&DeviceInterfaceData, sizeof(DeviceInterfaceData));
-         DeviceInterfaceData.cbSize = sizeof(DeviceInterfaceData);
-         if (!SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInterfaceData)){
-             // SetupDiEnumDeviceInfo failed
-             break;
-         }
+	//// Reset Port List
+	//nPorts = 0;
+	//// Search device set
+	//hDevInfo = SetupDiGetClassDevs((struct _GUID *)&GUID_SERENUM_BUS_ENUMERATOR,0,0,DIGCF_PRESENT);
+	//if ( hDevInfo ){
+ //     while (TRUE){
+ //        ZeroMemory(&DeviceInterfaceData, sizeof(DeviceInterfaceData));
+ //        DeviceInterfaceData.cbSize = sizeof(DeviceInterfaceData);
+ //        if (!SetupDiEnumDeviceInfo(hDevInfo, i, &DeviceInterfaceData)){
+ //            // SetupDiEnumDeviceInfo failed
+ //            break;
+ //        }
 
-         if (SetupDiGetDeviceRegistryPropertyA(hDevInfo,
-             &DeviceInterfaceData,
-             SPDRP_FRIENDLYNAME,
-             &dataType,
-             dataBuf,
-             sizeof(dataBuf),
-             &actualSize)){
+ //        if (SetupDiGetDeviceRegistryPropertyA(hDevInfo,
+ //            &DeviceInterfaceData,
+ //            SPDRP_FRIENDLYNAME,
+ //            &dataType,
+ //            dataBuf,
+ //            sizeof(dataBuf),
+ //            &actualSize)){
 
-			sprintf(portNamesFriendly[nPorts], "%s", dataBuf);
-			portNamesShort[nPorts][0] = 0;
+	//		sprintf(portNamesFriendly[nPorts], "%s", dataBuf);
+	//		portNamesShort[nPorts][0] = 0;
 
-			// turn blahblahblah(COM4) into COM4
+	//		// turn blahblahblah(COM4) into COM4
 
-            char *   begin    = NULL;
-            char *   end    = NULL;
-            begin          = strstr((char *)dataBuf, "COM");
+ //           char *   begin    = NULL;
+ //           char *   end    = NULL;
+ //           begin          = strstr((char *)dataBuf, "COM");
 
 
-            if (begin)
-                {
-                end          = strstr(begin, ")");
-                if (end)
-                    {
-                      *end = 0;   // get rid of the )...
-                      strcpy(portNamesShort[nPorts], begin);
-                }
-                if (nPorts++ > MAX_SERIAL_PORTS)
-                        break;
-            }
-         }
-            i++;
-      }
-   }
-   SetupDiDestroyDeviceInfoList(hDevInfo);
+ //           if (begin)
+ //               {
+ //               end          = strstr(begin, ")");
+ //               if (end)
+ //                   {
+ //                     *end = 0;   // get rid of the )...
+ //                     strcpy(portNamesShort[nPorts], begin);
+ //               }
+ //               if (nPorts++ > MAX_SERIAL_PORTS)
+ //                       break;
+ //           }
+ //        }
+ //           i++;
+ //     }
+ //  }
+ //  SetupDiDestroyDeviceInfoList(hDevInfo);
 
    bPortsEnumerated = false;
 }
