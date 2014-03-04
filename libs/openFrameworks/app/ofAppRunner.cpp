@@ -13,20 +13,16 @@
 #include "ofEvents.h"
 #include "ofMath.h"
 #include "ofGraphics.h"
-#ifndef TARGET_WINRT
-	#include "ofGLRenderer.h"
-#endif
+#include "ofGLRenderer.h"
 #include "ofGLProgrammableRenderer.h"
 #include "ofTrueTypeFont.h"
 #include "ofURLFileLoader.h"
-#ifndef TARGET_WINRT
-	#include "Poco/Net/NetSSL.h"
-#endif
+#include "Poco/Net/NetSSL.h"
 
 
 // TODO: closing seems wonky.
 // adding this for vc2010 compile: error C3861: 'closeQuicktime': identifier not found
-#if defined (TARGET_WIN32) || defined(TARGET_OSX ) || defined (TARGET_WINRT)
+#if defined (TARGET_WIN32) || defined(TARGET_OSX)
 	#include "ofQtUtils.h"
 #endif
 
@@ -48,8 +44,6 @@ static ofPtr<ofAppBaseWindow> 		window;
 	#include "ofAppAndroidWindow.h"
 #elif defined(TARGET_RASPBERRY_PI)
 	#include "ofAppEGLWindow.h"
-#elif defined(TARGET_WINRT)
-	#include "ofAppWinRTWindow.h"
 #else
 	#include "ofAppGLFWWindow.h"
 #endif
@@ -213,9 +207,7 @@ void ofSetupOpenGL(int w, int h, int screenMode){
 		window = ofPtr<ofAppBaseWindow>(new ofAppAndroidWindow());
 	#elif defined(TARGET_RASPBERRY_PI)
 		window = ofPtr<ofAppBaseWindow>(new ofAppEGLWindow());
-    #elif defined(TARGET_WINRT)
-		window = ofPtr<ofAppBaseWindow>(new ofAppWinRTWindow());
-	#else
+    #else
 		window = ofPtr<ofAppBaseWindow>(new ofAppGLFWWindow());
 	#endif
 
@@ -230,11 +222,9 @@ void ofExitCallback(){
 
 	ofNotifyExit();
 
-#ifndef TARGET_WINRT
 	ofRemoveAllURLRequests();
 	ofStopURLLoader();
 	Poco::Net::uninitializeSSL();
-#endif
 
     ofRemoveListener(ofEvents().setup,OFSAptr.get(),&ofBaseApp::setup,OF_EVENT_ORDER_APP);
     ofRemoveListener(ofEvents().update,OFSAptr.get(),&ofBaseApp::update,OF_EVENT_ORDER_APP);
@@ -259,7 +249,7 @@ void ofExitCallback(){
 	#endif
 
 	// try to close quicktime, for non-linux systems:
-	#if (defined(OF_VIDEO_CAPTURE_QUICKTIME) || defined(OF_VIDEO_PLAYER_QUICKTIME)) && !defined(TARGET_WINRT)
+	#if defined(OF_VIDEO_CAPTURE_QUICKTIME) || defined(OF_VIDEO_PLAYER_QUICKTIME)
 	closeQuicktime();
 	#endif
 
@@ -348,7 +338,7 @@ void ofExit(int status){
 
 //--------------------------------------
 void ofSleepMillis(int millis){
-	#if defined (TARGET_WIN32) || defined (TARGET_WINRT)
+	#ifdef TARGET_WIN32
 		Sleep(millis);			//windows sleep in milliseconds
 	#else
 		usleep(millis * 1000);	//mac sleep in microseconds - cooler :)

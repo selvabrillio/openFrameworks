@@ -360,7 +360,7 @@ void ofTexture::allocate(const ofTextureData & textureData, int glFormat, int pi
 	glTexParameterf(texData.textureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	if (!ofIsGLProgrammableRenderer()){
-		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	}
 	disableTextureTarget();
 
@@ -548,7 +548,7 @@ void ofTexture::loadData(const void * data, int w, int h, int glFormat, int glTy
 		
 		glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 		if(!ofGetGLProgrammableRenderer()){
-			//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 #ifndef TARGET_OPENGLES		
 		glTexParameteri(texData.textureTarget, GL_GENERATE_MIPMAP_SGIS, true);

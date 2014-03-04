@@ -6,9 +6,9 @@
 #include "ofGLRenderer.h"
 #include <map>
 
-//#ifdef TARGET_OPENGLES
-//#include <dlfcn.h>
-//#endif
+#ifdef TARGET_OPENGLES
+#include <dlfcn.h>
+#endif
 
 
 /*
@@ -21,49 +21,49 @@
 
  */
 
-//#ifdef TARGET_OPENGLES
-//	bool ofFbo::bglFunctionsInitialized=false;
-//	
-//	typedef void (* glGenFramebuffersType) (GLsizei n, GLuint* framebuffers);
-//	glGenFramebuffersType glGenFramebuffersFunc;
-//	#define glGenFramebuffers								glGenFramebuffersFunc
-//
-//	typedef void (* glDeleteFramebuffersType) (GLsizei n, const GLuint* framebuffers);
-//	glDeleteFramebuffersType glDeleteFramebuffersFunc;
-//	#define	glDeleteFramebuffers							glDeleteFramebuffersFunc
-//
-//	typedef void (* glDeleteRenderbuffersType) (GLsizei n, const GLuint* renderbuffers);
-//	glDeleteRenderbuffersType glDeleteRenderbuffersFunc;
-//	#define	glDeleteRenderbuffers							glDeleteRenderbuffersFunc
-//
-//	typedef void (* glBindFramebufferType) (GLenum target, GLuint framebuffer);
-//	glBindFramebufferType glBindFramebufferFunc;
-//	#define	glBindFramebuffer								glBindFramebufferFunc
-//
-//	typedef void (* glBindRenderbufferType) (GLenum target, GLuint renderbuffer);
-//	glBindRenderbufferType glBindRenderbufferFunc;
-//	#define	glBindRenderbuffer								glBindRenderbufferFunc
-//
-//	typedef void (* glRenderbufferStorageType) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-//	glRenderbufferStorageType glRenderbufferStorageFunc;
-//	#define glRenderbufferStorage							glRenderbufferStorageFunc
-//
-//	typedef void (* glFramebufferRenderbufferType) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-//	glFramebufferRenderbufferType glFramebufferRenderbufferFunc;
-//	#define glFramebufferRenderbuffer						glFramebufferRenderbufferFunc
-//
-//	typedef void (* glRenderbufferStorageMultisampleType) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
-//	glRenderbufferStorageMultisampleType glRenderbufferStorageMultisampleFunc;
-//	#define glRenderbufferStorageMultisample				glRenderbufferStorageMultisampleFunc
-//
-//	typedef void (* glFramebufferTexture2DType) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-//	glFramebufferTexture2DType glFramebufferTexture2DFunc;
-//	#define glFramebufferTexture2D							glFramebufferTexture2DFunc
-//
-//	typedef GLenum (* glCheckFramebufferStatusType)  (GLenum target);
-//	glCheckFramebufferStatusType glCheckFramebufferStatusFunc;
-//	#define glCheckFramebufferStatus						glCheckFramebufferStatusFunc
-//#endif
+#ifdef TARGET_OPENGLES
+	bool ofFbo::bglFunctionsInitialized=false;
+	
+	typedef void (* glGenFramebuffersType) (GLsizei n, GLuint* framebuffers);
+	glGenFramebuffersType glGenFramebuffersFunc;
+	#define glGenFramebuffers								glGenFramebuffersFunc
+
+	typedef void (* glDeleteFramebuffersType) (GLsizei n, const GLuint* framebuffers);
+	glDeleteFramebuffersType glDeleteFramebuffersFunc;
+	#define	glDeleteFramebuffers							glDeleteFramebuffersFunc
+
+	typedef void (* glDeleteRenderbuffersType) (GLsizei n, const GLuint* renderbuffers);
+	glDeleteRenderbuffersType glDeleteRenderbuffersFunc;
+	#define	glDeleteRenderbuffers							glDeleteRenderbuffersFunc
+
+	typedef void (* glBindFramebufferType) (GLenum target, GLuint framebuffer);
+	glBindFramebufferType glBindFramebufferFunc;
+	#define	glBindFramebuffer								glBindFramebufferFunc
+
+	typedef void (* glBindRenderbufferType) (GLenum target, GLuint renderbuffer);
+	glBindRenderbufferType glBindRenderbufferFunc;
+	#define	glBindRenderbuffer								glBindRenderbufferFunc
+
+	typedef void (* glRenderbufferStorageType) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+	glRenderbufferStorageType glRenderbufferStorageFunc;
+	#define glRenderbufferStorage							glRenderbufferStorageFunc
+
+	typedef void (* glFramebufferRenderbufferType) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+	glFramebufferRenderbufferType glFramebufferRenderbufferFunc;
+	#define glFramebufferRenderbuffer						glFramebufferRenderbufferFunc
+
+	typedef void (* glRenderbufferStorageMultisampleType) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
+	glRenderbufferStorageMultisampleType glRenderbufferStorageMultisampleFunc;
+	#define glRenderbufferStorageMultisample				glRenderbufferStorageMultisampleFunc
+
+	typedef void (* glFramebufferTexture2DType) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+	glFramebufferTexture2DType glFramebufferTexture2DFunc;
+	#define glFramebufferTexture2D							glFramebufferTexture2DFunc
+
+	typedef GLenum (* glCheckFramebufferStatusType)  (GLenum target);
+	glCheckFramebufferStatusType glCheckFramebufferStatusFunc;
+	#define glCheckFramebufferStatus						glCheckFramebufferStatusFunc
+#endif
 
 
 
@@ -183,31 +183,31 @@ defaultTextureIndex(0),
 bIsAllocated(false)
 {
 #ifdef TARGET_OPENGLES
-	//if(!bglFunctionsInitialized){
-	//	if(ofGetGLProgrammableRenderer()){
-	//		glGenFramebuffers = (glGenFramebuffersType)dlsym(RTLD_DEFAULT, "glGenFramebuffers");
-	//		glDeleteFramebuffers =  (glDeleteFramebuffersType)dlsym(RTLD_DEFAULT, "glDeleteFramebuffers");
-	//		glDeleteRenderbuffers =  (glDeleteRenderbuffersType)dlsym(RTLD_DEFAULT, "glDeleteRenderbuffers");
-	//		glBindFramebuffer =  (glBindFramebufferType)dlsym(RTLD_DEFAULT, "glBindFramebuffer");
-	//		glBindRenderbuffer = (glBindRenderbufferType)dlsym(RTLD_DEFAULT, "glBindRenderbuffer");
-	//		glRenderbufferStorage = (glRenderbufferStorageType)dlsym(RTLD_DEFAULT, "glRenderbufferStorage");
-	//		glFramebufferRenderbuffer = (glFramebufferRenderbufferType)dlsym(RTLD_DEFAULT, "glFramebufferRenderbuffer");
-	//		glRenderbufferStorageMultisample = (glRenderbufferStorageMultisampleType)dlsym(RTLD_DEFAULT, "glRenderbufferStorageMultisample");
-	//		glFramebufferTexture2D = (glFramebufferTexture2DType)dlsym(RTLD_DEFAULT, "glFramebufferTexture2D");
-	//		glCheckFramebufferStatus = (glCheckFramebufferStatusType)dlsym(RTLD_DEFAULT, "glCheckFramebufferStatus");
-	//	}else{
-	//		glGenFramebuffers = (glGenFramebuffersType)dlsym(RTLD_DEFAULT, "glGenFramebuffersOES");
-	//		glDeleteFramebuffers = (glDeleteFramebuffersType)dlsym(RTLD_DEFAULT, "glDeleteFramebuffersOES");
-	//		glDeleteRenderbuffers = (glDeleteRenderbuffersType)dlsym(RTLD_DEFAULT, "glDeleteRenderbuffersOES");
-	//		glBindFramebuffer = (glBindFramebufferType)dlsym(RTLD_DEFAULT, "glBindFramebufferOES");
-	//		glBindRenderbuffer = (glBindRenderbufferType)dlsym(RTLD_DEFAULT, "glBindRenderbufferOES");
-	//		glRenderbufferStorage = (glRenderbufferStorageType)dlsym(RTLD_DEFAULT, "glRenderbufferStorageOES");
-	//		glFramebufferRenderbuffer = (glFramebufferRenderbufferType)dlsym(RTLD_DEFAULT, "glFramebufferRenderbufferOES");
-	//		glRenderbufferStorageMultisample = (glRenderbufferStorageMultisampleType)dlsym(RTLD_DEFAULT, "glRenderbufferStorageMultisampleOES");
-	//		glFramebufferTexture2D = (glFramebufferTexture2DType)dlsym(RTLD_DEFAULT, "glFramebufferTexture2DOES");
-	//		glCheckFramebufferStatus = (glCheckFramebufferStatusType)dlsym(RTLD_DEFAULT, "glCheckFramebufferStatusOES");
-	//	}
-	//}
+	if(!bglFunctionsInitialized){
+		if(ofGetGLProgrammableRenderer()){
+			glGenFramebuffers = (glGenFramebuffersType)dlsym(RTLD_DEFAULT, "glGenFramebuffers");
+			glDeleteFramebuffers =  (glDeleteFramebuffersType)dlsym(RTLD_DEFAULT, "glDeleteFramebuffers");
+			glDeleteRenderbuffers =  (glDeleteRenderbuffersType)dlsym(RTLD_DEFAULT, "glDeleteRenderbuffers");
+			glBindFramebuffer =  (glBindFramebufferType)dlsym(RTLD_DEFAULT, "glBindFramebuffer");
+			glBindRenderbuffer = (glBindRenderbufferType)dlsym(RTLD_DEFAULT, "glBindRenderbuffer");
+			glRenderbufferStorage = (glRenderbufferStorageType)dlsym(RTLD_DEFAULT, "glRenderbufferStorage");
+			glFramebufferRenderbuffer = (glFramebufferRenderbufferType)dlsym(RTLD_DEFAULT, "glFramebufferRenderbuffer");
+			glRenderbufferStorageMultisample = (glRenderbufferStorageMultisampleType)dlsym(RTLD_DEFAULT, "glRenderbufferStorageMultisample");
+			glFramebufferTexture2D = (glFramebufferTexture2DType)dlsym(RTLD_DEFAULT, "glFramebufferTexture2D");
+			glCheckFramebufferStatus = (glCheckFramebufferStatusType)dlsym(RTLD_DEFAULT, "glCheckFramebufferStatus");
+		}else{
+			glGenFramebuffers = (glGenFramebuffersType)dlsym(RTLD_DEFAULT, "glGenFramebuffersOES");
+			glDeleteFramebuffers = (glDeleteFramebuffersType)dlsym(RTLD_DEFAULT, "glDeleteFramebuffersOES");
+			glDeleteRenderbuffers = (glDeleteRenderbuffersType)dlsym(RTLD_DEFAULT, "glDeleteRenderbuffersOES");
+			glBindFramebuffer = (glBindFramebufferType)dlsym(RTLD_DEFAULT, "glBindFramebufferOES");
+			glBindRenderbuffer = (glBindRenderbufferType)dlsym(RTLD_DEFAULT, "glBindRenderbufferOES");
+			glRenderbufferStorage = (glRenderbufferStorageType)dlsym(RTLD_DEFAULT, "glRenderbufferStorageOES");
+			glFramebufferRenderbuffer = (glFramebufferRenderbufferType)dlsym(RTLD_DEFAULT, "glFramebufferRenderbufferOES");
+			glRenderbufferStorageMultisample = (glRenderbufferStorageMultisampleType)dlsym(RTLD_DEFAULT, "glRenderbufferStorageMultisampleOES");
+			glFramebufferTexture2D = (glFramebufferTexture2DType)dlsym(RTLD_DEFAULT, "glFramebufferTexture2DOES");
+			glCheckFramebufferStatus = (glCheckFramebufferStatusType)dlsym(RTLD_DEFAULT, "glCheckFramebufferStatusOES");
+		}
+	}
 #endif
 }
 
@@ -837,9 +837,9 @@ bool ofFbo::checkStatus() {
 		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
 			ofLogError("ofFbo") << "FRAMEBUFFER_INCOMPLETE_DIMENSIONS";
 			break;
-		//case GL_FRAMEBUFFER_INCOMPLETE_FORMATS:
-		//	ofLogError("ofFbo") << "FRAMEBUFFER_INCOMPLETE_FORMATS";
-		//	break;
+		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS:
+			ofLogError("ofFbo") << "FRAMEBUFFER_INCOMPLETE_FORMATS";
+			break;
 		case GL_FRAMEBUFFER_UNSUPPORTED:
 			ofLogError("ofFbo") << "FRAMEBUFFER_UNSUPPORTED";
 			break;

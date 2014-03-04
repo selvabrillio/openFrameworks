@@ -58,7 +58,6 @@ ofFloatColor ofMaterial::getEmissiveColor() {
 }
 
 void ofMaterial::begin() {
-#ifndef TARGET_WINRT
 #ifndef TARGET_OPENGLES
     // save previous values, opengl es cannot use push/pop attrib
 	glGetMaterialfv(GL_FRONT,GL_DIFFUSE,&prev_diffuse.r);
@@ -100,11 +99,9 @@ void ofMaterial::begin() {
 	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, &emissive.r);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &shininess);
 #endif
-#endif
 }
 
 void ofMaterial::end() {
-#ifndef TARGET_WINRT
 #ifndef TARGET_OPENGLES
     // Set previous material colors and properties
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, &prev_diffuse.r);
@@ -126,7 +123,6 @@ void ofMaterial::end() {
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, &prev_ambient.r);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, &prev_emissive.r);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &prev_shininess);
-#endif
 #endif
 }
 

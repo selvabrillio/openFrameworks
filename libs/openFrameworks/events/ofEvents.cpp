@@ -128,7 +128,7 @@ void ofNotifyUpdate(){
 		unsigned long long diffMicros = timeNow - timeThen;
 		if(diffMicros < microsForFrame){
 			unsigned long long waitMicros = microsForFrame - diffMicros;
-			#if defined (TARGET_WIN32) || defined (TARGET_WINRT)
+			#ifdef TARGET_WIN32
 				Sleep(waitMicros*MICROS_TO_MILLIS);
 			#else
 				usleep(waitMicros);

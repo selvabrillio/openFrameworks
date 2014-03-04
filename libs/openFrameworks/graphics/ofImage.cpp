@@ -1,11 +1,7 @@
 #include "ofImage.h"
 #include "ofAppRunner.h"
 #include "ofTypes.h"
-#ifndef TARGET_WINRT
-	#include "ofURLFileLoader.h"
-#else
-	#include <ppltasks.h>
-#endif
+#include "ofURLFileLoader.h"
 #include "ofGraphics.h"
 #include "FreeImage.h"
 
@@ -187,11 +183,9 @@ void putBmpIntoPixels(FIBITMAP * bmp, ofPixels_<PixelType> &pix, bool swapForLit
 template<typename PixelType>
 static bool loadImage(ofPixels_<PixelType> & pix, string fileName){
 	ofInitFreeImage();
-#ifndef TARGET_WINRT
 	if(fileName.substr(0, 7) == "http://") {
 		return ofLoadImage(pix, ofLoadURL(fileName).data);
 	}
-#endif
 	
 	fileName = ofToDataPath(fileName);
 	bool bLoaded = false;
@@ -209,15 +203,6 @@ static bool loadImage(ofPixels_<PixelType> & pix, string fileName){
 		if (bmp != NULL){
 			bLoaded = true;
 		}
-#ifdef TARGET_WINRT
-		else{
-			fileName = WinrtLocalDirPath(fileName);
-			bmp = FreeImage_Load(fif, fileName.c_str(), 0);
-			if (bmp != NULL){
-				bLoaded = true;
-			}
-		}
-#endif
 	}
 	
 	//-----------------------------
@@ -357,11 +342,7 @@ static void saveImage(ofPixels_<PixelType> & pix, string fileName, ofImageQualit
 	#endif
 	
 	ofFilePath::createEnclosingDirectory(fileName);
-#ifdef TARGET_WINRT
-	fileName = WinrtLocalDirPath(fileName);
-#else
 	fileName = ofToDataPath(fileName);
-#endif
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 	fif = FreeImage_GetFileType(fileName.c_str(), 0);
 	if(fif == FIF_UNKNOWN) {
@@ -407,22 +388,6 @@ static void saveImage(ofPixels_<PixelType> & pix, string fileName, ofImageQualit
 	if (bmp != NULL){
 		FreeImage_Unload(bmp);
 	}
-	
-#ifdef TARGET_WINRT
-	//copy image file to the pictures folder for the user to get access to more easily outside the app
-	using namespace Windows::Storage;
-	using namespace concurrency;
-	fileName = ofFilePath::getFileName(fileName, false);
-	StorageFolder^ localFolder = ApplicationData::Current->LocalFolder;
-	wstring wFileName;
-	wFileName.assign(fileName.begin(), fileName.end());
-	create_task(localFolder->GetFileAsync(ref new Platform::String(wFileName.c_str())), task_continuation_context::use_arbitrary()).then(
-	[](StorageFile^ file)
-	{
-		file->CopyAsync(KnownFolders::PicturesLibrary, file->Name, NameCollisionOption::ReplaceExisting);
-	}, task_continuation_context::use_arbitrary());
-
-#endif
 }
 
 //----------------------------------------------------------------
@@ -502,7 +467,7 @@ static void saveImage(ofPixels_<PixelType> & pix, ofBuffer & buffer, ofImageForm
 		  but can also be retrieved by FreeImage_AcquireMemory that retrieves both the
 		  length of the buffer, and the buffer memory address.
 		  */
-			#if defined (TARGET_WIN32) || defined(TARGET_WINRT)
+			#ifdef TARGET_WIN32
 		   	   DWORD size_in_bytes = 0;
 			#else
 		   	   uint32_t size_in_bytes = 0;

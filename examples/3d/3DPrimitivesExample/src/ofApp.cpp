@@ -484,7 +484,7 @@ void ofApp::keyPressed(int key) {
         case 'n':
             bDrawNormals = !bDrawNormals;
             break;
-        case 'v':
+        case OF_KEY_RIGHT:
             mode++;
             if(mode > 3) mode = 0;
             if(mode==3){
@@ -492,7 +492,7 @@ void ofApp::keyPressed(int key) {
                 sphere.setMode( OF_PRIMITIVE_TRIANGLES );
             }
             break;
-        case 'c':
+        case OF_KEY_LEFT:
             mode--;
             if(mode < 0) mode = 3;
             if(mode==3){

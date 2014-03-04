@@ -1,6 +1,6 @@
 #include "ofDirectShowGrabber.h"
 #include "ofUtils.h"
-#if defined (TARGET_WIN32) || defined (TARGET_WINRT)
+#ifdef TARGET_WIN32
 //--------------------------------------------------------------------
 ofDirectShowGrabber::ofDirectShowGrabber(){
 

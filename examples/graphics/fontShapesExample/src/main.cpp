@@ -2,12 +2,7 @@
 #include "ofApp.h"
 
 //========================================================================
-#if defined(TARGET_WINRT)
-[Platform::MTAThread]
-int main(Platform::Array<Platform::String^>^){
-#else
 int main( ){
-#endif
 
 	ofSetupOpenGL(900,600, OF_WINDOW);			// <-------- setup the GL context
 

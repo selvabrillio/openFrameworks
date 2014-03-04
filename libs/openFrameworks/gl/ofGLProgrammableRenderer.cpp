@@ -779,35 +779,31 @@ void ofGLProgrammableRenderer::setBlendMode(ofBlendMode blendMode){
 
 //----------------------------------------------------------
 void ofGLProgrammableRenderer::enablePointSprites(){
-#ifndef TARGET_WINRT
-	#ifdef TARGET_OPENGLES
-			glEnable(GL_POINT_SPRITE_OES);
-	#else
-		glEnable(GL_PROGRAM_POINT_SIZE);
-	#endif
+#ifdef TARGET_OPENGLES
+        glEnable(GL_POINT_SPRITE_OES);
+#else
+	glEnable(GL_PROGRAM_POINT_SIZE);
 #endif
 }
 
 //----------------------------------------------------------
 void ofGLProgrammableRenderer::disablePointSprites(){
-#ifndef TARGET_WINRT
-	#ifdef TARGET_OPENGLES
-			glEnable(GL_POINT_SPRITE_OES);
-	#else
-		glDisable(GL_PROGRAM_POINT_SIZE);
-	#endif
+#ifdef TARGET_OPENGLES
+        glEnable(GL_POINT_SPRITE_OES);
+#else
+	glDisable(GL_PROGRAM_POINT_SIZE);
 #endif
 }
 
 
 //----------------------------------------------------------
 void ofGLProgrammableRenderer::enableAntiAliasing(){
-	//glEnable(GL_MULTISAMPLE);
+	glEnable(GL_MULTISAMPLE);
 }
 
 //----------------------------------------------------------
 void ofGLProgrammableRenderer::disableAntiAliasing(){
-	//glDisable(GL_MULTISAMPLE);
+	glDisable(GL_MULTISAMPLE);
 }
 
 //----------------------------------------------------------

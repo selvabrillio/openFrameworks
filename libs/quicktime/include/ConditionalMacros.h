@@ -985,7 +985,7 @@
       #define FUNCTION_DECLSPEC           0   
        #define FUNCTION_WIN32CC            0   
 
-    #elif defined(_M_IX86) || WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_APP) /* Visual Studio with Intel x86 target */
+    #elif defined(_M_IX86)  /* Visual Studio with Intel x86 target */
       #define TARGET_CPU_PPC              0
       #define TARGET_CPU_68K              0
       #define TARGET_CPU_X86              1

@@ -14,22 +14,22 @@
 #include <set>
 
 bool ofVbo::vaoChecked = false;
-bool ofVbo::supportVAOs = false;
+bool ofVbo::supportVAOs = true;
 
-//#ifdef TARGET_OPENGLES
-//	#include <dlfcn.h>
-//	typedef void (* glGenVertexArraysType) (GLsizei n,  GLuint *arrays);
-//	glGenVertexArraysType glGenVertexArraysFunc;
-//	#define glGenVertexArrays								glGenVertexArraysFunc
-//
-//	typedef void (* glDeleteVertexArraysType) (GLsizei n,  GLuint *arrays);
-//	glDeleteVertexArraysType glDeleteVertexArraysFunc;
-//	#define glDeleteVertexArrays							glDeleteVertexArraysFunc
-//
-//	typedef void (* glBindVertexArrayType) (GLuint array);
-//	glBindVertexArrayType glBindVertexArrayFunc;
-//	#define glBindVertexArray								glBindVertexArrayFunc
-//#endif
+#ifdef TARGET_OPENGLES
+	#include <dlfcn.h>
+	typedef void (* glGenVertexArraysType) (GLsizei n,  GLuint *arrays);
+	glGenVertexArraysType glGenVertexArraysFunc;
+	#define glGenVertexArrays								glGenVertexArraysFunc
+
+	typedef void (* glDeleteVertexArraysType) (GLsizei n,  GLuint *arrays);
+	glDeleteVertexArraysType glDeleteVertexArraysFunc;
+	#define glDeleteVertexArrays							glDeleteVertexArraysFunc
+
+	typedef void (* glBindVertexArrayType) (GLuint array);
+	glBindVertexArrayType glBindVertexArrayFunc;
+	#define glBindVertexArray								glBindVertexArrayFunc
+#endif
 
 static map<GLuint,int> & getIds(){
 	static map<GLuint,int> * ids = new map<GLuint,int>;
@@ -67,26 +67,26 @@ static void release(GLuint id){
 
 //--------------------------------------------------------------
 static void retainVAO(GLuint id){
-	//if(id==0) return;
-	//if(getVAOIds().find(id)!=getVAOIds().end()){
-	//	getVAOIds()[id]++;
-	//}else{
-	//	getVAOIds()[id]=1;
-	//}
+	if(id==0) return;
+	if(getVAOIds().find(id)!=getVAOIds().end()){
+		getVAOIds()[id]++;
+	}else{
+		getVAOIds()[id]=1;
+	}
 }
 
 //--------------------------------------------------------------
 static void releaseVAO(GLuint id){
-	//if(getVAOIds().find(id)!=getVAOIds().end()){
-	//	getVAOIds()[id]--;
-	//	if(getVAOIds()[id]==0){
-	//		glDeleteVertexArrays(1, &id);
-	//		getVAOIds().erase(id);
-	//	}
-	//}else{
-	//	ofLogWarning("ofVbo") << "releaseVAO(): something's wrong here, releasing unknown vertex array object id " << id;
-	//	glDeleteVertexArrays(1, &id);
-	//}
+	if(getVAOIds().find(id)!=getVAOIds().end()){
+		getVAOIds()[id]--;
+		if(getVAOIds()[id]==0){
+			glDeleteVertexArrays(1, &id);
+			getVAOIds().erase(id);
+		}
+	}else{
+		ofLogWarning("ofVbo") << "releaseVAO(): something's wrong here, releasing unknown vertex array object id " << id;
+		glDeleteVertexArrays(1, &id);
+	}
 }
 
 #if defined(TARGET_ANDROID) || defined(TARGET_OF_IOS)
@@ -296,17 +296,17 @@ void ofVbo::setVertexData(const float * vert0x, int numCoords, int total, int us
 
 #ifdef TARGET_OPENGLES
 	if(!vaoChecked){
-		//if(ofGetGLProgrammableRenderer()){
-		//	glGenVertexArrays = (glGenVertexArraysType)dlsym(RTLD_DEFAULT, "glGenVertexArrays");
-		//	glDeleteVertexArrays =  (glDeleteVertexArraysType)dlsym(RTLD_DEFAULT, "glDeleteVertexArrays");
-		//	glBindVertexArray =  (glBindVertexArrayType)dlsym(RTLD_DEFAULT, "glBindVertexArrayArrays");
-		//}else{
-		//	glGenVertexArrays = (glGenVertexArraysType)dlsym(RTLD_DEFAULT, "glGenVertexArraysOES");
-		//	glDeleteVertexArrays =  (glDeleteVertexArraysType)dlsym(RTLD_DEFAULT, "glDeleteVertexArraysOES");
-		//	glBindVertexArray =  (glBindVertexArrayType)dlsym(RTLD_DEFAULT, "glBindVertexArrayArraysOES");
-		//}
+		if(ofGetGLProgrammableRenderer()){
+			glGenVertexArrays = (glGenVertexArraysType)dlsym(RTLD_DEFAULT, "glGenVertexArrays");
+			glDeleteVertexArrays =  (glDeleteVertexArraysType)dlsym(RTLD_DEFAULT, "glDeleteVertexArrays");
+			glBindVertexArray =  (glBindVertexArrayType)dlsym(RTLD_DEFAULT, "glBindVertexArrayArrays");
+		}else{
+			glGenVertexArrays = (glGenVertexArraysType)dlsym(RTLD_DEFAULT, "glGenVertexArraysOES");
+			glDeleteVertexArrays =  (glDeleteVertexArraysType)dlsym(RTLD_DEFAULT, "glDeleteVertexArraysOES");
+			glBindVertexArray =  (glBindVertexArrayType)dlsym(RTLD_DEFAULT, "glBindVertexArrayArraysOES");
+		}
 		vaoChecked = true;
-		supportVAOs = false;//glGenVertexArrays && glDeleteVertexArrays && glBindVertexArray;
+		supportVAOs = glGenVertexArrays && glDeleteVertexArrays && glBindVertexArray;
 	}
 #else
 	if(!vaoChecked){
@@ -630,34 +630,34 @@ GLuint ofVbo::getIndexId() const {
 
 //--------------------------------------------------------------
 void ofVbo::bind(){
-	//if(supportVAOs){
-	//	if(vaoID==0){
-	//		glGenVertexArrays(1, &vaoID);
-	//		if(vaoID!=0){
-	//			retainVAO(vaoID);
-	//		}else{
-	//			supportVAOs = false;
-	//			ofLogVerbose("ofVbo") << "bind(): error allocating VAO, disabling VAO support";
-	//		}
-	//	}
+	if(supportVAOs){
+		if(vaoID==0){
+			glGenVertexArrays(1, &vaoID);
+			if(vaoID!=0){
+				retainVAO(vaoID);
+			}else{
+				supportVAOs = false;
+				ofLogVerbose("ofVbo") << "bind(): error allocating VAO, disabling VAO support";
+			}
+		}
 
-	//	glBindVertexArray(vaoID);
-	//}
+		glBindVertexArray(vaoID);
+	}
 
 	if(vaoChanged || !supportVAOs){
 		bool programmable = ofIsGLProgrammableRenderer();
 		if(bUsingVerts){
 			glBindBuffer(GL_ARRAY_BUFFER, vertId);
 			if(!programmable){
-				//glEnableClientState(GL_VERTEX_ARRAY);
-				//glVertexPointer(vertSize, GL_FLOAT, vertStride, 0);
+				glEnableClientState(GL_VERTEX_ARRAY);
+				glVertexPointer(vertSize, GL_FLOAT, vertStride, 0);
 			}else{
 				glEnableVertexAttribArray(ofShader::POSITION_ATTRIBUTE);
 				glVertexAttribPointer(ofShader::POSITION_ATTRIBUTE, vertSize, GL_FLOAT, GL_FALSE, vertStride, 0);
 			}
 		}else if(supportVAOs){
 			if(!programmable){
-				//glDisableClientState(GL_VERTEX_ARRAY);
+				glDisableClientState(GL_VERTEX_ARRAY);
 			}else{
 				glDisableVertexAttribArray(ofShader::POSITION_ATTRIBUTE);
 			}
@@ -666,15 +666,15 @@ void ofVbo::bind(){
 		if(bUsingColors) {
 			glBindBuffer(GL_ARRAY_BUFFER, colorId);
 			if(!programmable){
-				//glEnableClientState(GL_COLOR_ARRAY);
-				//glColorPointer(4, GL_FLOAT, colorStride, 0);
+				glEnableClientState(GL_COLOR_ARRAY);
+				glColorPointer(4, GL_FLOAT, colorStride, 0);
 			}else{
 				glEnableVertexAttribArray(ofShader::COLOR_ATTRIBUTE);
 				glVertexAttribPointer(ofShader::COLOR_ATTRIBUTE, 4, GL_FLOAT, GL_FALSE, colorStride, 0);
 			}
 		}else if(supportVAOs){
 			if(!programmable){
-				//glDisableClientState(GL_COLOR_ARRAY);
+				glDisableClientState(GL_COLOR_ARRAY);
 			}else{
 				glDisableVertexAttribArray(ofShader::COLOR_ATTRIBUTE);
 			}
@@ -683,8 +683,8 @@ void ofVbo::bind(){
 		if(bUsingNormals) {
 			glBindBuffer(GL_ARRAY_BUFFER, normalId);
 			if(!programmable){
-				//glEnableClientState(GL_NORMAL_ARRAY);
-				//glNormalPointer(GL_FLOAT, normalStride, 0);
+				glEnableClientState(GL_NORMAL_ARRAY);
+				glNormalPointer(GL_FLOAT, normalStride, 0);
 			}else{
 				// tig: note that we set the 'Normalize' flag to true here, assuming that mesh normals need to be
 				// normalized while being uploaded to GPU memory.
@@ -698,7 +698,7 @@ void ofVbo::bind(){
 			}
 		}else if(supportVAOs){
 			if(!programmable){
-				//glDisableClientState(GL_NORMAL_ARRAY);
+				glDisableClientState(GL_NORMAL_ARRAY);
 			}else{
 				glDisableVertexAttribArray(ofShader::NORMAL_ATTRIBUTE);
 			}
@@ -707,15 +707,15 @@ void ofVbo::bind(){
 		if(bUsingTexCoords) {
 			glBindBuffer(GL_ARRAY_BUFFER, texCoordId);
 			if(!programmable){
-				//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				//glTexCoordPointer(2, GL_FLOAT, texCoordStride, 0);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, texCoordStride, 0);
 			}else{
 				glEnableVertexAttribArray(ofShader::TEXCOORD_ATTRIBUTE);
 				glVertexAttribPointer(ofShader::TEXCOORD_ATTRIBUTE, 2, GL_FLOAT, GL_FALSE, texCoordStride, 0);
 			}
 		}else if(supportVAOs){
 			if(!programmable){
-				//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 			}else{
 				glDisableVertexAttribArray(ofShader::TEXCOORD_ATTRIBUTE);
 			}
@@ -742,20 +742,20 @@ void ofVbo::bind(){
 //--------------------------------------------------------------
 void ofVbo::unbind() {
 	if(supportVAOs){
-		//glBindVertexArray(0);
-		//if(!ofIsGLProgrammableRenderer()){
-		//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-		//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		//	if(bUsingColors){
-		//		glDisableClientState(GL_COLOR_ARRAY);
-		//	}
-		//	if(bUsingNormals){
-		//		glDisableClientState(GL_NORMAL_ARRAY);
-		//	}
-		//	if(bUsingTexCoords){
-		//		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		//	}
-		//}
+		glBindVertexArray(0);
+		if(!ofIsGLProgrammableRenderer()){
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			if(bUsingColors){
+				glDisableClientState(GL_COLOR_ARRAY);
+			}
+			if(bUsingNormals){
+				glDisableClientState(GL_NORMAL_ARRAY);
+			}
+			if(bUsingTexCoords){
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			}
+		}
 	}else{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -769,7 +769,7 @@ void ofVbo::unbind() {
 			if(bUsingTexCoords){
 				glDisableVertexAttribArray(ofShader::TEXCOORD_ATTRIBUTE);
 			}
-		}/*else{
+		}else{
 			if(bUsingColors){
 				glDisableClientState(GL_COLOR_ARRAY);
 			}
@@ -779,7 +779,7 @@ void ofVbo::unbind() {
 			if(bUsingTexCoords){
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 			}
-		}*/
+		}
 	}
 	bBound   = false;
 }

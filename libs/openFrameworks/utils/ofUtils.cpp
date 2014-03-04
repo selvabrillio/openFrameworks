@@ -56,17 +56,6 @@ static bool enableDataPath = true;
 static unsigned long long startTime = ofGetSystemTime();   //  better at the first frame ?? (currently, there is some delay from static init, to running.
 static unsigned long long startTimeMicros = ofGetSystemTimeMicros();
 
-#ifdef TARGET_WINRT
-	//--------------------------------------
-	static DWORD timeGetTime(){
-		LARGE_INTEGER currentTime;
-		QueryPerformanceCounter(&currentTime);
-		LARGE_INTEGER freq;
-		QueryPerformanceFrequency(&freq);
-		return (unsigned long long)((double)currentTime.QuadPart / freq.QuadPart * 1000);
-	}
-#endif
-
 //--------------------------------------
 unsigned long long ofGetElapsedTimeMillis(){
 	return ofGetSystemTime() - startTime;
@@ -96,7 +85,7 @@ void ofResetElapsedTimeCounter(){
  * 32-bit, where the GLUT API return value is also overflowed.
  */
 unsigned long long ofGetSystemTime( ) {
-	#if !defined (TARGET_WIN32) && !defined(TARGET_WINRT)
+	#ifndef TARGET_WIN32
 		struct timeval now;
 		gettimeofday( &now, NULL );
 		return 
@@ -112,7 +101,7 @@ unsigned long long ofGetSystemTime( ) {
 }
 
 unsigned long long ofGetSystemTimeMicros( ) {
-	#if !defined (TARGET_WIN32) && !defined(TARGET_WINRT)
+	#ifndef TARGET_WIN32
 		struct timeval now;
 		gettimeofday( &now, NULL );
 		return 
@@ -249,16 +238,12 @@ static Poco::Path & dataPathRoot(){
 
 //--------------------------------------------------
 Poco::Path getWorkingDir(){
-#ifdef TARGET_WINRT
-	return Poco::Path();
-#else
 	char charWorkingDir[MAXPATHLEN];
 	char* ret = getcwd(charWorkingDir, MAXPATHLEN);
 	if(ret)
 		return Poco::Path(charWorkingDir);
 	else
 		return Poco::Path();
-#endif
 }
 
 //--------------------------------------------------
@@ -785,9 +770,6 @@ void ofSaveFrame(bool bUseViewport){
 
 //--------------------------------------------------
 string ofSystem(string command){
-#ifdef TARGET_WINRT
-	return "";
-#else
 	FILE * ret = NULL;
 #ifdef TARGET_WIN32
 	 ret = _popen(command.c_str(),"r");
@@ -809,7 +791,6 @@ string ofSystem(string command){
 	}
 
 	return strret;
-#endif
 }
 
 //--------------------------------------------------
@@ -827,7 +808,7 @@ ofTargetPlatform ofGetTargetPlatform(){
     }
 #elif defined(TARGET_OSX)
     return OF_TARGET_OSX;
-#elif defined(TARGET_WIN32) || defined(TARGET_WINRT)
+#elif defined(TARGET_WIN32)
     #if (_MSC_VER)
         return OF_TARGET_WINVS;
     #else
