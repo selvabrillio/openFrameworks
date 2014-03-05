@@ -26,6 +26,9 @@
     <Filter Include="win32 dlls">
       <UniqueIdentifier>{8358c9d7-a1f4-45a5-868d-ade1c06c71d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{f7de8c8f-0c94-4204-b2ae-37a71390fb90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
