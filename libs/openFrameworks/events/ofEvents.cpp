@@ -401,10 +401,88 @@ void ofSendMessage(string messageString){
 	ofSendMessage(msg);
 }
 
+//------------------------------------------
 void ofNotifyWindowEntry( int state ) {
 	
 	static ofEntryEventArgs entryArgs;
 	entryArgs.state = state;
 	ofNotifyEvent(ofEvents().windowEntered, entryArgs);
 	
+}
+
+//------------------------------------------
+void ofNotifyTouchDown(float x, float y, int touchId){
+	static ofTouchEventArgs touchEventArgs;
+	touchEventArgs.x = x;
+	touchEventArgs.y = y;
+	touchEventArgs.type = ofTouchEventArgs::down;
+	touchEventArgs.id = touchId;
+	ofNotifyEvent( ofEvents().touchDown, touchEventArgs );
+}
+
+//------------------------------------------
+void ofNotifyTouchUp(float x, float y, int touchId){
+	static ofTouchEventArgs touchEventArgs;
+	touchEventArgs.x = x;
+	touchEventArgs.y = y;
+	touchEventArgs.type = ofTouchEventArgs::up;
+	touchEventArgs.id = touchId;
+	ofNotifyEvent( ofEvents().touchUp, touchEventArgs );
+}
+
+//------------------------------------------
+void ofNotifyTouchMoved(float x, float y, int touchId){
+	static ofTouchEventArgs touchEventArgs;
+	touchEventArgs.x = x;
+	touchEventArgs.y = y;
+	touchEventArgs.type = ofTouchEventArgs::move;
+	touchEventArgs.id = touchId;
+	ofNotifyEvent( ofEvents().touchMoved, touchEventArgs );
+}
+
+//------------------------------------------
+void ofNotifyTouchDoubleTap(float x, float y, int touchId){
+	static ofTouchEventArgs touchEventArgs;
+	touchEventArgs.x = x;
+	touchEventArgs.y = y;
+	touchEventArgs.type = ofTouchEventArgs::doubleTap;
+	touchEventArgs.id = touchId;
+	ofNotifyEvent( ofEvents().touchDoubleTap, touchEventArgs );
+}
+
+//------------------------------------------
+void ofNotifyTouchCancelled(float x, float y, int touchId){
+	static ofTouchEventArgs touchEventArgs;
+	//todo: figure out what touch cancelled means. perhaps a synonym for touch up?
+	touchEventArgs.x = x;
+	touchEventArgs.y = y;
+	touchEventArgs.type = ofTouchEventArgs::cancel;
+	touchEventArgs.id = touchId;
+	ofNotifyEvent( ofEvents().touchCancelled, touchEventArgs );
+}
+
+//------------------------------------------
+void ofNotifyTouchEvent(const ofTouchEventArgs & touchEvent){
+	switch(touchEvent.type)
+	{
+		switch(ofTouchEventArgs::down)
+			ofNotifyTouchDown(touchEvent.x, touchEvent.y, touchEvent.id);
+			break;
+			
+		switch(ofTouchEventArgs::up)
+			ofNotifyTouchUp(touchEvent.x, touchEvent.y, touchEvent.id);
+			break;
+			
+		switch(ofTouchEventArgs::move)
+			ofNotifyTouchMoved(touchEvent.x, touchEvent.y, touchEvent.id);
+			break;
+			
+		switch(ofTouchEventArgs::doubleTap)
+			ofNotifyTouchDoubleTap(touchEvent.x, touchEvent.y, touchEvent.id);
+			break;
+			
+		switch(ofTouchEventArgs::cancel)
+			ofNotifyTouchCancelled(touchEvent.x, touchEvent.y, touchEvent.id);
+			break;
+	}
 }

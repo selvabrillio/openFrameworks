@@ -309,15 +309,18 @@ void ofAppWinRTWindow::WinRTHandler::OnPointerPressed(CoreWindow^ sender, Pointe
 {
 	appWindow->bMousePressed = true;
 	int button;
-  if (args->CurrentPoint->Properties->IsLeftButtonPressed)
+	if(args->CurrentPoint->Properties->IsLeftButtonPressed)
 		button = OF_MOUSE_BUTTON_LEFT;
-  else if (args->CurrentPoint->Properties->IsMiddleButtonPressed)
-    button = OF_MOUSE_BUTTON_MIDDLE;
-  else if (args->CurrentPoint->Properties->IsRightButtonPressed)
-    button = OF_MOUSE_BUTTON_RIGHT;
-  else
+	else if(args->CurrentPoint->Properties->IsMiddleButtonPressed)
+	  button = OF_MOUSE_BUTTON_MIDDLE;
+	else if(args->CurrentPoint->Properties->IsRightButtonPressed)
+		button = OF_MOUSE_BUTTON_RIGHT;
+	else
 		return;
-	ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), button);
+	ofNotifyMousePressed(ofGetMouseX(),ofGetMouseY(),button);
+
+	auto point = args->CurrentPoint;
+	ofNotifyTouchDown(point->Position.X, point->Position.Y, point->PointerId);
 }
 
 void ofAppWinRTWindow::WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
@@ -329,6 +332,8 @@ void ofAppWinRTWindow::WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerE
 		ofNotifyMouseDragged(x, y, appWindow->mouseInUse);
 	else
 		ofNotifyMouseMoved(x, y);
+	auto point = args->CurrentPoint;
+	ofNotifyTouchMoved(point->Position.X, point->Position.Y, point->PointerId);
 }
 
 void ofAppWinRTWindow::WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
@@ -344,6 +349,8 @@ void ofAppWinRTWindow::WinRTHandler::OnPointerReleased(CoreWindow^ sender, Point
     return;
   ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), button);
 	appWindow->bMousePressed = false;
+	auto point = args->CurrentPoint;
+	ofNotifyTouchUp(point->Position.X, point->Position.Y, point->PointerId);
 }
 
 static int TranslateWinrtKey(CoreWindow^ sender, KeyEventArgs^ args)
