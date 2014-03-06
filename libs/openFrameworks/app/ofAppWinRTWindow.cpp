@@ -4,6 +4,7 @@
 #include "ofAppRunner.h"
 #include "ofLog.h"
 #include <Windows.h>
+#include <queue>
 
 #include <agile.h>
 #include <ppltasks.h>
@@ -36,6 +37,14 @@ protected:
 	void OnWindowSizeChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args);
 
 private:
+	void NotifyTouchEvent(int id, ofEvent<ofTouchEventArgs>& touchEvents, Windows::UI::Core::PointerEventArgs^ args);
+	
+	//keeps track of touch input, first is touch id and second is touch number
+	//which will only ever be 0 to (max simultaneous touches-1)
+	int currentTouchIndex;
+	map<int, int> touchInputTracker;
+	queue<int> availableTouchIndices;
+
 	ofAppWinRTWindow *appWindow;
 	Platform::Agile<Windows::UI::Core::CoreWindow> m_window;
 	Microsoft::WRL::ComPtr<IWinrtEglWindow> m_eglWindow;
@@ -68,6 +77,7 @@ using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::ApplicationModel::Activation;
 using namespace Windows::UI::Core;
+using namespace Windows::UI::Input;
 using namespace Windows::System;
 using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
@@ -89,6 +99,7 @@ void ofAppWinRTWindow::WinRTHandler::Initialize(CoreApplicationView^ application
 
 void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 {
+	currentTouchIndex = 0;
 	m_window = window;
 
     // Specify the orientation of your application here
@@ -209,6 +220,7 @@ void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 
 void ofAppWinRTWindow::WinRTHandler::SetWindowXaml(Windows::UI::Core::CoreWindow^ window)
 {
+	currentTouchIndex = 0;
 	m_window = window;
 
     // Specify the orientation of your application here
@@ -305,6 +317,23 @@ static void rotateMouseXY(ofOrientation orientation, double &x, double &y) {
 	}
 }
 
+void ofAppWinRTWindow::WinRTHandler::NotifyTouchEvent(int id, ofEvent<ofTouchEventArgs>& touchEvents, PointerEventArgs^ args)
+{
+	ofTouchEventArgs touchEventArgs;
+	PointerPoint^ pointerPoint = args->CurrentPoint;
+	Point point = pointerPoint->Position;
+	PointerPointProperties^ props = pointerPoint->Properties;
+
+	touchEventArgs.x = point.X;
+	touchEventArgs.y = point.Y;
+	touchEventArgs.type = ofTouchEventArgs::doubleTap;
+	touchEventArgs.id = id;
+	touchEventArgs.pressure = props->Pressure;
+	touchEventArgs.numTouches = touchInputTracker.size();
+
+	ofNotifyEvent( touchEvents, touchEventArgs );
+}
+
 void ofAppWinRTWindow::WinRTHandler::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
 {
 	appWindow->bMousePressed = true;
@@ -318,9 +347,20 @@ void ofAppWinRTWindow::WinRTHandler::OnPointerPressed(CoreWindow^ sender, Pointe
 	else
 		return;
 	ofNotifyMousePressed(ofGetMouseX(),ofGetMouseY(),button);
-
-	auto point = args->CurrentPoint;
-	ofNotifyTouchDown(point->Position.X, point->Position.Y, point->PointerId);
+	
+	int id;
+	if(availableTouchIndices.empty())
+	{
+		id = currentTouchIndex++;
+		touchInputTracker[args->CurrentPoint->PointerId] = id;
+	}
+	else
+	{
+		id = availableTouchIndices.front();
+		availableTouchIndices.pop();
+		touchInputTracker[args->CurrentPoint->PointerId] = id;
+	}
+	NotifyTouchEvent(id, ofEvents().touchDown, args);
 }
 
 void ofAppWinRTWindow::WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
@@ -332,8 +372,8 @@ void ofAppWinRTWindow::WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerE
 		ofNotifyMouseDragged(x, y, appWindow->mouseInUse);
 	else
 		ofNotifyMouseMoved(x, y);
-	auto point = args->CurrentPoint;
-	ofNotifyTouchMoved(point->Position.X, point->Position.Y, point->PointerId);
+
+	NotifyTouchEvent(touchInputTracker[args->CurrentPoint->PointerId], ofEvents().touchMoved, args);
 }
 
 void ofAppWinRTWindow::WinRTHandler::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
@@ -349,8 +389,11 @@ void ofAppWinRTWindow::WinRTHandler::OnPointerReleased(CoreWindow^ sender, Point
     return;
   ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), button);
 	appWindow->bMousePressed = false;
-	auto point = args->CurrentPoint;
-	ofNotifyTouchUp(point->Position.X, point->Position.Y, point->PointerId);
+
+	int id = touchInputTracker[args->CurrentPoint->PointerId];
+	availableTouchIndices.push(id);
+	touchInputTracker.erase(args->CurrentPoint->PointerId);
+	NotifyTouchEvent(id, ofEvents().touchUp, args);
 }
 
 static int TranslateWinrtKey(CoreWindow^ sender, KeyEventArgs^ args)
