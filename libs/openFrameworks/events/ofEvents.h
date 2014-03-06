@@ -266,10 +266,3 @@ void ofNotifyWindowResized(int width, int height);
 void ofNotifyWindowEntry(int state);
 
 void ofNotifyDragEvent(ofDragInfo info);
-
-void ofNotifyTouchDown(float x, float y, int touchId);
-void ofNotifyTouchUp(float x, float y, int touchId);
-void ofNotifyTouchMoved(float x, float y, int touchId);
-void ofNotifyTouchDoubleTap(float x, float y, int touchId);
-void ofNotifyTouchCancelled(float x, float y, int touchId);
-void ofNotifyTouchEvent(const ofTouchEventArgs & touchEvent);
