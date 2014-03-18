@@ -8,6 +8,7 @@
 
 #include <agile.h>
 #include <ppltasks.h>
+#include <d2d1_2.h>
 
 void ofGLReadyCallback();
 
@@ -38,6 +39,7 @@ protected:
 
 private:
 	void NotifyTouchEvent(int id, ofEvent<ofTouchEventArgs>& touchEvents, Windows::UI::Core::PointerEventArgs^ args);
+	void CalculateDPI();
 	
 	//keeps track of touch input, first is touch id and second is touch number
 	//which will only ever be 0 to (max simultaneous touches-1)
@@ -207,9 +209,8 @@ void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 	m_eglDisplay = display;
 	m_eglSurface = surface;
 	m_eglContext = context;
-
-	appWindow->windowWidth = window->Bounds.Width;
-	appWindow->windowHeight = window->Bounds.Height;
+	
+	CalculateDPI();
 
 	ofGLReadyCallback();
 
@@ -251,8 +252,7 @@ void ofAppWinRTWindow::WinRTHandler::SetWindowXaml(Windows::UI::Core::CoreWindow
 	window->SizeChanged +=
 		ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &WinRTHandler::OnWindowSizeChanged);
 		
-	appWindow->windowWidth = window->Bounds.Width;
-	appWindow->windowHeight = window->Bounds.Height;
+	CalculateDPI();
 }
 
 void ofAppWinRTWindow::WinRTHandler::Load(Platform::String^ entryPoint)
@@ -334,6 +334,15 @@ void ofAppWinRTWindow::WinRTHandler::NotifyTouchEvent(int id, ofEvent<ofTouchEve
 	ofNotifyEvent( touchEvents, touchEventArgs );
 }
 
+void ofAppWinRTWindow::WinRTHandler::CalculateDPI()
+{
+	float dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
+	float scale = dpi / 96.0f;
+	auto bounds = m_window->Bounds;
+	appWindow->windowWidth = bounds.Width * scale;
+	appWindow->windowHeight = bounds.Height * scale;
+}
+
 void ofAppWinRTWindow::WinRTHandler::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
 {
 	appWindow->bMousePressed = true;
@@ -365,8 +374,9 @@ void ofAppWinRTWindow::WinRTHandler::OnPointerPressed(CoreWindow^ sender, Pointe
 
 void ofAppWinRTWindow::WinRTHandler::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
 {
-	double x = args->CurrentPoint->Position.X;
-	double y = args->CurrentPoint->Position.Y;
+	float scale = DisplayInformation::GetForCurrentView()->LogicalDpi / 96.0f;
+	double x = args->CurrentPoint->Position.X * scale;
+	double y = args->CurrentPoint->Position.Y * scale;
 	rotateMouseXY(ofGetOrientation(), x, y);
 	if(appWindow->bMousePressed)
 		ofNotifyMouseDragged(x, y, appWindow->mouseInUse);
@@ -662,8 +672,10 @@ void ofAppWinRTWindow::WinRTHandler::OnResuming(Platform::Object^ sender, Platfo
 
 void ofAppWinRTWindow::WinRTHandler::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
 {
-	int w = args->Size.Width;
-	int h = args->Size.Height;
+	float dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
+	float scale = dpi / 96.0f;
+	int w = args->Size.Width * scale;
+	int h = args->Size.Height * scale;
 	appWindow->windowWidth = w;
 	appWindow->windowHeight = h;
 	ofNotifyWindowResized(w, h);
