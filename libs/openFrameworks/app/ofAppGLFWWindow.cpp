@@ -27,6 +27,9 @@
 	#define GLFW_EXPOSE_NATIVE_WIN32
 	#define GLFW_EXPOSE_NATIVE_WGL
 	#include <GLFW/glfw3native.h>
+	//glut.h should handle this from ofAppGlutWindow.cpp, but still has linker error
+	//todo: figure out why
+	#pragma comment (lib, "winmm.lib")
 #endif
 
 //========================================================================
