@@ -252,6 +252,17 @@ string ofGetLogLevelName(ofLogLevel level, bool pad){
 
 //--------------------------------------------------
 void ofConsoleLoggerChannel::log(ofLogLevel level, const string & module, const string & message){
+#ifdef TARGET_WINRT
+	// print to cerr for OF_LOG_ERROR and OF_LOG_FATAL_ERROR, everything else to cout 
+	stringstream out;
+	out << "[" << ofGetLogLevelName(level, true)  << "] ";
+	// only print the module name if it's not ""
+	if(module != ""){
+		out << module << ": ";
+	}
+	out << message << endl;
+	OutputDebugStringA(out.str().c_str());
+#else
 	// print to cerr for OF_LOG_ERROR and OF_LOG_FATAL_ERROR, everything else to cout 
 	ostream& out = level < OF_LOG_ERROR ? cout : cerr;
 	out << "[" << ofGetLogLevelName(level, true)  << "] ";
@@ -260,6 +271,7 @@ void ofConsoleLoggerChannel::log(ofLogLevel level, const string & module, const 
 		out << module << ": ";
 	}
 	out << message << endl;
+#endif
 }
 
 void ofConsoleLoggerChannel::log(ofLogLevel level, const string & module, const char* format, ...){
@@ -270,6 +282,17 @@ void ofConsoleLoggerChannel::log(ofLogLevel level, const string & module, const 
 }
 
 void ofConsoleLoggerChannel::log(ofLogLevel level, const string & module, const char* format, va_list args){
+#ifdef TARGET_WINRT
+	char buffer[1 << 16]; //hopefully this is large enough
+	int bytesWritten = 0;
+	bytesWritten += sprintf(buffer + bytesWritten, "[%s] ", ofGetLogLevelName(level, true).c_str());
+	if(module != ""){
+		bytesWritten += sprintf(buffer + bytesWritten, "%s: ", module.c_str());
+	}
+	bytesWritten += vsprintf(buffer + bytesWritten, format, args);
+	bytesWritten += sprintf(buffer + bytesWritten, "\n");
+	OutputDebugStringA(buffer);
+#else
 	//thanks stefan!
 	//http://www.ozzu.com/cpp-tutorials/tutorial-writing-custom-printf-wrapper-function-t89166.html
 	FILE* out = level < OF_LOG_ERROR ? stdout : stderr;
@@ -279,6 +302,7 @@ void ofConsoleLoggerChannel::log(ofLogLevel level, const string & module, const 
 	}
 	vfprintf(out, format, args);
 	fprintf(out, "\n");
+#endif
 }
 
 //--------------------------------------------------
