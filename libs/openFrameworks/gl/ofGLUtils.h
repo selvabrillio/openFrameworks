@@ -120,7 +120,7 @@ bool ofIsGLProgrammableRenderer();
 	#ifndef GL_UNSIGNED_INT_24_8
 		#define GL_UNSIGNED_INT_24_8						GL_UNSIGNED_INT_24_8_EXT
 	#endif
-#else
+#elif !defined(TARGET_WINRT)
     // ES1 - check if GL_FRAMEBUFFER is defined, if not assume ES1 is running.
 	#ifndef GL_FRAMEBUFFER
 		#define GL_FRAMEBUFFER									GL_FRAMEBUFFER_OES
@@ -167,6 +167,12 @@ bool ofIsGLProgrammableRenderer();
     #ifdef TARGET_OF_IOS
         #ifndef GL_UNSIGNED_INT
             #define GL_UNSIGNED_INT                         GL_UNSIGNED_INT_OES
+        #endif
+    #endif
+#else
+    #ifndef GL_STENCIL_INDEX
+        #ifdef GL_STENCIL_INDEX8
+            #define GL_STENCIL_INDEX                        GL_STENCIL_INDEX8
         #endif
     #endif
 #endif
