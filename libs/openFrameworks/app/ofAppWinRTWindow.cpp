@@ -154,7 +154,6 @@ void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 	EGLContext context;
 	EGLSurface surface;
 	EGLConfig config;
-	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
 
 	ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_11_0;
 	HRESULT hr = CreateWinrtEglWindow(WINRT_EGL_IUNKNOWN(m_window.Get()), featureLevel, m_eglWindow.GetAddressOf());
@@ -194,10 +193,15 @@ void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 	}
 
 	// Create a GL context
+	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE, EGL_NONE };
 	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
 	if(context == EGL_NO_CONTEXT){
-		ofLogError("ofAppWinRTWindow") << "failed to create EGL context";
-		return;
+        EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
+	    context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
+        if(context == EGL_NO_CONTEXT){
+		    ofLogError("ofAppWinRTWindow") << "failed to create EGL context";
+    		return;
+        }
 	}   
 
 	// Make the context current
