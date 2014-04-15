@@ -168,6 +168,8 @@ enum ofTargetPlatform{
 	#include <windows.h>
 	#include <GLES2/gl2.h>
 	#include <GLES2/gl2ext.h>
+	#include <GLES3/gl3.h>
+	#include <GLES3/gl3ext.h>
 	#define __WINDOWS_DS__
 	#define __WINDOWS_MM__
 	#if (_MSC_VER)       // microsoft visual studio
