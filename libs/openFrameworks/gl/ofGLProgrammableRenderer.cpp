@@ -802,12 +802,16 @@ void ofGLProgrammableRenderer::disablePointSprites(){
 
 //----------------------------------------------------------
 void ofGLProgrammableRenderer::enableAntiAliasing(){
-	//glEnable(GL_MULTISAMPLE);
+#ifndef TARGET_WINRT
+	glEnable(GL_MULTISAMPLE);
+#endif
 }
 
 //----------------------------------------------------------
 void ofGLProgrammableRenderer::disableAntiAliasing(){
-	//glDisable(GL_MULTISAMPLE);
+#ifndef TARGET_WINRT
+	glDisable(GL_MULTISAMPLE);
+#endif
 }
 
 //----------------------------------------------------------
