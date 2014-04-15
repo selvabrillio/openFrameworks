@@ -30,6 +30,11 @@
 	#define OF_VID_PLAYER_TYPE ofxAndroidVideoPlayer
 #endif
 
+#ifdef OF_VIDEO_PLAYER_MEDIAFOUNDATION
+    #include "ofMediaFoundationPlayer.h"
+    #define OF_VID_PLAYER_TYPE ofMediaFoundationPlayer
+#endif
+
 //---------------------------------------------
 class ofVideoPlayer : public ofBaseVideoPlayer,public ofBaseVideoDraws{
 
@@ -101,6 +106,9 @@ class ofVideoPlayer : public ofBaseVideoPlayer,public ofBaseVideoDraws{
 		int					width;
 
 	private:
+
+        void setup();
+
 		ofPtr<ofBaseVideoPlayer>		player;
 		
 		ofTexture tex;
@@ -108,6 +116,7 @@ class ofVideoPlayer : public ofBaseVideoPlayer,public ofBaseVideoDraws{
 		bool bUseTexture;
 		ofPixelFormat internalPixelFormat;
 	    string moviePath;
+        bool bPlayerReady;
 };
 
 
