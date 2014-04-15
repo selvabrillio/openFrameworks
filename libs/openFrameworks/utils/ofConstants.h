@@ -355,6 +355,8 @@ typedef TESSindex ofIndexType;
 		#define OF_VIDEO_PLAYER_GSTREAMER
 	#elif defined(TARGET_ANDROID)
 		#define OF_VIDEO_PLAYER_ANDROID
+    #elif defined(TARGET_WINRT)
+        #define OF_VIDEO_PLAYER_MEDIA_FOUNDATION
 	#elif defined(TARGET_OF_IOS)
 		#define OF_VIDEO_PLAYER_IOS
 	#elif defined(TARGET_OSX)
