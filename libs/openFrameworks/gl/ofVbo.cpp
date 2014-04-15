@@ -80,16 +80,12 @@ static void releaseVAO(GLuint id){
 	if(getVAOIds().find(id)!=getVAOIds().end()){
 		getVAOIds()[id]--;
 		if(getVAOIds()[id]==0){
-#ifndef TARGET_WINRT
 			glDeleteVertexArrays(1, &id);
-#endif //TARGET_WINRT
 			getVAOIds().erase(id);
 		}
 	}else{
 		ofLogWarning("ofVbo") << "releaseVAO(): something's wrong here, releasing unknown vertex array object id " << id;
-#ifndef TARGET_WINRT
 		glDeleteVertexArrays(1, &id);
-#endif //TARGET_WINRT
 	}
 }
 
@@ -318,9 +314,8 @@ void ofVbo::setVertexData(const float * vert0x, int numCoords, int total, int us
 		vaoChecked = true;
 	}
 #else
-	//ANGLE doesn't currently support VAOs yet
 	vaoChecked = true;
-	supportVAOs = false;
+	supportVAOs = true;
 #endif
 
 
@@ -640,9 +635,7 @@ GLuint ofVbo::getIndexId() const {
 void ofVbo::bind(){
 	if(supportVAOs){
 		if(vaoID==0){
-#ifndef TARGET_WINRT
 			glGenVertexArrays(1, &vaoID);
-#endif //TARGET_WINRT
 			if(vaoID!=0){
 				retainVAO(vaoID);
 			}else{
@@ -651,9 +644,7 @@ void ofVbo::bind(){
 			}
 		}
 
-#ifndef TARGET_WINRT
 		glBindVertexArray(vaoID);
-#endif //TARGET_WINRT
 	}
 
 	if(vaoChanged || !supportVAOs){
@@ -770,8 +761,8 @@ void ofVbo::bind(){
 //--------------------------------------------------------------
 void ofVbo::unbind() {
 	if(supportVAOs){
-#ifndef TARGET_WINRT
 		glBindVertexArray(0);
+#ifndef TARGET_WINRT
 		if(!ofIsGLProgrammableRenderer()){
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
