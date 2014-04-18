@@ -264,6 +264,9 @@
     <ClInclude Include="..\..\..\openFrameworks\video\ofWinrtVideoGrabber.h">
       <Filter>libs\openFrameworks\video</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\video\ofMediaFoundationPlayer.h">
+      <Filter>libs\openFrameworks\video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppRunner.cpp">
@@ -447,6 +450,9 @@
       <Filter>libs\openFrameworks\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\video\ofWinrtVideoGrabber.cpp">
+      <Filter>libs\openFrameworks\video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\video\ofMediaFoundationPlayer.cpp">
       <Filter>libs\openFrameworks\video</Filter>
     </ClCompile>
   </ItemGroup>

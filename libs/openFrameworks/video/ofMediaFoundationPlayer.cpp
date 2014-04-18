@@ -1,0 +1,1067 @@
+#include "ofMediaFoundationPlayer.h"
+#include "ofUtils.h"
+
+#include <algorithm>
+#include <ppltasks.h>
+#include <Strsafe.h>
+#include <string>
+#include <DXGIFormat.h>
+
+using namespace Windows::Storage;
+using namespace Platform;
+using namespace concurrency;
+using namespace Windows::Storage::Streams;
+using namespace Microsoft::WRL;
+
+static bool sMFInitialized = false;
+
+#define ME_CAN_SEEK 0x00000002
+
+
+namespace MEDIA
+{
+    inline void ThrowIfFailed(HRESULT hr)
+    {
+        if (FAILED(hr))
+        {
+            // Set a breakpoint on this line to catch DirectX API errors
+            throw Platform::Exception::CreateException(hr);
+        }
+    }
+}
+
+
+
+// MediaEngineNotify: Implements the callback for Media Engine event notification.
+class MediaEngineNotify : public IMFMediaEngineNotify
+{
+    long m_cRef;
+    MediaEngineNotifyCallback* m_pCB;
+
+public:
+    MediaEngineNotify() : m_cRef(1), m_pCB(nullptr)
+    {
+    }
+
+    STDMETHODIMP QueryInterface(REFIID riid, void** ppv)
+    {
+        if (__uuidof(IMFMediaEngineNotify) == riid)
+        {
+            *ppv = static_cast<IMFMediaEngineNotify*>(this);
+        }
+        else
+        {
+            *ppv = nullptr;
+            return E_NOINTERFACE;
+        }
+
+        AddRef();
+
+        return S_OK;
+    }
+
+    STDMETHODIMP_(ULONG) AddRef()
+    {
+        return InterlockedIncrement(&m_cRef);
+    }
+
+    STDMETHODIMP_(ULONG) Release()
+    {
+        LONG cRef = InterlockedDecrement(&m_cRef);
+        if (cRef == 0)
+        {
+            delete this;
+        }
+        return cRef;
+    }
+
+    // EventNotify is called when the Media Engine sends an event.
+    STDMETHODIMP EventNotify(DWORD meEvent, DWORD_PTR param1, DWORD param2)
+    {
+        if (meEvent == MF_MEDIA_ENGINE_EVENT_NOTIFYSTABLESTATE)
+        {
+            SetEvent(reinterpret_cast<HANDLE>(param1));
+        }
+        else
+        {
+            m_pCB->OnMediaEngineEvent(meEvent);
+        }
+
+        return S_OK;
+    }
+
+    void MediaEngineNotifyCallback(MediaEngineNotifyCallback* pCB)
+    {
+        m_pCB = pCB;
+    }
+};
+
+
+//---------------------------------------------------------------------------
+ofMediaFoundationPlayer::ofMediaFoundationPlayer()
+    : m_spMediaEngine(nullptr)
+    , m_spEngineEx(nullptr)
+    , m_pReader(nullptr)
+{
+    bLoaded = false;
+    width = 0;
+    height = 0;
+    speed = 1;
+    bStarted = false;
+    nFrames = 0;
+    bPaused = true;
+    bEOF = false;
+    currentLoopState = OF_LOOP_NORMAL;
+}
+
+
+//---------------------------------------------------------------------------
+ofMediaFoundationPlayer::~ofMediaFoundationPlayer(){
+
+    closeMovie();
+    clearMemory();
+
+
+
+}
+
+//---------------------------------------------------------------------------
+unsigned char * ofMediaFoundationPlayer::getPixels(){
+    return pixels.getPixels();
+}
+
+//---------------------------------------------------------------------------
+ofPixelsRef ofMediaFoundationPlayer::getPixelsRef(){
+    return pixels;
+}
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::update(){
+
+    if (bLoaded == true)
+    {
+        LONGLONG pts;
+        if (m_spMediaEngine->OnVideoStreamTick(&pts) == S_OK)
+        {
+            // ---------------------------------------------------
+            // 		on all platforms,
+            // 		do "new"ness ever time we idle...
+            // 		before "isFrameNew" was clearning,
+            // 		people had issues with that...
+            // 		and it was badly named so now, newness happens
+            // 		per-idle not per isNew call
+            // ---------------------------------------------------
+
+
+            bIsFrameNew = true;
+        }
+        else
+        {
+            bIsFrameNew = true;
+        }
+    }
+}
+
+//---------------------------------------------------------------------------
+bool ofMediaFoundationPlayer::isFrameNew(){
+    return bIsFrameNew;
+}
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::close(){
+    closeMovie();
+}
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::closeMovie(){
+
+    if (bLoaded == true){
+        if (m_pReader)
+        {
+            m_pReader->Release();
+            m_pReader = nullptr;
+        }
+    }
+
+    bLoaded = false;
+}
+
+
+//---------------------------------------------------------------------------
+bool ofMediaFoundationPlayer::loadMovie(string name){
+
+    HRESULT hr = S_OK;
+ 
+    //--------------------------------------
+#ifdef OF_VIDEO_PLAYER_MEDIAFOUNDATION
+    //--------------------------------------
+
+    closeMovie();       // if we have a movie open, close it
+    bLoaded = false;	// try to load now
+
+    Initialize();
+
+    if (SUCCEEDED(hr))
+    {
+        Windows::ApplicationModel::Package^ package = Windows::ApplicationModel::Package::Current;
+        StorageFolder^ installedLocation = package->InstalledLocation;
+        std::string path = "ms-appx:///data/" + name;
+        std::wstring wpath(path.begin(), path.end());
+        auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(wpath.c_str()));
+        auto fileTask = create_task(StorageFile::GetFileFromApplicationUriAsync(uri));
+
+        fileTask.then([this](StorageFile^ fileHandle)
+        {
+            try
+            {
+                if (!fileHandle)
+                {
+                    return;
+                }
+                SetURL(fileHandle->Path);
+            }
+            catch (Platform::Exception^)
+            {
+                // TODO handle exception correctly
+                throw std::exception("can't get StorageFile");
+            }
+
+            task<IRandomAccessStream^> fOpenStreamTask(fileHandle->OpenAsync(Windows::Storage::FileAccessMode::Read));
+
+            try
+            {
+                auto vidPlayer = this;
+                fOpenStreamTask.then([vidPlayer](IRandomAccessStream^ streamHandle)
+                {
+                    try
+                    {
+                        vidPlayer->SetBytestream(streamHandle);
+                    }
+                    catch (Platform::Exception^)
+                    {
+                        MEDIA::ThrowIfFailed(E_UNEXPECTED);
+                    }
+                });
+            }
+            catch (Platform::Exception^)
+            {
+                // TODO handle exception correctly
+                throw std::exception("can't get IRandomAccessStream");
+            }
+
+        });
+    }
+
+#if 0
+
+
+    if (SUCCEEDED(hr))
+    {
+        std::string fullPath = ofFilePath::join(WinrtLocalDirPath(""), ofToDataPath(name));
+        std::replace(fullPath.begin(), fullPath.end(), '/', '\\');
+        std::wstring path(fullPath.begin(), fullPath.end());
+        hr = MFCreateSourceReaderFromURL(path.c_str(), NULL, &m_pReader);
+    }
+#endif // 0
+
+
+#if 0
+
+
+    if (name.substr(0, 7) == "http://" || name.substr(0, 7) == "rtsp://"){
+        if (!createMovieFromURL(name, moviePtr)) return false;
+    }
+    else{
+        name = ofToDataPath(name);
+        if (!createMovieFromPath((char *) name.c_str(), moviePtr)) return false;
+    }
+
+    bool bDoWeAlreadyHaveAGworld = false;
+    if (width != 0 && height != 0){
+        bDoWeAlreadyHaveAGworld = true;
+    }
+    Rect 				movieRect;
+    GetMovieBox(moviePtr, &(movieRect));
+    if (bDoWeAlreadyHaveAGworld){
+        // is the gworld the same size, then lets *not* de-allocate and reallocate:
+        if (width == movieRect.right &&
+            height == movieRect.bottom){
+            SetMovieGWorld(moviePtr, offscreenGWorld, nil);
+        }
+        else {
+            width = movieRect.right;
+            height = movieRect.bottom;
+            pixels.clear();
+            delete [] offscreenGWorldPixels;
+            if ((offscreenGWorld)) DisposeGWorld((offscreenGWorld));
+            createImgMemAndGWorld();
+        }
+    }
+    else {
+        width = movieRect.right;
+        height = movieRect.bottom;
+        createImgMemAndGWorld();
+    }
+
+    if (moviePtr == NULL){
+        return false;
+    }
+
+    //----------------- callback method
+    myDrawCompleteProc = NewMovieDrawingCompleteUPP(DrawCompleteProc);
+    SetMovieDrawingCompleteProc(moviePtr, movieDrawingCallWhenChanged, myDrawCompleteProc, (long)this);
+
+    // ------------- get the total # of frames:
+    nFrames = 0;
+    TimeValue			curMovieTime;
+    curMovieTime = 0;
+    TimeValue			duration;
+
+    //OSType whichMediaType	= VIDEO_TYPE; // mingw chokes on this
+    OSType whichMediaType = FOUR_CHAR_CODE('vide');
+
+    short flags = nextTimeMediaSample + nextTimeEdgeOK;
+
+    while (curMovieTime >= 0) {
+        nFrames++;
+        GetMovieNextInterestingTime(moviePtr, flags, 1, &whichMediaType, curMovieTime, 0, &curMovieTime, &duration);
+        flags = nextTimeMediaSample;
+    }
+    nFrames--; // there's an extra time step at the end of themovie
+
+
+
+
+    // ------------- get some pixels in there ------
+    GoToBeginningOfMovie(moviePtr);
+    SetMovieActiveSegment(moviePtr, -1, -1);
+    MoviesTask(moviePtr, 0);
+
+#if defined(TARGET_OSX) && defined(__BIG_ENDIAN__)
+    convertPixels(offscreenGWorldPixels, pixels.getPixels(), width, height);
+#endif
+
+    bStarted = false;
+    bLoaded = true;
+    bPlaying = false;
+    bHavePixelsChanged = false;
+    speed = 1;
+
+
+    //--------------------------------------
+#endif
+    //--------------------------------------
+
+#endif
+
+    return true;
+}
+
+
+//--------------------------------------------------------
+void ofMediaFoundationPlayer::start(){
+
+    //--------------------------------------
+#ifdef OF_VIDEO_PLAYER_MEDIAFOUNDATION
+    //--------------------------------------
+
+    if (bLoaded == true && bStarted == false){
+        setLoopState(currentLoopState);
+
+        bHavePixelsChanged = true;
+
+        bStarted = true;
+        bPlaying = true;
+    }
+
+    //--------------------------------------
+#endif
+    //--------------------------------------
+}
+
+//--------------------------------------------------------
+void ofMediaFoundationPlayer::play(){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "play(): movie not loaded";
+        return;
+    }
+
+    bPlaying = true;
+    bPaused = false;
+
+    //--------------------------------------
+#ifdef OF_VIDEO_PLAYER_MEDIAFOUNDATION
+    //--------------------------------------
+
+    if (!bStarted){
+        start();
+    }
+    else {
+
+    }
+
+    //--------------------------------------
+#endif
+    //--------------------------------------
+
+    //this is if we set the speed first but it only can be set when we are playing.
+    setSpeed(speed);
+
+}
+
+//--------------------------------------------------------
+void ofMediaFoundationPlayer::stop(){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "stop(): movie not loaded";
+        return;
+    }
+
+    //--------------------------------------
+#ifdef OF_VIDEO_PLAYER_MEDIAFOUNDATION
+    //--------------------------------------
+
+
+    bStarted = false;
+
+    //--------------------------------------
+#endif
+    //--------------------------------------
+
+    bPlaying = false;
+}
+
+//--------------------------------------------------------
+void ofMediaFoundationPlayer::setVolume(float volume){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "setVolume(): movie not loaded";
+        return;
+    }
+
+    //--------------------------------------
+#ifdef OF_VIDEO_PLAYER_MEDIAFOUNDATION
+    //--------------------------------------
+
+    //SetMovieVolume(moviePtr, volume * 255);
+
+    //--------------------------------------
+#endif
+    //--------------------------------------
+
+}
+
+
+//--------------------------------------------------------
+void ofMediaFoundationPlayer::setLoopState(ofLoopType state){
+
+
+    if (isLoaded()){
+
+        switch (state) {
+        case OF_LOOP_NORMAL:
+            MFLoop(true);
+            break;
+        case OF_LOOP_PALINDROME:
+            break;
+        case OF_LOOP_NONE:
+        default:
+            MFLoop(false);
+            break;
+        }
+    }
+
+
+    //store the current loop state;
+    currentLoopState = state;
+
+}
+
+//---------------------------------------------------------------------------
+ofLoopType ofMediaFoundationPlayer::getLoopState(){
+    return currentLoopState;
+}
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::setPosition(float pct){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "setPosition(): movie not loaded";
+        return;
+    }
+
+    //--------------------------------------
+#ifdef OF_VIDEO_PLAYER_MEDIAFOUNDATION
+    //--------------------------------------
+
+
+    //--------------------------------------
+#endif
+    //--------------------------------------
+
+
+}
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::setFrame(int frame){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "setFrame(): movie not loaded";
+        return;
+    }
+
+    //--------------------------------------
+#ifdef OF_VIDEO_PLAYER_MEDIAFOUNDATION
+    //--------------------------------------
+
+    // frame 0 = first frame...
+
+    // this is the simple way...
+    //float durationPerFrame = getDuration() / getTotalNumFrames();
+
+    // seems that freezing, doing this and unfreezing seems to work alot
+    // better then just SetMovieTimeValue() ;
+
+
+
+    //--------------------------------------
+#endif
+    //--------------------------------------
+
+}
+
+
+//---------------------------------------------------------------------------
+float ofMediaFoundationPlayer::getDuration(){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "getDuration(): movie not loaded";
+        return 0.0;
+    }
+
+    double duration;
+    BOOL canSeek;
+
+    MFGetDuration(&duration, &canSeek);
+    return (float)duration;
+}
+
+//---------------------------------------------------------------------------
+float ofMediaFoundationPlayer::getPosition(){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "getPosition(): movie not loaded";
+        return 0.0;
+    }
+
+    double duration;
+    BOOL canSeek;
+
+    MFGetDuration(&duration, &canSeek);
+    double position = MFGetPlaybackPosition();
+
+    float pct = ((float) position / (float) duration);
+    return pct;
+}
+
+//---------------------------------------------------------------------------
+int ofMediaFoundationPlayer::getCurrentFrame(){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "getCurrentFrame(): movie not loaded";
+        return 0;
+    }
+
+    int frame = 0;
+
+    // zach I think this may fail on variable length frames...
+    float pos = getPosition();
+
+    float  framePosInFloat = ((float) getTotalNumFrames() * pos);
+    int    framePosInInt = (int) framePosInFloat;
+    float  floatRemainder = (framePosInFloat - framePosInInt);
+    if (floatRemainder > 0.5f) framePosInInt = framePosInInt + 1;
+    //frame = (int)ceil((getTotalNumFrames() * getPosition()));
+    frame = framePosInInt;
+
+    return frame;
+
+
+}
+
+//---------------------------------------------------------------------------
+bool ofMediaFoundationPlayer::setPixelFormat(ofPixelFormat pixelFormat){
+    //note as we only support RGB we are just confirming that this pixel format is supported
+    if (pixelFormat == OF_PIXELS_RGBA){
+        return true;
+    }
+    ofLogWarning("ofMediaFoundationPlayer") << "setPixelFormat(): requested pixel format " << pixelFormat << " not supported, expecting OF_PIXELS_RGBA";
+    return false;
+}
+
+//---------------------------------------------------------------------------
+ofPixelFormat ofMediaFoundationPlayer::getPixelFormat(){
+    //note if you support more than one pixel format you will need to return a ofPixelFormat variable. 
+    return OF_PIXELS_RGBA;
+}
+
+
+//---------------------------------------------------------------------------
+bool ofMediaFoundationPlayer::getIsMovieDone(){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "getIsMovieDone(): movie not loaded";
+        return false;
+    }
+
+    return bEOF;
+
+}
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::firstFrame(){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "firstFrame(): movie not loaded";
+        return;
+    }
+
+
+    setFrame(0);
+
+}
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::nextFrame(){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "nextFrame(): movie not loaded";
+        return;
+    }
+
+    MFFrameStep(true);
+}
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::previousFrame(){
+    if (!isLoaded()){
+        ofLogError("ofMediaFoundationPlayer") << "previousFrame(): movie not loaded";
+        return;
+    }
+
+    MFFrameStep(false);
+}
+
+
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::setSpeed(float _speed){
+
+    speed = _speed;
+
+    if (bPlaying == true){
+        MFRate(speed);
+    }
+
+}
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::setPaused(bool _bPause){
+
+    bPaused = _bPause;
+
+    if (_bPause == true)
+    {
+        MFPause();
+    }
+    else
+    {
+        MFPlay();
+    }
+}
+
+
+//---------------------------------------------------------------------------
+void ofMediaFoundationPlayer::clearMemory(){
+
+    pixels.clear();
+
+}
+
+//---------------------------------------------------------------------------
+float ofMediaFoundationPlayer::getSpeed(){
+    return speed;
+}
+
+//------------------------------------
+int ofMediaFoundationPlayer::getTotalNumFrames(){
+    return nFrames;
+}
+
+//----------------------------------------------------------
+float ofMediaFoundationPlayer::getWidth(){
+
+    DWORD w, h;
+    MFGetNativeVideoSize(&w, &h);
+    return (float) w;
+}
+
+//----------------------------------------------------------
+float ofMediaFoundationPlayer::getHeight(){
+    DWORD w, h;
+    MFGetNativeVideoSize(&w, &h);
+    return (float) h;
+}
+
+//----------------------------------------------------------
+bool ofMediaFoundationPlayer::isPaused(){
+    return bPaused;
+}
+
+//----------------------------------------------------------
+bool ofMediaFoundationPlayer::isLoaded(){
+    return bLoaded;
+}
+
+//----------------------------------------------------------
+bool ofMediaFoundationPlayer::isPlaying(){
+    return bPlaying;
+}
+
+// Set a URL
+void ofMediaFoundationPlayer::SetURL(Platform::String^ szURL)
+{
+    if (nullptr != m_bstrURL)
+    {
+        ::CoTaskMemFree(m_bstrURL);
+        m_bstrURL = nullptr;
+    }
+
+    size_t cchAllocationSize = 1 + ::wcslen(szURL->Data());
+    m_bstrURL = (LPWSTR)::CoTaskMemAlloc(sizeof(WCHAR)*(cchAllocationSize));
+
+    if (m_bstrURL == 0)
+    {
+        MEDIA::ThrowIfFailed(E_OUTOFMEMORY);
+    }
+
+    StringCchCopyW(m_bstrURL, cchAllocationSize, szURL->Data());
+
+    return;
+}
+
+// Set Bytestream
+void ofMediaFoundationPlayer::SetBytestream(IRandomAccessStream^ streamHandle)
+{
+    HRESULT hr = S_OK;
+    ComPtr<IMFByteStream> spMFByteStream = nullptr;
+
+    MEDIA::ThrowIfFailed(
+        MFCreateMFByteStreamOnStreamEx((IUnknown*) streamHandle, &spMFByteStream)
+        );
+
+    MEDIA::ThrowIfFailed(
+        m_spEngineEx->SetSourceFromByteStream(spMFByteStream.Get(), m_bstrURL)
+        );
+
+    return;
+}
+
+void ofMediaFoundationPlayer::OnMediaEngineEvent(DWORD meEvent)
+{
+    switch (meEvent)
+    {
+    case MF_MEDIA_ENGINE_EVENT_LOADEDMETADATA:
+    {
+        bEOF  = FALSE;
+        bLoaded = true;
+    }
+        break;
+    case MF_MEDIA_ENGINE_EVENT_CANPLAY:
+    {
+        // Start the Playback
+        MFPlay();
+    }
+        break;
+    case MF_MEDIA_ENGINE_EVENT_PLAY:
+        //m_fPlaying = TRUE;
+        break;
+    case MF_MEDIA_ENGINE_EVENT_PAUSE:
+        //m_fPlaying = FALSE;
+        break;
+    case MF_MEDIA_ENGINE_EVENT_ENDED:
+
+        if (m_spMediaEngine->HasVideo())
+        {
+           // StopTimer();
+        }
+        //m_fEOS = TRUE;
+        break;
+    case MF_MEDIA_ENGINE_EVENT_TIMEUPDATE:
+        break;
+    case MF_MEDIA_ENGINE_EVENT_ERROR:
+        break;
+    }
+
+    return;
+}
+
+// Start playback.
+void ofMediaFoundationPlayer::MFPlay()
+{
+    if (m_spMediaEngine)
+    {
+        setLoopState(currentLoopState);
+
+        if (bEOF)
+        {
+            MFSetPlaybackPosition(0);
+        }
+        else
+        {
+            MEDIA::ThrowIfFailed(
+                m_spMediaEngine->Play()
+                );
+        }
+
+        bEOF = FALSE;
+        bPlaying = TRUE;
+        bPaused = FALSE;
+    }
+    return;
+}
+
+// Is the player in the middle of a seek operation?
+BOOL ofMediaFoundationPlayer::MFIsSeeking()
+{
+    if (m_spMediaEngine)
+    {
+        return m_spMediaEngine->IsSeeking();
+    }
+    else
+    {
+        return FALSE;
+    }
+}
+
+
+// Seek to a new playback position.
+void ofMediaFoundationPlayer::MFSetPlaybackPosition(float pos)
+{
+    if (m_spMediaEngine)
+    {
+        MEDIA::ThrowIfFailed(
+            m_spMediaEngine->SetCurrentTime(pos)
+            );
+    }
+}
+
+// Pause playback.
+void ofMediaFoundationPlayer::MFPause()
+{
+    if (m_spMediaEngine)
+    {
+        MEDIA::ThrowIfFailed(
+            m_spMediaEngine->Pause()
+            );
+    }
+    return;
+}
+
+// Set the audio volume.
+void ofMediaFoundationPlayer::MFSetVolume(float fVol)
+{
+    if (m_spMediaEngine)
+    {
+        MEDIA::ThrowIfFailed(
+            m_spMediaEngine->SetVolume(fVol)
+            );
+    }
+    return;
+}
+
+// Set the audio balance.
+void ofMediaFoundationPlayer::MFSetBalance(float fBal)
+{
+    if (m_spEngineEx)
+    {
+        MEDIA::ThrowIfFailed(
+            m_spEngineEx->SetBalance(fBal)
+            );
+    }
+    return;
+}
+
+// Mute the audio.
+void ofMediaFoundationPlayer::MFRate(float rate)
+{
+    if (m_spMediaEngine)
+    {
+        MEDIA::ThrowIfFailed(
+            m_spMediaEngine->SetDefaultPlaybackRate(rate)
+            );
+    }
+    return;
+}
+
+
+// Mute the audio.
+void ofMediaFoundationPlayer::MFMute(BOOL mute)
+{
+    if (m_spMediaEngine)
+    {
+        MEDIA::ThrowIfFailed(
+            m_spMediaEngine->SetMuted(mute)
+            );
+    }
+    return;
+}
+
+// Loop the video
+void ofMediaFoundationPlayer::MFLoop(BOOL loop)
+{
+    if (m_spMediaEngine)
+    {
+        MEDIA::ThrowIfFailed(
+            m_spMediaEngine->SetLoop(loop)
+            );
+    }
+    return;
+}
+
+// Step forward one frame.
+void ofMediaFoundationPlayer::MFFrameStep(BOOL forward)
+{
+    if (m_spEngineEx)
+    {
+        MEDIA::ThrowIfFailed(
+            m_spEngineEx->FrameStep(forward)
+            );
+    }
+    return;
+}
+
+// Get the duration of the content.
+void ofMediaFoundationPlayer::MFGetDuration(double *pDuration, BOOL *pbCanSeek)
+{
+    if (m_spMediaEngine)
+    {
+        double duration = m_spMediaEngine->GetDuration();
+
+        // NOTE:
+        // "duration != duration"
+        // This tests if duration is NaN, because NaN != NaN
+
+        if (duration != duration || duration == std::numeric_limits<float>::infinity())
+        {
+            *pDuration = 0;
+            *pbCanSeek = FALSE;
+        }
+        else
+        {
+            *pDuration = duration;
+
+            DWORD caps = 0;
+            m_spEngineEx->GetResourceCharacteristics(&caps);
+            *pbCanSeek = (caps & ME_CAN_SEEK) == ME_CAN_SEEK;
+        }
+    }
+    else
+    {
+        MEDIA::ThrowIfFailed(E_FAIL);
+    }
+
+    return;
+}
+
+void ofMediaFoundationPlayer::MFGetNativeVideoSize(DWORD *cx, DWORD *cy)
+{
+    if (m_spMediaEngine)
+    {
+        m_spMediaEngine->GetNativeVideoSize(cx, cy);
+    }
+    return;
+}
+
+
+// Get the current playback position.
+double ofMediaFoundationPlayer::MFGetPlaybackPosition()
+{
+    if (m_spMediaEngine)
+    {
+        return m_spMediaEngine->GetCurrentTime();
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+// Create a new instance of the Media Engine.
+void ofMediaFoundationPlayer::Initialize()
+{
+    ComPtr<IMFMediaEngineClassFactory> spFactory;
+    ComPtr<IMFAttributes> spAttributes;
+    ComPtr<MediaEngineNotify> spNotify;
+
+    HRESULT hr = S_OK;
+
+
+    MEDIA::ThrowIfFailed(MFStartup(MF_VERSION));
+
+    //EnterCriticalSection(&m_critSec);
+
+    try
+    {
+
+        // Create our event callback object.
+        spNotify = new MediaEngineNotify();
+        if (spNotify == nullptr)
+        {
+            MEDIA::ThrowIfFailed(E_OUTOFMEMORY);
+        }
+
+        spNotify->MediaEngineNotifyCallback(this);
+
+        // Create the class factory for the Media Engine.
+        MEDIA::ThrowIfFailed(
+            CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&spFactory))
+            );
+
+        // Set configuration attribiutes.
+        MEDIA::ThrowIfFailed(
+            MFCreateAttributes(&spAttributes, 1)
+            );
+
+        MEDIA::ThrowIfFailed(
+            spAttributes->SetUnknown(MF_MEDIA_ENGINE_CALLBACK, (IUnknown*) spNotify.Get())
+            );
+
+
+        MEDIA::ThrowIfFailed(
+            spAttributes->SetUINT32(MF_MEDIA_ENGINE_VIDEO_OUTPUT_FORMAT, DXGI_FORMAT_R8G8B8A8_UINT)
+            );
+
+
+        // Create the Media Engine.
+        const DWORD flags = MF_MEDIA_ENGINE_WAITFORSTABLE_STATE;
+        MEDIA::ThrowIfFailed(
+            spFactory->CreateInstance(flags, spAttributes.Get(), &m_spMediaEngine)
+            );
+
+        MEDIA::ThrowIfFailed(
+            m_spMediaEngine.Get()->QueryInterface(__uuidof(IMFMediaEngine), (void**) &m_spEngineEx)
+            );
+
+    }
+    catch (Platform::Exception^)
+    {
+#if 0
+        CoreWindowDialog^ coreWindowDialog = ref new CoreWindowDialog(\
+            "Failed to initialize DirectX device.");
+        task<Windows::UI::Popups::IUICommand^> coreWindowDialogTask(coreWindowDialog->ShowAsync());
+
+        coreWindowDialogTask.then([this](Windows::UI::Popups::IUICommand^ uiCommand){
+            m_fExitApp = TRUE;
+        });
+#endif // 0
+
+    }
+
+    //LeaveCriticalSection(&m_critSec);
+
+    return;
+}
+
+
+
+

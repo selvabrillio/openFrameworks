@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 ofVideoPlayer::ofVideoPlayer (){
 	bUseTexture			= true;
+    bPlayerReady        = false;
 	playerTex			= NULL;
 	internalPixelFormat = OF_PIXELS_RGB;
 	height 				= 0;
@@ -65,23 +66,35 @@ bool ofVideoPlayer::loadMovie(string name){
 	//#endif
 	
 	bool bOk = player->loadMovie(name);
-	width	 = player->getWidth();
-	height	 = player->getHeight();
 
-	if( bOk){
+    if (bOk)
+    {
         moviePath = name;
-        if(bUseTexture ){
-            if(width!=0 && height!=0) {
-                tex.allocate(width, height, ofGetGLInternalFormatFromPixelFormat(internalPixelFormat));
-        		if(ofGetGLProgrammableRenderer() && internalPixelFormat == OF_PIXELS_MONO){
-        			tex.setRGToRGBASwizzles(true);
-        		}
-            }
-        }
+        bPlayerReady = player->isLoaded();
     }
 	
 	return bOk;
 }
+
+void ofVideoPlayer::setup(){
+
+    bPlayerReady = player->isLoaded();
+
+    if (bPlayerReady){
+        width = player->getWidth();
+        height = player->getHeight();
+
+        if (bUseTexture){
+            if (width != 0 && height != 0) {
+                tex.allocate(width, height, ofGetGLInternalFormatFromPixelFormat(internalPixelFormat));
+                if (ofGetGLProgrammableRenderer() && internalPixelFormat == OF_PIXELS_MONO){
+                    tex.setRGToRGBASwizzles(true);
+                }
+            }
+        }
+    }
+}
+
 
 //---------------------------------------------------------------------------
 string ofVideoPlayer::getMoviePath(){
@@ -142,6 +155,11 @@ bool ofVideoPlayer::isFrameNew(){
 void ofVideoPlayer::update(){
 	if(	player != NULL ){
 
+        if (!bPlayerReady)
+        {
+            setup();
+            return;
+        }
 		player->update();
 		
 		if( bUseTexture && player->isFrameNew() ) {
