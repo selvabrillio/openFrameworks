@@ -9,7 +9,13 @@
 #include <ppltasks.h>
 #include <agile.h>
 
-class ofWinrtVideoGrabber : public ofBaseVideoGrabber{
+
+namespace CaptureFrameGrabber {
+    ref class Controller;
+}
+
+class ofWinrtVideoGrabber : public ofBaseVideoGrabber
+{
 
 public:
 
@@ -55,7 +61,16 @@ public:
 
 	int						width, height;
 
-	Platform::Agile<Windows::Media::Capture::MediaCapture> m_mediaCaptureMgr;
-	Windows::Storage::Streams::Buffer ^m_buffer;
-	Windows::Storage::Streams::InMemoryRandomAccessStream ^m_recording;
+private:
+
+    CaptureFrameGrabber::Controller ^controller;
+
+    // not possible due to use of pch and other conflicts in the custom media sink:
+    //
+    //void _GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber);
+    //Platform::Agile<Windows::Media::Capture::MediaCapture> capture;
+    //unsigned int frameCounter;
+
+	// Windows::Storage::Streams::Buffer ^m_buffer;
+	// Windows::Storage::Streams::InMemoryRandomAccessStream ^m_recording;
 };
