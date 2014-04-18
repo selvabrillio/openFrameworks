@@ -6,6 +6,7 @@
 // PARTICULAR PURPOSE.
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
+// Portions Copyright (c) Microsoft Open Technologies, Inc.
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -13,10 +14,10 @@
 
 // #include "MainPage.g.h"
 
-namespace Media
-{
-    ref class CaptureFrameGrabber;
-}
+//namespace Media
+//{
+//    ref class CaptureFrameGrabber;
+//}
 
 namespace CaptureFrameGrabber
 {
