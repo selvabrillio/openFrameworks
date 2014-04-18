@@ -6,6 +6,7 @@
 // PARTICULAR PURPOSE.
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
+// Portions Copyright (c) Microsoft Open Technologies, Inc.
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -45,8 +46,8 @@ using namespace Windows::UI::Xaml::Media::Imaging;
 
 using namespace Windows::Devices::Enumeration;
 
-// zv
-#include "../../../../include/cinder/app/winrt/cdebug.h"
+// temp debug
+#include "cdebug.h"
 
 
 Controller::Controller()
@@ -61,7 +62,12 @@ Controller::Controller()
 
 bool Controller::Setup(int deviceID, int w, int h, Platform::Object ^buffer)
 {
-    _buffer = reinterpret_cast<uint8_t *>(buffer);
+    // _buffer = reinterpret_cast<uint8_t *>(buffer);
+    // unbox
+    auto adr = safe_cast<unsigned int>(buffer);
+    _buffer = reinterpret_cast<uint8_t *>(adr);
+    TC(static_cast<void *>(_buffer));    TCNL;
+
     _newFrame = false;
     return true;
 }
@@ -129,16 +135,16 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
     create_task(frameGrabber->GetFrameAsync()).then([this, frameGrabber](const ComPtr<IMF2DBuffer2>& buffer)
     {
         // test
-        int m = _width * _height;
-        TC(m); TCNL;
-        auto bitmap = ref new WriteableBitmap(_width, _height);
-        TC(bitmap->PixelBuffer->Capacity); TCNL;
-        CHK(buffer->ContiguousCopyTo(GetData(bitmap->PixelBuffer), bitmap->PixelBuffer->Capacity));
-        unsigned long length;
-        CHK(buffer->GetContiguousLength(&length));       
-        TC(length); TCNL;
+        //int m = _width * _height * 4;
+        //TC(m); TCNL;
+        //auto bitmap = ref new WriteableBitmap(_width, _height);
+        //TC(bitmap->PixelBuffer->Capacity); TCNL;
+        //CHK(buffer->ContiguousCopyTo(GetData(bitmap->PixelBuffer), bitmap->PixelBuffer->Capacity));
+        //unsigned long length;
+        //CHK(buffer->GetContiguousLength(&length));       
+        //TC(length); TCNL;
 
-//      CHK(buffer->ContiguousCopyTo( _buffer, _width * _height * 4 ));
+        CHK(buffer->ContiguousCopyTo( _buffer, _width * _height * 4 ));
         
         // unsigned long length;
         // CHK(buffer->GetContiguousLength(&length));
@@ -148,7 +154,8 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
 
         _frameCounter++;
 
-        TCC("got frame"); TC(_frameCounter); TC( length );  TCNL;
+        TCC("got frame"); TC(_frameCounter); TCNL;
+        // TC( length );  
 
         _newFrame = true;
 
