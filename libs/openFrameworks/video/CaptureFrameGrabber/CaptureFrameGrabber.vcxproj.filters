@@ -9,15 +9,16 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="CaptureFrameGrabber.cpp" />
-    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="MediaStreamSink.cpp" />
+    <ClCompile Include="Controller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="CaptureFrameGrabber.h" />
-    <ClInclude Include="Controller.h" />
     <ClInclude Include="MediaSink.h" />
     <ClInclude Include="MediaStreamSink.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="cdebug.h" />
+    <ClInclude Include="Controller.h" />
   </ItemGroup>
 </Project>

@@ -208,6 +208,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CaptureFrameGrabber.h" />
+    <ClInclude Include="cdebug.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="MediaSink.h" />
     <ClInclude Include="MediaStreamSink.h" />
