@@ -215,11 +215,10 @@ bool AngleBase::InitializeAngle()
 	EGLContext context;
 	EGLSurface surface;
 	EGLConfig config;
-	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
 
     // we need to select the correct DirectX feature level depending on the platform
     // default is D3D_FEATURE_LEVEL_9_3 Windows Phone 8.0
-    ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
+    ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_11_0;
 
 
  	DX::ThrowIfFailed(
@@ -257,11 +256,16 @@ bool AngleBase::InitializeAngle()
     }  
 
 	// Create a GL context
+	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE, EGL_NONE };
 	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
 	if(context == EGL_NO_CONTEXT){
-		//ofLogError("ofAppWinRTWindow") << "failed to create EGL context";
-		return false;
-	}   
+        EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
+	    context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
+        if(context == EGL_NO_CONTEXT){
+		    //ofLogError("ofAppWinRTWindow") << "failed to create EGL context";
+    		return false;
+        }
+	}    
 
 	// Make the context current
 	if (!eglMakeCurrent(display, surface, surface, context)){
