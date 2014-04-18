@@ -2,6 +2,7 @@
 //
 // Microsoft Windows Media Foundation
 // Copyright (C) Microsoft Corporation. All rights reserved.
+// Portions Copyright (c) Microsoft Open Technologies, Inc.
 //
 //*@@@---@@@@******************************************************************
 
@@ -19,6 +20,12 @@ using namespace Windows::Media::MediaProperties;
 using namespace concurrency;
 using namespace Microsoft::WRL::Details;
 using namespace Microsoft::WRL;
+
+// inform linker to pull in these Media Foundation libraries:
+// nb. removes the need to put these into project settings for the app/startup project
+#pragma comment(lib, "mfplat")
+#pragma comment(lib, "mf")
+#pragma comment(lib, "mfuuid")
 
 task<Media::CaptureFrameGrabber^> Media::CaptureFrameGrabber::CreateAsync(_In_ MediaCapture^ capture, _In_ VideoEncodingProperties^ props, CaptureStreamType streamType)
 {
