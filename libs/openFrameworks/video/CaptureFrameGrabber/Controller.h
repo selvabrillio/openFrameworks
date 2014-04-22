@@ -26,7 +26,7 @@ namespace CaptureFrameGrabber
     public:
         Controller();
 
-        bool Setup(int deviceID, int w, int h, Platform::Object ^buffer );
+        bool Setup(int deviceID, int width, int height, int bytesPerPixel, Platform::Object ^buffer);
 
         void Controller::Start(int deviceID);
 
@@ -52,6 +52,7 @@ namespace CaptureFrameGrabber
         Platform::Agile<WMC::MediaCapture> _capture;
         unsigned int _width;
         unsigned int _height;
+        unsigned int _bytesPerPixel;
 
         uint8_t *_buffer;
         bool _newFrame;
