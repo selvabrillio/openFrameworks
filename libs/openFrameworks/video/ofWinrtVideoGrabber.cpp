@@ -6,6 +6,8 @@
 // temp
 #include "CaptureFrameGrabber/cdebug.h"
 
+// for MF attempt (NOT USED)
+#if 0
 // media foundation and WRL
 //#include <mfapi.h>
 //#include <mfidl.h>
@@ -68,7 +70,8 @@ using namespace concurrency;
 //#pragma comment(lib, "mfuuid")
 
 // for GrabFrameAsync
-#define CHK(statement)  {HRESULT _hr = (statement); if (FAILED(_hr)) { throw ref new Platform::COMException(_hr); };}
+//#define CHK(statement)  {HRESULT _hr = (statement); if (FAILED(_hr)) { throw ref new Platform::COMException(_hr); };}
+#endif
 
 //--------------------------------------------------------------------
 
@@ -115,9 +118,10 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
 {
     width = w;
     height = h;
+    int bytesPerPixel = 4;
     bGrabberInited = false;
 //    pixels.allocate(w, h, 3);
-    pixels.allocate(w, h, 4);
+    pixels.allocate(w, h, bytesPerPixel);
 
     // debug
     TC(static_cast<void *>(pixels.getPixels()));    TCNL;
@@ -127,14 +131,14 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
     // box for call across ABI
     auto adr = reinterpret_cast<unsigned int>(pixels.getPixels());
     TC(adr); TCNL;
-    Object^ buffer = adr;
+    Platform::Object^ buffer = adr;
 
     // unbox test
     //auto adr2 = safe_cast<unsigned int>(buffer);
     //auto buffer2 = reinterpret_cast<uint8_t *>(adr2);
     //TC(static_cast<void *>(buffer2));    TCNL;
 
-    controller->Setup(deviceID, w, h, buffer );
+    controller->Setup(deviceID, w, h, bytesPerPixel, buffer);
     controller->Start(deviceID);
 
     // not really
