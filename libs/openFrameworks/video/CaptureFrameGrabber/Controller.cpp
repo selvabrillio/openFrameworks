@@ -60,10 +60,14 @@ Controller::Controller()
 }
 
 
-bool Controller::Setup(int deviceID, int w, int h, Platform::Object ^buffer)
+bool Controller::Setup(int deviceID, int width, int height, int bytesPerPixel, Platform::Object ^buffer)
 {
-    // _buffer = reinterpret_cast<uint8_t *>(buffer);
+    _width = width;
+    _height = height;
+    _bytesPerPixel = bytesPerPixel;
+
     // unbox
+    // _buffer = reinterpret_cast<uint8_t *>(buffer);
     auto adr = safe_cast<unsigned int>(buffer);
     _buffer = reinterpret_cast<uint8_t *>(adr);
     TC(static_cast<void *>(_buffer));    TCNL;
@@ -109,13 +113,37 @@ void Controller::Start( int selectedVideoDeviceIndex )
         settings->VideoDeviceId = chosenDevInfo->Id;
 
         _capture = ref new MediaCapture();
-        create_task(_capture->InitializeAsync(settings)).then([this](){
-
+        create_task( _capture->InitializeAsync(settings)).then([this]()
+        {
             auto props = safe_cast<VideoEncodingProperties^>(_capture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
-            props->Subtype = MediaEncodingSubtypes::Bgra8; // Ask for color conversion to match WriteableBitmap
+            
+            // ARGB ARGB ...
+            // props->Subtype = MediaEncodingSubtypes::Bgra8; // Ask for color conversion to match WriteableBitmap
+            // buffer dump on red screen:
+            // ffc40000  ffc40000  ffc60000  ffc70000  ffc70000  ffc70000  ffc60000  ffc60000
+            // buffer dump on green screen:
+            // ff23d270  ff24d372  ff24d372  ff25d573  ff25d574  ff25d676  ff26d777  ff26d777
+            
+            // RGBR GBRG B ...
+            // working - packed format
+            // buffer dump green screen:
+            // 531ca653  a7541ca6  1da7541d  541da754  a7541da7  1da7541d  561ea956  a9561ea9
+            props->Subtype = MediaEncodingSubtypes::Rgb24;
+            
+            // ARGB ARGB ...
+            // props->Subtype = MediaEncodingSubtypes::Rgb32;
+            // buffer dump on red screen:
+            // ffc70000  ffc70000  ffc70000  ffc70000  ffc80000  ffc90000  ffc90000  ffc90000
+            // buffer dump on green screen:
+            // ff10a750  ff12a952  ff14aa53  ff15ab54  ff14aa53  ff12a952  ff14aa53  ff15ab54
 
-            _width = props->Width;
-            _height = props->Height;
+            if (props->Width > _width || props->Height > _height)
+            {
+                TCC("incorrect buffer size"); TCNL;
+                // throw                
+            }
+            //_width = props->Width;
+            //_height = props->Height;
 
             TC(_width); TC(_height); TCNL;
 
@@ -144,8 +172,20 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
         //CHK(buffer->GetContiguousLength(&length));       
         //TC(length); TCNL;
 
-        CHK(buffer->ContiguousCopyTo( _buffer, _width * _height * 4 ));
-        
+        CHK(buffer->ContiguousCopyTo( _buffer, _width * _height * _bytesPerPixel ));
+
+        if (_frameCounter < 10)
+        {
+            TCC("buffer dump:"); TCNL;
+            unsigned int *p = (unsigned int *)(_buffer);
+            for (int i = 0; i < 64; i++) {
+                if (i && !(i % 8)) { TCNL; }
+                // TCC(i);  
+                TCX(p[i]);
+            }
+            TCNL;
+        }
+
         // unsigned long length;
         // CHK(buffer->GetContiguousLength(&length));
         // bitmap->PixelBuffer->Length = length;
