@@ -53,20 +53,24 @@
 
 #define	DBG1	\
 	char _dbgstr[1024]; std::ostrstream _dbgofstr(_dbgstr, 1024); char _x = 0; \
-_dbgofstr << std::setprecision(3); _dbgofstr.setf( std::ios::fixed );
+        _dbgofstr << std::setprecision(3); _dbgofstr.setf(std::ios::fixed);
 #define DBG2        _dbgofstr << _x; OutputDebugStringA( _dbgofstr.str() );
+
 #define TC(a);      {   DBG1; _dbgofstr << #a << " = " << (a) << "  "; DBG2; }
 #define TCS(a);      {   DBG1; _dbgofstr << #a << " = '" << (a) << "'  "; DBG2; }
-
-#define TCSW(a);      {   DBG1; std::wstring _wstr(a); std::string _str( _wstr.begin(), _wstr.end() ); \
-        _dbgofstr << #a << " = '" << _str << "'  "; DBG2; }
-
 #define TCC(a);     {   DBG1; _dbgofstr << (a) << "  "; DBG2; }
 #define TCW(w,a);   {   DBG1; _dbgofstr << #a << " = " << std::setw(w) << (a) << "  "; DBG2; }
 #define TCCW(w,a);	{   DBG1; _dbgofstr << std::setw(w) << (a) << "  "; DBG2; }
 #define TCCWL(w,a);	{   DBG1; _dbgofstr.flags(ios::left); _dbgofstr << std::setw(w) << (a) << "  "; DBG2; }
 #define TCNL        OutputDebugStringA( "\n" );
 #define TCCR        OutputDebugStringA( "\r" );
+
+// wide string output, e.g. Platform::String.Data() for WinRT
+#define TCSW(a);      {   DBG1; std::wstring _wstr(a); std::string _str( _wstr.begin(), _wstr.end() ); \
+        _dbgofstr << #a << " = '" << _str << "'  "; DBG2; }
+
+// hex output
+#define TCX(a);     {   DBG1; _dbgofstr << std::hex << std::setw(8) << std::setfill('0') << (a) << "  "; DBG2; }
 
 #else
 
@@ -78,6 +82,7 @@ _dbgofstr << std::setprecision(3); _dbgofstr.setf( std::ios::fixed );
 #define TCC(a); cerr << std::setprecision(3) << (a) << "  ";
 #define TCNL    cerr << endl;
 #define TCCR    cerr << "\r";
+#define TCX(a); cerr << std::hex << std::setw(8) << std::setfill('0') << (a) << "  ";
 
 #endif
 
