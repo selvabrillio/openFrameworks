@@ -145,6 +145,7 @@ void Controller::Start( int selectedVideoDeviceIndex )
             //_width = props->Width;
             //_height = props->Height;
 
+            TC(props->Width); TC(props->Height); TCNL;
             TC(_width); TC(_height); TCNL;
 
             return ::Media::CaptureFrameGrabber::CreateAsync(_capture.Get(), props);
@@ -171,6 +172,8 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
         //unsigned long length;
         //CHK(buffer->GetContiguousLength(&length));       
         //TC(length); TCNL;
+
+        TCC("calling ContiguousCopyTo"); TCNL;
 
         CHK(buffer->ContiguousCopyTo( _buffer, _width * _height * _bytesPerPixel ));
 
