@@ -130,7 +130,6 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
 
     // box for call across ABI
     auto adr = reinterpret_cast<unsigned int>(pixels.getPixels());
-    TC(adr); TCNL;
     Platform::Object^ buffer = adr;
 
     // unbox test
