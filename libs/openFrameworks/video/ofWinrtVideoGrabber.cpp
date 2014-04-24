@@ -118,10 +118,10 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
 {
     width = w;
     height = h;
-    int bytesPerPixel = 4;
+    int bytesPerPixel = 3;
     bGrabberInited = false;
 //    pixels.allocate(w, h, 3);
-    pixels.allocate(w, h, bytesPerPixel);
+    pixels.allocate(w, h, bytesPerPixel );
 
     // debug
     TC(static_cast<void *>(pixels.getPixels()));    TCNL;
