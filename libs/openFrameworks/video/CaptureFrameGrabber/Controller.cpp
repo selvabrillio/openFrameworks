@@ -116,22 +116,32 @@ void Controller::Start( int selectedVideoDeviceIndex )
         create_task( _capture->InitializeAsync(settings)).then([this]()
         {
             auto props = safe_cast<VideoEncodingProperties^>(_capture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
-            
+
+            // NOTE: ALL FORMATS: BLUE CHANNEL SEEMS TO BE LOST 
+            // DATA SEEMS TO BE YUV FORMAT
+
             // ARGB ARGB ...
-            // props->Subtype = MediaEncodingSubtypes::Bgra8; // Ask for color conversion to match WriteableBitmap
+            // props->Subtype = MediaEncodingSubtypes::Bgra8; 
+            //
             // buffer dump on red screen:
             // ffc40000  ffc40000  ffc60000  ffc70000  ffc70000  ffc70000  ffc60000  ffc60000
+            // buffer dump :
+            // ffe30500  ffe40602  ffe60801  ffe60800  ffe60900  ffe40800  ffe50700  ffe50500
             // buffer dump on green screen:
             // ff23d270  ff24d372  ff24d372  ff25d573  ff25d574  ff25d676  ff26d777  ff26d777
-            
-            // RGBR GBRG B ...
-            // working - packed format
+            // 
+            // Ask for color conversion to match WriteableBitmap (not used) 
+
+            // RGBR GBRG BRGB  RGBR
+            // packed format 
+            props->Subtype = MediaEncodingSubtypes::Rgb24;
+            //
             // buffer dump green screen:
             // 531ca653  a7541ca6  1da7541d  541da754  a7541da7  1da7541d  561ea956  a9561ea9
-            props->Subtype = MediaEncodingSubtypes::Rgb24;
-            
+
             // ARGB ARGB ...
             // props->Subtype = MediaEncodingSubtypes::Rgb32;
+            //
             // buffer dump on red screen:
             // ffc70000  ffc70000  ffc70000  ffc70000  ffc80000  ffc90000  ffc90000  ffc90000
             // buffer dump on green screen:
@@ -164,29 +174,58 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
     create_task(frameGrabber->GetFrameAsync()).then([this, frameGrabber](const ComPtr<IMF2DBuffer2>& buffer)
     {
         // test
-        //int m = _width * _height * 4;
-        //TC(m); TCNL;
-        //auto bitmap = ref new WriteableBitmap(_width, _height);
-        //TC(bitmap->PixelBuffer->Capacity); TCNL;
-        //CHK(buffer->ContiguousCopyTo(GetData(bitmap->PixelBuffer), bitmap->PixelBuffer->Capacity));
-        //unsigned long length;
-        //CHK(buffer->GetContiguousLength(&length));       
-        //TC(length); TCNL;
+        int m = _width * _height * 4;
+        auto bitmap = ref new WriteableBitmap(_width, _height);
+        CHK(buffer->ContiguousCopyTo(GetData(bitmap->PixelBuffer), bitmap->PixelBuffer->Capacity));
 
-        TCC("calling ContiguousCopyTo"); TCNL;
-
-        CHK(buffer->ContiguousCopyTo( _buffer, _width * _height * _bytesPerPixel ));
-
-        if (_frameCounter < 10)
+        if (_frameCounter || 1)
         {
-            TCC("buffer dump:"); TCNL;
-            unsigned int *p = (unsigned int *)(_buffer);
+            TC(m); TCNL;
+            TC(bitmap->PixelBuffer->Capacity); TCNL;
+            unsigned long length;
+            CHK(buffer->GetContiguousLength(&length));
+            TC(length); TCNL;
+
+            TCC("bitmap dump:"); TCNL;
+            unsigned int *p = (unsigned int *)(bitmap->PixelBuffer);
             for (int i = 0; i < 64; i++) {
                 if (i && !(i % 8)) { TCNL; }
                 // TCC(i);  
                 TCX(p[i]);
             }
             TCNL;
+        }
+
+        // TCC("calling ContiguousCopyTo"); TCNL;
+
+        int buffer_length = _width * _height * _bytesPerPixel;
+
+        CHK(buffer->ContiguousCopyTo(_buffer, buffer_length));
+
+        // swizzle for ANGLE (temp) RGB to BGR
+        if (0) {
+            unsigned int *p = (unsigned int *)(_buffer);
+            unsigned int r, g, b, a = 0xFF;
+            for (unsigned int i = 0; i < _width * _height; i++)
+            {
+                // p[i] = p[i] << 8 | 0xFF;
+                r = p[i];   r &= 0x00FF0000;    r >>= 8;
+                g = p[i];   g &= 0x0000FF00;    g <<= 8;
+                b = p[i];   b &= 0x000000FF;    b <<= 24;
+                // p[i] = b | g | r | a;
+            }
+
+            if (_frameCounter == 1)
+            {
+                TCC("buffer dump 2:"); TCNL;
+                unsigned int *p = (unsigned int *)(_buffer);
+                for (int i = 0; i < 64; i++) {
+                    if (i && !(i % 8)) { TCNL; }
+                    // TCC(i);  
+                    TCX(p[i]);
+                }
+                TCNL;
+            }
         }
 
         // unsigned long length;
@@ -197,8 +236,7 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
 
         _frameCounter++;
 
-        TCC("got frame"); TC(_frameCounter); TCNL;
-        // TC( length );  
+        // TCC("got frame"); TC(_frameCounter); TCNL;
 
         _newFrame = true;
 
