@@ -404,6 +404,8 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
 
         CHK(buffer->ContiguousCopyTo(_buffer, buffer_length));
 
+        // if had support for GL_BGR_EXT
+        // we would not need to swizzle, which is costly
         // swap R and B channels
         unsigned int *p = (unsigned int *)(_buffer);
         int length = _width * _height;
@@ -431,3 +433,4 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
         _GrabFrameAsync(frameGrabber);
     }, task_continuation_context::use_current());
 }
+

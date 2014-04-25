@@ -36,6 +36,8 @@ namespace CaptureFrameGrabber
             return b;
         }
 
+        // static void GetVideoCamerasAsync(GetMediaDevicesDelegate^ func);
+
         // box for WinRT ABI from uint8_t *
         //Platform::Object ^getPixels() {
         //    return reinterpret_cast<Platform::Object^>(_buffer); 
