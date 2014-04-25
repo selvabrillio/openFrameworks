@@ -202,7 +202,11 @@ class ofBaseVideoGrabber: virtual public ofBaseVideo{
 
 	//needs implementing
 	virtual vector<ofVideoDevice>	listDevices() = 0;
-	virtual bool	initGrabber(int w, int h) = 0;
+#ifdef TARGET_WINRT
+    virtual void    listDevicesAsync(std::function<void()> f) = 0;
+#endif
+    
+    virtual bool	initGrabber(int w, int h) = 0;
 	virtual void	update() = 0;
 	virtual bool	isFrameNew() = 0;
 	
