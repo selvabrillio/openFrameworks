@@ -6,6 +6,10 @@
 // temp
 #include "CaptureFrameGrabber/cdebug.h"
 
+#include <ppltasks.h>
+#include <ppl.h>
+#include <agile.h>
+
 // for MF attempt (NOT USED)
 #if 0
 // media foundation and WRL
@@ -352,6 +356,29 @@ vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices()
     return devices;
 }
 
+#if 0
+void ofWinrtVideoGrabber::listDevicesAsync(std::function<void()> f)
+{
+    // callback delegate
+    CaptureFrameGrabber::GetMediaDevicesDelegate^ delegate = ref new CaptureFrameGrabber::GetMediaDevicesDelegate([f](const Array<CaptureFrameGrabber::VideoDeviceInfo^>^ devices)
+    {
+        for (size_t i = 0; i < devices->Length; ++i)
+        {
+            auto src = devices[i];
+            //std::string s = toUtf8(src->devName->Data());
+            //auto dest = new CaptureImplWinRT::Device(s, i);
+            //dest->setFacing(src->isFrontFacing, src->isBackFacing);
+            //sDevices.push_back(Capture::DeviceRef(dest));
+        }
+        //sDevicesEnumerated = true;
+        f();
+    });
+
+//    MediaCaptureWinRT::GetVideoCamerasAsync(delegate); 
+}
+#endif
+
+
 //--------------------------------------------------------------------
 
 void ofWinrtVideoGrabber::update()
@@ -627,4 +654,52 @@ void ofWinrtVideoGrabber::videoSettings(void)
 #endif
     //---------------------------------
 }
+
+#if 0
+namespace CaptureFrameGrabber {
+
+    void GetVideoCamerasAsync(GetMediaDevicesDelegate^ func)
+    {
+        GetMediaDevicesDelegate^ delegate = func;
+
+        create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
+            .then([delegate](task<DeviceInformationCollection^> findTask)
+        {
+            Platform::Array<VideoDeviceInfo^>^ devices = ref new Platform::Array<VideoDeviceInfo^>(0);
+            try
+            {
+                auto devInfoCollection = findTask.get();
+                devices = ref new Platform::Array<VideoDeviceInfo^>(devInfoCollection->Size);
+                for (size_t i = 0; i < devInfoCollection->Size; i++)
+                {
+                    auto devInfo = devInfoCollection->GetAt(i);
+                    auto location = devInfo->EnclosureLocation;
+                    bool isFrontFacing = false;
+                    bool isBackFacing = false;
+                    if (location != nullptr)
+                    {
+                        isFrontFacing = (location->Panel == Windows::Devices::Enumeration::Panel::Front);
+                        isBackFacing = (location->Panel == Windows::Devices::Enumeration::Panel::Back);
+                    }
+
+                    // allocate VideoDeviceInfo object before use
+                    devices[i] = ref new VideoDeviceInfo();
+
+                    devices[i]->devName = devInfo->Name;
+                    devices[i]->isFrontFacing = isFrontFacing;
+                    devices[i]->isBackFacing = isBackFacing;
+                }
+            }
+            catch (Exception ^e)
+            {
+                // todo: handle exception
+            }
+
+            delegate(devices);
+
+        });
+    }
+}
+#endif
+
 #endif

@@ -12,6 +12,20 @@
 
 namespace CaptureFrameGrabber {
     ref class Controller;
+
+    public ref class VideoDeviceInfo sealed
+    {
+    public:
+        property Platform::String^  devName;
+        property Platform::Boolean  isFrontFacing;
+        property Platform::Boolean  isBackFacing;
+
+    };
+
+    public delegate void GetMediaDevicesDelegate(const Platform::Array<VideoDeviceInfo^>^ devices);
+
+    // static void GetVideoCamerasAsync(GetMediaDevicesDelegate^ func);
+
 }
 
 class ofWinrtVideoGrabber : public ofBaseVideoGrabber
@@ -23,7 +37,9 @@ public:
 	virtual ~ofWinrtVideoGrabber();
 
 	vector<ofVideoDevice>	listDevices();
-	bool					initGrabber(int w, int h);
+    virtual void            listDevicesAsync(std::function<void()> f) {}
+
+    bool					initGrabber(int w, int h);
 	void					update();
 	bool					isFrameNew();
 
