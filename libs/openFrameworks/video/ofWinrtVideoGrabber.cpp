@@ -120,7 +120,6 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
     height = h;
     int bytesPerPixel = 3;
     bGrabberInited = false;
-//    pixels.allocate(w, h, 3);
     pixels.allocate(w, h, bytesPerPixel );
 
     // debug
@@ -129,6 +128,7 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
     TC(pixels.size());  TCNL;
 
     // box for call across ABI
+    // nb. adr must be a value type
     auto adr = reinterpret_cast<unsigned int>(pixels.getPixels());
     Platform::Object^ buffer = adr;
 
@@ -140,7 +140,7 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
     controller->Setup(deviceID, w, h, bytesPerPixel, buffer);
     controller->Start(deviceID);
 
-    // not really
+    // not really - everything is async
     bGrabberInited = true;
 
     return true;
