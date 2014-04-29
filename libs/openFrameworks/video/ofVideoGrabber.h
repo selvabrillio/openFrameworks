@@ -54,7 +54,10 @@ class ofVideoGrabber : public ofBaseVideoGrabber,public ofBaseVideoDraws{
 
 		vector<ofVideoDevice> listDevices();
 #ifdef TARGET_WINRT
-        virtual void        listDevicesAsync(std::function<void()> f) {}
+        virtual void        listDevicesAsync(std::function<void()> f) {
+            // devices.clear();
+            f();
+        }
 #endif
 		bool				isFrameNew();
 		void				update();
