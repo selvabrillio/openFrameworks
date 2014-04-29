@@ -153,11 +153,11 @@ void Controller::Start(int selectedVideoDeviceIndex)
             // ff10a750  ff12a952  ff14aa53  ff15ab54  ff14aa53  ff12a952  ff14aa53  ff15ab54
 #endif
 
-            if (props->Width > _width || props->Height > _height)
-            {
-                TCC("incorrect buffer size"); TCNL;
-                // TODO: throw                
-            }
+            //if (props->Width > _width || props->Height > _height)
+            //{
+            //    TCC("incorrect buffer size"); TCNL;
+            //    // TODO: throw                
+            //}
 
             // set desired capture size
             props->Width = _width;
@@ -292,7 +292,6 @@ void swizzleRGBtoBGRpacked(unsigned int *p, int length)
     // TC(length); TCNL;
 
     // process pixels in groups of four packed into three words
-    // this would be MUCH easier on the GPU with swizzle support
     for (int i = 0; (i + 3) <= length; i += 3)
     {
         unsigned int s0 = 0, s1 = 0, s2 = 0;
@@ -300,11 +299,31 @@ void swizzleRGBtoBGRpacked(unsigned int *p, int length)
         {
             // little endian (read right to left):
             // hw in:   rrBBGGRR GGRRbbgg bbggrrBB
-            // out:     bbRRGGBB GGBBrrgg rrggbbRR
             // case n:  11000000 22221111 33333322
             // word i:  0        1        2 
             unsigned p0 = p[i], p1 = p[i + 1], p2 = p[i + 2];
-            unsigned int r, g, b;
+            // optimized
+            // nb. C++ operator precedence: << >> then & then |
+            switch (n)
+            {
+            case 0:
+                s0 |= p0 << 16 & 0xff0000 | p0 & 0xff00 | p0 >> 16 & 0xff;
+                break;
+            case 1:
+                s0 |= p1 << 16 & 0xff000000;
+                s1 |= p0 >> 16 & 0xff00 | p1 & 0xff;
+                break;
+            case 2:
+                s1 |= p2 << 16 & 0xff0000 | p1 & 0xff000000;
+                s2 |= p1 >> 16 & 0xff;
+                break;
+            case 3:
+                s2 |= p2 << 16 & 0xff000000 | p2 & 0xff0000 | p2 >> 16 & 0xff00;
+                break;
+            }
+            // original - unoptimized
+#if 0
+            // unsigned int r, g, b;
             switch (n)
             {
             case 0:
@@ -333,6 +352,7 @@ void swizzleRGBtoBGRpacked(unsigned int *p, int length)
                 b = p2 >> 24 & 0xFF;
                 s2 |= r << 24 | g << 16 | b << 8;
             }
+#endif
         }
 
         p[i] = s0;
