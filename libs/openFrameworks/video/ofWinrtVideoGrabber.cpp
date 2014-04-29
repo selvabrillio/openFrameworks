@@ -356,6 +356,8 @@ vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices()
     return devices;
 }
 
+vector<ofVideoDevice> ofWinrtVideoGrabber::devices;
+
 #if 0
 void ofWinrtVideoGrabber::listDevicesAsync(std::function<void()> f)
 {
@@ -655,6 +657,7 @@ void ofWinrtVideoGrabber::videoSettings(void)
     //---------------------------------
 }
 
+// reference
 #if 0
 namespace CaptureFrameGrabber {
 
