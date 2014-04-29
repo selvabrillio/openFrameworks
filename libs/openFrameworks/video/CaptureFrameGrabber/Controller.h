@@ -36,6 +36,8 @@ namespace CaptureFrameGrabber
             return b;
         }
 
+        void listDevices(Platform::WriteOnlyArray<Platform::String^> ^dev);
+
         // static void GetVideoCamerasAsync(GetMediaDevicesDelegate^ func);
 
         // box for WinRT ABI from uint8_t *

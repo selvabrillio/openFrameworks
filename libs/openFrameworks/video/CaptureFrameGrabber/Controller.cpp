@@ -82,7 +82,6 @@ void Controller::Start(int selectedVideoDeviceIndex)
     _selectedVideoDeviceIndex = selectedVideoDeviceIndex;
 
     auto settings = ref new MediaCaptureInitializationSettings();
-
     settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
     // settings->StreamingCaptureMode = StreamingCaptureMode::AudioAndVideo;
 
@@ -453,4 +452,103 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
         _GrabFrameAsync(frameGrabber);
     }, task_continuation_context::use_current());
 }
+
+
+void Controller::listDevices(Platform::WriteOnlyArray<Platform::String^> ^dev) {
+    auto devices = ref new Platform::Array<Platform::String^>(0);
+
+    auto settings = ref new MediaCaptureInitializationSettings();
+    settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
+
+    // DeviceInformation::FindAllAsync(DeviceClass::VideoCapture);
+
+    // reference
+#if 0
+    create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
+        .then([settings](task<DeviceInformationCollection^> findTask)
+    {
+        auto devInfo = findTask.get();
+
+        TCC("video devices:"); TCNL;
+        for (size_t i = 0; i < devInfo->Size; i++)
+        {
+            auto d = devInfo->GetAt(i);
+            TC(i);  TCSW(d->Name->Data());  TCNL;
+        }
+
+        if (devInfo->Size == 0) {
+            TCC("none"); TCNL;
+            return;
+        }
+
+    });
+#endif
+
+    dev = devices;
+}
+
+// notes
+/*
+
+std::async
+
+block - spec a fn, returns an std::future
+block on future
+call future.get
+auto result = std::async(fn)
+result.get
+
+do try/catch
+
+and return
+
+*/
+
+// ref from cinder
+#if 0
+void MediaCaptureWinRT::GetVideoCamerasAsync(GetMediaDevicesDelegate^ func)
+{
+    GetMediaDevicesDelegate^ delegate = func;
+
+    create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
+        .then([delegate](task<DeviceInformationCollection^> findTask)
+    {
+        Platform::Array<VideoDeviceInfo^>^ devices = ref new Platform::Array<VideoDeviceInfo^>(0);
+        try
+        {
+            auto devInfoCollection = findTask.get();
+            devices = ref new Platform::Array<VideoDeviceInfo^>(devInfoCollection->Size);
+            for (size_t i = 0; i < devInfoCollection->Size; i++)
+            {
+                auto devInfo = devInfoCollection->GetAt(i);
+                auto location = devInfo->EnclosureLocation;
+                bool isFrontFacing = false;
+                bool isBackFacing = false;
+                if (location != nullptr)
+                {
+                    isFrontFacing = (location->Panel == Windows::Devices::Enumeration::Panel::Front);
+                    isBackFacing = (location->Panel == Windows::Devices::Enumeration::Panel::Back);
+                }
+
+                // allocate VideoDeviceInfo object before use
+                devices[i] = ref new VideoDeviceInfo();
+
+                devices[i]->devName = devInfo->Name;
+                devices[i]->isFrontFacing = isFrontFacing;
+                devices[i]->isBackFacing = isBackFacing;
+            }
+        }
+        catch (Exception ^e)
+        {
+            // todo: handle exception
+            // in CaptureImplWinRT, see:
+            // throw CaptureExcInitFail();
+        }
+
+        delegate(devices);
+
+    });
+}
+
+#endif
 
