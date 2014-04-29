@@ -37,8 +37,6 @@ public:
 	virtual ~ofWinrtVideoGrabber();
 
 	vector<ofVideoDevice>	listDevices();
-    virtual void            listDevicesAsync(std::function<void()> f) {}
-    static vector<ofVideoDevice> devices;
 
     bool					initGrabber(int w, int h);
 	void					update();

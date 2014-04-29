@@ -332,6 +332,8 @@ vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices()
 
     vector <ofVideoDevice> devices;
 
+
+
     //---------------------------------
 #ifdef OF_VIDEO_CAPTURE_DIRECTSHOW
     //---------------------------------
@@ -356,7 +358,6 @@ vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices()
     return devices;
 }
 
-vector<ofVideoDevice> ofWinrtVideoGrabber::devices;
 
 #if 0
 void ofWinrtVideoGrabber::listDevicesAsync(std::function<void()> f)
@@ -376,7 +377,7 @@ void ofWinrtVideoGrabber::listDevicesAsync(std::function<void()> f)
         f();
     });
 
-//    MediaCaptureWinRT::GetVideoCamerasAsync(delegate); 
+    //    MediaCaptureWinRT::GetVideoCamerasAsync(delegate); 
 }
 #endif
 
