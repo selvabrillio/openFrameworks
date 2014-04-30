@@ -332,7 +332,7 @@ vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices()
 
     vector <ofVideoDevice> devices;
 
-
+    controller->listDevices();
 
     //---------------------------------
 #ifdef OF_VIDEO_CAPTURE_DIRECTSHOW

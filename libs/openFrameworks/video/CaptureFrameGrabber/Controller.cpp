@@ -14,6 +14,8 @@
 #include "CaptureFrameGrabber.h"
 #include "Controller.h"
 
+#include <mutex>
+
 using namespace CaptureFrameGrabber;
 
 using namespace Platform;
@@ -454,13 +456,45 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
 }
 
 
-void Controller::listDevices(Platform::WriteOnlyArray<Platform::String^> ^dev) {
-    auto devices = ref new Platform::Array<Platform::String^>(0);
+void Controller::listDevices( /* Platform::WriteOnlyArray<Platform::String^> ^dev */ ) {
+
+    devices = ref new Platform::Array<Platform::String^>(0);
 
     auto settings = ref new MediaCaptureInitializationSettings();
     settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
 
-    // DeviceInformation::FindAllAsync(DeviceClass::VideoCapture);
+    auto mtx = new std::mutex;
+
+    create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
+        .then([this,settings,mtx](task<DeviceInformationCollection^> findTask)
+    {
+        mtx->lock();
+        //std::lock_guard<std::mutex> guard(mtx);
+
+        auto devInfo = findTask.get();
+
+        TCC("loading:"); TCNL;
+        devices = ref new Platform::Array<Platform::String^>(devInfo->Size);
+        for (size_t i = 0; i < devInfo->Size; i++)
+        {
+            auto d = devInfo->GetAt(i);
+            devices[i] = d->Name;
+            TC(i);  TCSW(d->Name->Data());  TCNL;
+        }
+
+        mtx->unlock();
+    });
+
+    TCC("wait for mutex"); TCNL;
+    mtx->lock();
+    TCC("mutex done"); TCNL;
+
+    TCC("video devices:"); TCNL;
+    for (size_t i = 0; i < devices->Length; i++)
+    {
+        TC(i);  TCSW(devices[i]->Data());  TCNL;
+    }
+
 
     // reference
 #if 0
@@ -484,7 +518,7 @@ void Controller::listDevices(Platform::WriteOnlyArray<Platform::String^> ^dev) {
     });
 #endif
 
-    dev = devices;
+//    dev = devices;
 }
 
 // notes

@@ -36,7 +36,7 @@ namespace CaptureFrameGrabber
             return b;
         }
 
-        void listDevices(Platform::WriteOnlyArray<Platform::String^> ^dev);
+        void listDevices( /* Platform::WriteOnlyArray<Platform::String^> ^dev */ );
 
         // static void GetVideoCamerasAsync(GetMediaDevicesDelegate^ func);
 
@@ -63,5 +63,7 @@ namespace CaptureFrameGrabber
 
         unsigned int _selectedVideoDeviceIndex;
         unsigned int _frameCounter;
+
+        Platform::Array<Platform::String^> ^devices;
     };
 }
