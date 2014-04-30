@@ -284,7 +284,7 @@ void YUVtoRGB(unsigned int *p, int length)
 #endif
 
 
-void swizzleRGBtoBGRpacked(unsigned char *pixels, int length, int nChannels)
+void swizzleRGBtoBGRpacked(uint8_t *pixels, int length, int nChannels)
 {
     for (int i = 0; i < length; i += nChannels){
         std::swap(pixels[i], pixels[i + 2]);
@@ -308,37 +308,6 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
 {
     create_task(frameGrabber->GetFrameAsync()).then([this, frameGrabber](const ComPtr<IMF2DBuffer2>& buffer)
     {
-        // test
-#if 0
-        {
-            int m = _width * _height * 4;
-            auto bitmap = ref new WriteableBitmap(_width, _height);
-            CHK(buffer->ContiguousCopyTo(GetData(bitmap->PixelBuffer), bitmap->PixelBuffer->Capacity));
-
-            if (_frameCounter || 1)
-            {
-                TC(m); TCNL;
-                TC(bitmap->PixelBuffer->Capacity); TCNL;
-                unsigned long length;
-                CHK(buffer->GetContiguousLength(&length));
-                TC(length); TCNL;
-
-                TCC("bitmap dump:"); TCNL;
-                unsigned int *p = (unsigned int *)(bitmap->PixelBuffer);
-                for (int i = 0; i < 64; i++) {
-                    if (i && !(i % 8)) { TCNL; }
-                    // TCC(i);  
-                    TCX(p[i]);
-                }
-                TCNL;
-            }
-            // unsigned long length;
-            // CHK(buffer->GetContiguousLength(&length));
-            // bitmap->PixelBuffer->Length = length;
-            // Preview->Source = bitmap;
-        }
-#endif
-
         // TCC("calling ContiguousCopyTo"); TCNL;
 
         int buffer_length = _width * _height * _bytesPerPixel;
@@ -348,22 +317,13 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
         // if had support for GL_BGR_EXT
         // we would not need to swizzle, which is costly
         // swap R and B channels
-        unsigned char *p = (unsigned char *) (_buffer);
-        int length = _width * _height;
+        int length = _width * _height  * _bytesPerPixel;
         //if (_frameCounter == 0)
         //{
         //    TCC("framebuffer dump before swizzleRGBtoBGRpacked:"); TCNL;
         //    dumpFB(p);
         //}
-        swizzleRGBtoBGRpacked(p, length * 3, 3);
-
-        // attempt YUV to RGB conversion NOT NEEDED NOW
-#if 0
-        unsigned int *p = (unsigned int *)(_buffer);
-        int length = _width * _height;
-        length = 10000;
-        YUVtoRGB(p, length);
-#endif
+        swizzleRGBtoBGRpacked(_buffer, length, _bytesPerPixel);
 
         _frameCounter++;
 
