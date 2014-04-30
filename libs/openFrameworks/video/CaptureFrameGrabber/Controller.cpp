@@ -463,13 +463,10 @@ void Controller::listDevices( /* Platform::WriteOnlyArray<Platform::String^> ^de
     auto settings = ref new MediaCaptureInitializationSettings();
     settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
 
-    auto mtx = new std::mutex;
-
     create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
-        .then([this,settings,mtx](task<DeviceInformationCollection^> findTask)
+        .then([this,settings](task<DeviceInformationCollection^> findTask)
     {
-        mtx->lock();
-        //std::lock_guard<std::mutex> guard(mtx);
+        std::lock_guard<std::mutex> guard(enum_mtx);
 
         auto devInfo = findTask.get();
 
@@ -481,12 +478,10 @@ void Controller::listDevices( /* Platform::WriteOnlyArray<Platform::String^> ^de
             devices[i] = d->Name;
             TC(i);  TCSW(d->Name->Data());  TCNL;
         }
-
-        mtx->unlock();
     });
 
     TCC("wait for mutex"); TCNL;
-    mtx->lock();
+    std::lock_guard<std::mutex> guard(enum_mtx);
     TCC("mutex done"); TCNL;
 
     TCC("video devices:"); TCNL;

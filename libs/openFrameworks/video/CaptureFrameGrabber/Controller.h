@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <mutex>
+
 // #include "MainPage.g.h"
 
 //namespace Media
@@ -65,5 +67,7 @@ namespace CaptureFrameGrabber
         unsigned int _frameCounter;
 
         Platform::Array<Platform::String^> ^devices;
+
+        std::mutex enum_mtx;
     };
 }
