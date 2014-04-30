@@ -311,6 +311,7 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
 {
     create_task(frameGrabber->GetFrameAsync()).then([this, frameGrabber](const ComPtr<IMF2DBuffer2>& buffer)
     {
+#if 1
         // do the RGB swizzle while copying the pixels from the IMF2DBuffer2
         BYTE *pbScanline;
         LONG plPitch;
@@ -331,6 +332,17 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
             buf += numBytes;
         }
         CHK(buffer->Unlock2D());
+#else
+        // speed comparison
+        int buffer_length = _width * _height * _bytesPerPixel;
+        CHK(buffer->ContiguousCopyTo(_buffer, buffer_length));
+
+        // swap R and B channels
+        unsigned char *p = (unsigned char *)(_buffer);
+        int length = _width * _height;
+        swizzleRGBtoBGRpacked(p, length * 3, 3);
+
+#endif
 
         _frameCounter++;
 
