@@ -15,6 +15,7 @@
 #include "Controller.h"
 
 #include <mutex>
+#include <algorithm>
 
 using namespace CaptureFrameGrabber;
 
@@ -283,93 +284,12 @@ void YUVtoRGB(unsigned int *p, int length)
 #endif
 
 
-void swizzleRGBtoBGRpacked(unsigned int *p, int length)
+void swizzleRGBtoBGRpacked(unsigned char *pixels, int length, int nChannels)
 {
-    // account for packing
-    // convert from pixels to words
-    // TC(length);
-    length *= 3;
-    length /= 4;
-    // TC(length); TCNL;
-
-    // process pixels in groups of four packed into three words
-    for (int i = 0; (i + 3) <= length; i += 3)
-    {
-        unsigned int s0 = 0, s1 = 0, s2 = 0;
-        for (int n = 0; n < 4; n++)
-        {
-            // little endian (read right to left):
-            // hw in:   rrBBGGRR GGRRbbgg bbggrrBB
-            // case n:  11000000 22221111 33333322
-            // word i:  0        1        2 
-            unsigned p0 = p[i], p1 = p[i + 1], p2 = p[i + 2];
-            // optimized
-            // nb. C++ operator precedence: << >> then & then |
-            switch (n)
-            {
-            case 0:
-                s0 |= p0 << 16 & 0xff0000 | p0 & 0xff00 | p0 >> 16 & 0xff;
-                break;
-            case 1:
-                s0 |= p1 << 16 & 0xff000000;
-                s1 |= p0 >> 16 & 0xff00 | p1 & 0xff;
-                break;
-            case 2:
-                s1 |= p2 << 16 & 0xff0000 | p1 & 0xff000000;
-                s2 |= p1 >> 16 & 0xff;
-                break;
-            case 3:
-                s2 |= p2 << 16 & 0xff000000 | p2 & 0xff0000 | p2 >> 16 & 0xff00;
-                break;
-            }
-            // original - unoptimized
-#if 0
-            // unsigned int r, g, b;
-            switch (n)
-            {
-            case 0:
-                r = p0 & 0xFF;
-                g = p0 >> 8  & 0xFF;
-                b = p0 >> 16 & 0xFF;
-                s0 |= r << 16 | g << 8 | b;
-                break;
-            case 1:
-                r = p0 >> 24;
-                g = p1 & 0xFF;
-                b = p1 >> 8 & 0xFF;
-                s0 |= b << 24;
-                s1 |= g | r << 8;
-                break;
-            case 2:
-                r = p1 >> 16 & 0xFF;
-                g = p1 >> 24 & 0xFF;
-                b = p2 & 0xFF;
-                s1 |= g << 24 | b << 16;
-                s2 |= r;
-                break;
-            case 3:
-                r = p2 >> 8 & 0xFF;
-                g = p2 >> 16 & 0xFF;
-                b = p2 >> 24 & 0xFF;
-                s2 |= r << 24 | g << 16 | b << 8;
-            }
-#endif
-        }
-
-        p[i] = s0;
-        p[i + 1] = s1;
-        p[i + 2] = s2;
-
-        // force color test
-        // test:           rrBBGGRR
-        // p[i] =        0x00004000;
-        //                 GGRRbbgg
-        // p[i + 1] =    0xc0000080;
-        //                 bbggrrBB
-        // p[i + 2] =    0x00ff0000;
+    for (int i = 0; i < length; i += nChannels){
+        std::swap(pixels[i], pixels[i + 2]);
     }
 }
-
 
 void dumpFB(unsigned int *p)
 {
@@ -428,14 +348,14 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
         // if had support for GL_BGR_EXT
         // we would not need to swizzle, which is costly
         // swap R and B channels
-        unsigned int *p = (unsigned int *)(_buffer);
+        unsigned char *p = (unsigned char *) (_buffer);
         int length = _width * _height;
         //if (_frameCounter == 0)
         //{
         //    TCC("framebuffer dump before swizzleRGBtoBGRpacked:"); TCNL;
         //    dumpFB(p);
         //}
-        swizzleRGBtoBGRpacked(p, length);
+        swizzleRGBtoBGRpacked(p, length * 3, 3);
 
         // attempt YUV to RGB conversion NOT NEEDED NOW
 #if 0
