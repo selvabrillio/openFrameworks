@@ -6,6 +6,9 @@
 #include <Strsafe.h>
 #include <string>
 #include <DXGIFormat.h>
+#include <Wincodec.h>
+#include <d3d11.h>
+#include <dxgi.h>
 
 using namespace Windows::Storage;
 using namespace Platform;
@@ -141,6 +144,7 @@ void ofMediaFoundationPlayer::update(){
     if (bLoaded == true)
     {
         LONGLONG pts;
+        bIsFrameNew = false;
         if (m_spMediaEngine->OnVideoStreamTick(&pts) == S_OK)
         {
             // ---------------------------------------------------
@@ -151,7 +155,97 @@ void ofMediaFoundationPlayer::update(){
             // 		and it was badly named so now, newness happens
             // 		per-idle not per isNew call
             // ---------------------------------------------------
+            HRESULT hr;
+            DWORD w, h;
+            MFGetNativeVideoSize(&w, &h);
+            pixels.allocate(w, h, ofImageType::OF_IMAGE_COLOR_ALPHA);
 
+            ComPtr<ID3D11Texture2D> readTexture;
+            D3D11_TEXTURE2D_DESC desc;
+            desc.Width = w;
+            desc.Height = h;
+            desc.MipLevels = 1;
+            desc.ArraySize = 1;
+            desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+            desc.SampleDesc.Count = 1;
+            desc.SampleDesc.Quality = 0;
+            desc.Usage = D3D11_USAGE_STAGING;
+            desc.BindFlags = 0;
+            desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;// | D3D11_CPU_ACCESS_WRITE;
+            desc.MiscFlags = 0;
+            hr = m_spDX11Device->CreateTexture2D(&desc, nullptr, readTexture.GetAddressOf());
+            if(FAILED(hr))
+                return;
+
+			ComPtr<ID3D11Texture2D> writeTexture;
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.BindFlags = D3D11_BIND_RENDER_TARGET;
+			desc.CPUAccessFlags = 0;
+			hr = m_spDX11Device->CreateTexture2D(&desc, nullptr, writeTexture.GetAddressOf());
+			if(FAILED(hr))
+				return;
+#if 0
+            // Initialize COM
+            //HRESULT hr = Windows::Foundation::Initialize(RO_INIT_TYPE::RO_INIT_MULTITHREADED);
+            //if(FAILED(hr))
+            //    return;
+
+            // The factory pointer
+            ComPtr<IWICImagingFactory> pFactory;
+
+            // Create the COM imaging factory
+            HRESULT hr = CoCreateInstance(
+                CLSID_WICImagingFactory,
+                NULL,
+                CLSCTX_INPROC_SERVER,
+                IID_PPV_ARGS(pFactory.GetAddressOf())
+            );
+            if(FAILED(hr))
+                return;
+
+            ComPtr<IWICBitmap> pBitmap;
+            hr = pFactory->CreateBitmap(w, h, GUID_WICPixelFormat32bppRGBA, WICBitmapCreateCacheOption::WICBitmapCacheOnLoad, pBitmap.GetAddressOf());
+            if(FAILED(hr))
+                return;
+#endif
+
+            RECT rect;
+            rect.left = 0;
+            rect.top = 0;
+            rect.right = w;
+            rect.bottom = h;
+            MFARGB mfargb;
+            memset(&mfargb, 0, sizeof(MFARGB));
+            hr = m_spMediaEngine->TransferVideoFrame(writeTexture.Get(), nullptr, &rect, &mfargb);
+            if(FAILED(hr))
+                return;
+
+			m_spDX11DeviceContext->CopyResource(readTexture.Get(), writeTexture.Get());
+			m_spDX11DeviceContext->Flush();
+			D3D11_MAPPED_SUBRESOURCE mapped;
+			hr = m_spDX11DeviceContext->Map(readTexture.Get(), 0, D3D11_MAP_READ, 0, &mapped);
+			if(FAILED(hr))
+				return;
+
+            unsigned char *pixelArray = pixels.getPixels();
+			for(int y = 0; y < h; ++y)
+			{
+				int row = y * w;
+				for(int x = 0; x < w; ++x)
+				{
+					int index = (row + x) * 4;
+					BYTE *mappedData = static_cast<BYTE*>(mapped.pData);
+					pixelArray[index + 0] = mappedData[index + 2];
+					pixelArray[index + 1] = mappedData[index + 1];
+					pixelArray[index + 2] = mappedData[index + 0];
+					pixelArray[index + 3] = mappedData[index + 3];
+				}
+			}
+			//memcpy(pixelArray, mapped.pData, pixels.size());
+			m_spDX11DeviceContext->Unmap(readTexture.Get(), 0);
+            //hr = pBitmap->CopyPixels(nullptr, (w * pixels.getBitsPerPixel() + 7) / 8, pixels.size(), pixelArray);
+            if(FAILED(hr))
+                return;
 
             bIsFrameNew = true;
         }
@@ -207,9 +301,10 @@ bool ofMediaFoundationPlayer::loadMovie(string name){
         std::string path = "ms-appx:///data/" + name;
         std::wstring wpath(path.begin(), path.end());
         auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(wpath.c_str()));
-        auto fileTask = create_task(StorageFile::GetFileFromApplicationUriAsync(uri));
+		HANDLE eventHandle = CreateEventEx(nullptr, nullptr, 0, EVENT_ALL_ACCESS);
+        auto fileTask = create_task(StorageFile::GetFileFromApplicationUriAsync(uri), task_continuation_context::use_arbitrary());
 
-        fileTask.then([this](StorageFile^ fileHandle)
+        fileTask.then([this, eventHandle](StorageFile^ fileHandle)
         {
             try
             {
@@ -224,13 +319,13 @@ bool ofMediaFoundationPlayer::loadMovie(string name){
                 // TODO handle exception correctly
                 throw std::exception("can't get StorageFile");
             }
-
-            task<IRandomAccessStream^> fOpenStreamTask(fileHandle->OpenAsync(Windows::Storage::FileAccessMode::Read));
+			HANDLE eventHandle2 = CreateEventEx(nullptr, nullptr, 0, EVENT_ALL_ACCESS);
+            task<IRandomAccessStream^> fOpenStreamTask(fileHandle->OpenAsync(Windows::Storage::FileAccessMode::Read), task_continuation_context::use_arbitrary());
 
             try
             {
                 auto vidPlayer = this;
-                fOpenStreamTask.then([vidPlayer](IRandomAccessStream^ streamHandle)
+                fOpenStreamTask.then([vidPlayer, eventHandle2](IRandomAccessStream^ streamHandle)
                 {
                     try
                     {
@@ -238,17 +333,25 @@ bool ofMediaFoundationPlayer::loadMovie(string name){
                     }
                     catch (Platform::Exception^)
                     {
+						SetEvent(eventHandle2);
                         MEDIA::ThrowIfFailed(E_UNEXPECTED);
                     }
-                });
+					SetEvent(eventHandle2);
+                }, task_continuation_context::use_arbitrary());
             }
             catch (Platform::Exception^)
             {
                 // TODO handle exception correctly
+				CloseHandle(eventHandle2);
+				SetEvent(eventHandle);
                 throw std::exception("can't get IRandomAccessStream");
             }
-
-        });
+			WaitForSingleObjectEx(eventHandle2, INFINITE, FALSE);
+			CloseHandle(eventHandle2);
+			SetEvent(eventHandle);
+        }, task_continuation_context::use_arbitrary());
+		WaitForSingleObjectEx(eventHandle, INFINITE, FALSE);
+		CloseHandle(eventHandle);
     }
 
 #if 0
@@ -323,11 +426,7 @@ bool ofMediaFoundationPlayer::loadMovie(string name){
 
     while (curMovieTime >= 0) {
         nFrames++;
-        GetMovieNextInterestingTime(moviePtr, flags, 1, &whichMediaType, curMovieTime, 0, &curMovieTime, &duration);
-        flags = nextTimeMediaSample;
-    }
-    nFrames--; // there's an extra time step at the end of themovie
-
+        GetMovieNextInterestingTime(moviePtr, flags, 1, &whichMediaType, cus
 
 
 
@@ -1002,6 +1101,39 @@ void ofMediaFoundationPlayer::Initialize()
 
     try
     {
+		D3D_FEATURE_LEVEL levels[] = {
+			D3D_FEATURE_LEVEL_11_1,
+			D3D_FEATURE_LEVEL_11_0,  
+			D3D_FEATURE_LEVEL_10_1,
+			D3D_FEATURE_LEVEL_10_0,
+			D3D_FEATURE_LEVEL_9_3,
+			D3D_FEATURE_LEVEL_9_2,
+			D3D_FEATURE_LEVEL_9_1
+		};
+		D3D_FEATURE_LEVEL featureLevel;
+
+		hr = D3D11CreateDevice(
+			nullptr,
+			D3D_DRIVER_TYPE_HARDWARE,
+			nullptr,
+			D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_BGRA_SUPPORT,
+			levels,
+			ARRAYSIZE(levels),
+			D3D11_SDK_VERSION,
+			m_spDX11Device.GetAddressOf(),
+			&featureLevel,
+			m_spDX11DeviceContext.GetAddressOf()
+			);
+		if(FAILED(hr))
+			return;
+        UINT resetToken;
+        MEDIA::ThrowIfFailed(
+            MFCreateDXGIDeviceManager(&resetToken, &m_spDXGIManager)
+            );
+
+        MEDIA::ThrowIfFailed(
+            m_spDXGIManager->ResetDevice(m_spDX11Device.Get(), resetToken)
+            );
 
         // Create our event callback object.
         spNotify = new MediaEngineNotify();
@@ -1021,6 +1153,10 @@ void ofMediaFoundationPlayer::Initialize()
         MEDIA::ThrowIfFailed(
             MFCreateAttributes(&spAttributes, 1)
             );
+			
+        MEDIA::ThrowIfFailed(
+            spAttributes->SetUnknown(MF_MEDIA_ENGINE_DXGI_MANAGER, (IUnknown*) m_spDXGIManager.Get())
+            );
 
         MEDIA::ThrowIfFailed(
             spAttributes->SetUnknown(MF_MEDIA_ENGINE_CALLBACK, (IUnknown*) spNotify.Get())
@@ -1028,7 +1164,7 @@ void ofMediaFoundationPlayer::Initialize()
 
 
         MEDIA::ThrowIfFailed(
-            spAttributes->SetUINT32(MF_MEDIA_ENGINE_VIDEO_OUTPUT_FORMAT, DXGI_FORMAT_R8G8B8A8_UINT)
+            spAttributes->SetUINT32(MF_MEDIA_ENGINE_VIDEO_OUTPUT_FORMAT, DXGI_FORMAT_B8G8R8A8_UNORM)
             );
 
 
