@@ -15,7 +15,6 @@
 #include "Controller.h"
 
 #include <mutex>
-#include <algorithm>
 
 using namespace CaptureFrameGrabber;
 
@@ -284,10 +283,14 @@ void YUVtoRGB(unsigned int *p, int length)
 #endif
 
 
-void swizzleRGBtoBGRpacked(uint8_t *pixels, int length, int nChannels)
+void swizzleRGBtoBGRpacked(uint8_t* pixels, int length, int nChannels)
 {
-    for (int i = 0; i < length; i += nChannels){
-        std::swap(pixels[i], pixels[i + 2]);
+    uint8_t temp;
+    for (int i = 0, j = 2; i < length; i += nChannels, j += nChannels)
+    {
+        temp = pixels[i];
+        pixels[i] = pixels[j];
+        pixels[j] = temp;
     }
 }
 
