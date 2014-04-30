@@ -311,12 +311,6 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
 {
     create_task(frameGrabber->GetFrameAsync()).then([this, frameGrabber](const ComPtr<IMF2DBuffer2>& buffer)
     {
-        // TCC("calling ContiguousCopyTo"); TCNL;
-
-        int buffer_length = _width * _height * _bytesPerPixel;
-
-        //CHK(buffer->ContiguousCopyTo(_buffer, buffer_length));
-
         // do the RGB swizzle while copying the pixels from the IMF2DBuffer2
         BYTE *pbScanline;
         LONG plPitch;
@@ -328,6 +322,7 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
         {
             for (unsigned int i = 0; i < numBytes; i += _bytesPerPixel)
             {
+                // swizzle the R and B values (BGR to RGB)
                 buf[i] = pbScanline[i + 2];
                 buf[i + 1] = pbScanline[i + 1];
                 buf[i + 2] = pbScanline[i];
@@ -336,17 +331,6 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
             buf += numBytes;
         }
         CHK(buffer->Unlock2D());
-
-        // if had support for GL_BGR_EXT
-        // we would not need to swizzle, which is costly
-        // swap R and B channels
-        int length = _width * _height  * _bytesPerPixel;
-        //if (_frameCounter == 0)
-        //{
-        //    TCC("framebuffer dump before swizzleRGBtoBGRpacked:"); TCNL;
-        //    dumpFB(p);
-        //}
-        //swizzleRGBtoBGRpacked(_buffer, length, _bytesPerPixel);
 
         _frameCounter++;
 
