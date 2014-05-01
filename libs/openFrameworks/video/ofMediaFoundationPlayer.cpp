@@ -160,54 +160,31 @@ void ofMediaFoundationPlayer::update(){
             MFGetNativeVideoSize(&w, &h);
             pixels.allocate(w, h, ofImageType::OF_IMAGE_COLOR_ALPHA);
 
-            ComPtr<ID3D11Texture2D> readTexture;
-            D3D11_TEXTURE2D_DESC desc;
-            desc.Width = w;
-            desc.Height = h;
-            desc.MipLevels = 1;
-            desc.ArraySize = 1;
-            desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-            desc.SampleDesc.Count = 1;
-            desc.SampleDesc.Quality = 0;
-            desc.Usage = D3D11_USAGE_STAGING;
-            desc.BindFlags = 0;
-            desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;// | D3D11_CPU_ACCESS_WRITE;
-            desc.MiscFlags = 0;
-            hr = m_spDX11Device->CreateTexture2D(&desc, nullptr, readTexture.GetAddressOf());
-            if(FAILED(hr))
-                return;
+			if(!m_spReadTexture)
+			{
+				D3D11_TEXTURE2D_DESC desc;
+				desc.Width = w;
+				desc.Height = h;
+				desc.MipLevels = 1;
+				desc.ArraySize = 1;
+				desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+				desc.SampleDesc.Count = 1;
+				desc.SampleDesc.Quality = 0;
+				desc.Usage = D3D11_USAGE_STAGING;
+				desc.BindFlags = 0;
+				desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+				desc.MiscFlags = 0;
+				hr = m_spDX11Device->CreateTexture2D(&desc, nullptr, m_spReadTexture.GetAddressOf());
+				if(FAILED(hr))
+					return;
 
-			ComPtr<ID3D11Texture2D> writeTexture;
-			desc.Usage = D3D11_USAGE_DEFAULT;
-			desc.BindFlags = D3D11_BIND_RENDER_TARGET;
-			desc.CPUAccessFlags = 0;
-			hr = m_spDX11Device->CreateTexture2D(&desc, nullptr, writeTexture.GetAddressOf());
-			if(FAILED(hr))
-				return;
-#if 0
-            // Initialize COM
-            //HRESULT hr = Windows::Foundation::Initialize(RO_INIT_TYPE::RO_INIT_MULTITHREADED);
-            //if(FAILED(hr))
-            //    return;
-
-            // The factory pointer
-            ComPtr<IWICImagingFactory> pFactory;
-
-            // Create the COM imaging factory
-            HRESULT hr = CoCreateInstance(
-                CLSID_WICImagingFactory,
-                NULL,
-                CLSCTX_INPROC_SERVER,
-                IID_PPV_ARGS(pFactory.GetAddressOf())
-            );
-            if(FAILED(hr))
-                return;
-
-            ComPtr<IWICBitmap> pBitmap;
-            hr = pFactory->CreateBitmap(w, h, GUID_WICPixelFormat32bppRGBA, WICBitmapCreateCacheOption::WICBitmapCacheOnLoad, pBitmap.GetAddressOf());
-            if(FAILED(hr))
-                return;
-#endif
+				desc.Usage = D3D11_USAGE_DEFAULT;
+				desc.BindFlags = D3D11_BIND_RENDER_TARGET;
+				desc.CPUAccessFlags = 0;
+				hr = m_spDX11Device->CreateTexture2D(&desc, nullptr, m_spWriteTexture.GetAddressOf());
+				if(FAILED(hr))
+					return;
+			}
 
             RECT rect;
             rect.left = 0;
@@ -216,17 +193,18 @@ void ofMediaFoundationPlayer::update(){
             rect.bottom = h;
             MFARGB mfargb;
             memset(&mfargb, 0, sizeof(MFARGB));
-            hr = m_spMediaEngine->TransferVideoFrame(writeTexture.Get(), nullptr, &rect, &mfargb);
+            hr = m_spMediaEngine->TransferVideoFrame(m_spWriteTexture.Get(), nullptr, &rect, &mfargb);
             if(FAILED(hr))
                 return;
 
-			m_spDX11DeviceContext->CopyResource(readTexture.Get(), writeTexture.Get());
+			m_spDX11DeviceContext->CopyResource(m_spReadTexture.Get(), m_spWriteTexture.Get());
 			m_spDX11DeviceContext->Flush();
 			D3D11_MAPPED_SUBRESOURCE mapped;
-			hr = m_spDX11DeviceContext->Map(readTexture.Get(), 0, D3D11_MAP_READ, 0, &mapped);
+			hr = m_spDX11DeviceContext->Map(m_spReadTexture.Get(), 0, D3D11_MAP_READ, 0, &mapped);
 			if(FAILED(hr))
 				return;
 
+			//need to swizzle red and blue channels
             unsigned char *pixelArray = pixels.getPixels();
 			for(int y = 0; y < h; ++y)
 			{
@@ -242,8 +220,7 @@ void ofMediaFoundationPlayer::update(){
 				}
 			}
 			//memcpy(pixelArray, mapped.pData, pixels.size());
-			m_spDX11DeviceContext->Unmap(readTexture.Get(), 0);
-            //hr = pBitmap->CopyPixels(nullptr, (w * pixels.getBitsPerPixel() + 7) / 8, pixels.size(), pixelArray);
+			m_spDX11DeviceContext->Unmap(m_spReadTexture.Get(), 0);
             if(FAILED(hr))
                 return;
 
