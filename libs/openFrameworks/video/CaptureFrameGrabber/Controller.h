@@ -29,7 +29,6 @@ namespace CaptureFrameGrabber
             return b;
         }
 
-        void listDevices( /* Platform::WriteOnlyArray<Platform::String^> ^dev */ );
 
     protected:
 

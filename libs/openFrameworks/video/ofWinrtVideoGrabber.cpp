@@ -6,6 +6,20 @@
 #include <ppltasks.h>
 #include <ppl.h>
 #include <agile.h>
+#include <future>
+#include <vector>
+#include <atomic>
+
+
+using namespace concurrency;
+using namespace Microsoft::WRL;
+using namespace Windows::Media::Devices;
+using namespace Windows::Media::MediaProperties;
+using namespace Windows::Media::Capture;
+using namespace Windows::UI::Xaml::Media::Imaging;
+using namespace Windows::Devices::Enumeration;
+using namespace Platform;
+using namespace Windows::Foundation;
 
 
 ofWinrtVideoGrabber::ofWinrtVideoGrabber()
@@ -70,15 +84,60 @@ ofPixelFormat ofWinrtVideoGrabber::getPixelFormat()
     return OF_PIXELS_RGB;
 }
 
-vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices()
+
+std::string PlatformStringToString(Platform::String^ s) {
+    std::wstring t = std::wstring(s->Data());
+    return std::string(t.begin(), t.end());
+}
+
+vector <ofVideoDevice> listDevicesTask()
 {
+    std::atomic<bool> ready(false);
+
+    auto settings = ref new MediaCaptureInitializationSettings();
 
     vector <ofVideoDevice> devices;
 
-    controller->listDevices();
+    create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
+        .then([&devices, &ready](task<DeviceInformationCollection^> findTask)
+    {
+        auto devInfo = findTask.get();
+
+        for (size_t i = 0; i < devInfo->Size; i++)
+        {
+            ofVideoDevice deviceInfo;
+            auto d = devInfo->GetAt(i);
+            deviceInfo.id = i;
+            deviceInfo.bAvailable = true;
+            deviceInfo.deviceName = PlatformStringToString(d->Name);
+            deviceInfo.hardwareName = deviceInfo.deviceName;
+            devices.push_back(deviceInfo);
+        }
+
+        ready = true;
+    });
+
+    int count = 0;
+    while (!ready)
+    {
+        count++;
+    }
 
     return devices;
 }
+
+
+//--------------------------------------------------------------------
+vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices()
+{
+    // synchronous version of listing video devices on WinRT
+    // not a recommended practice but oF expects synchronous device enumeration
+    std::future<vector <ofVideoDevice>> result = std::async(std::launch::async, listDevicesTask);
+    return result.get();
+}
+
+
+//--------------------------------------------------------------------
 
 void ofWinrtVideoGrabber::update()
 {

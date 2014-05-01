@@ -14,16 +14,33 @@
 #include "CaptureFrameGrabber.h"
 #include "Controller.h"
 
+#include <mutex>
+#include <atomic>        
+#include <future>        
+
 using namespace CaptureFrameGrabber;
 
 using namespace Platform;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Collections;
 
+#if 0
+using namespace Windows::UI::Xaml;
+using namespace Windows::UI::Xaml::Controls;
+using namespace Windows::UI::Xaml::Controls::Primitives;
+using namespace Windows::UI::Xaml::Data;
+using namespace Windows::UI::Xaml::Input;
+using namespace Windows::UI::Xaml::Media;
+using namespace Windows::UI::Xaml::Navigation;
+#endif
+
 // inform linker to pull in these Media Foundation libraries:
 #pragma comment(lib, "mfplat")
 #pragma comment(lib, "mf")
 #pragma comment(lib, "mfuuid")
+// #pragma comment(lib, "Shlwapi")
+// #pragma comment(lib, "Strmiids")
+
 
 using namespace concurrency;
 using namespace Microsoft::WRL;
@@ -33,6 +50,9 @@ using namespace Windows::UI::Xaml::Media::Imaging;
 
 using namespace Windows::Devices::Enumeration;
 
+// temp debug
+#include "cdebug.h"
+
 
 Controller::Controller()
     : _width(0)
@@ -40,6 +60,7 @@ Controller::Controller()
     , _selectedVideoDeviceIndex(0)
     , _frameCounter(0)
 {
+    //     InitializeComponent();
 }
 
 
@@ -50,8 +71,10 @@ bool Controller::Setup(int deviceID, int width, int height, int bytesPerPixel, P
     _bytesPerPixel = bytesPerPixel;
 
     // unbox
+    // _buffer = reinterpret_cast<uint8_t *>(buffer);
     auto adr = safe_cast<unsigned int>(buffer);
     _buffer = reinterpret_cast<uint8_t *>(adr);
+    TC(static_cast<void *>(_buffer));    TCNL;
 
     _newFrame = false;
     return true;
@@ -76,7 +99,15 @@ void Controller::Start(int selectedVideoDeviceIndex)
         auto devInfo = findTask.get();
         auto s = devInfo->Size;
 
+        TCC("video devices:"); TCNL;
+        for (size_t i = 0; i < devInfo->Size; i++)
+        {
+            auto d = devInfo->GetAt(i);
+            TC(i);  TCSW(d->Name->Data());  TCNL;
+        }
+
         if (devInfo->Size == 0) {
+            TCC("none"); TCNL;
             return;
         }
 
@@ -96,6 +127,9 @@ void Controller::Start(int selectedVideoDeviceIndex)
             props->Width = _width;
             props->Height = _height;
 
+            //TC(props->Width); TC(props->Height); TCNL;
+            //TC(_width); TC(_height); TCNL;
+
             return ::Media::CaptureFrameGrabber::CreateAsync(_capture.Get(), props);
 
         }).then([this](::Media::CaptureFrameGrabber^ frameGrabber)
@@ -104,9 +138,7 @@ void Controller::Start(int selectedVideoDeviceIndex)
         });
 
     });
-
 }
-
 
 
 void swizzleRGBtoBGRpacked(uint8_t* pixels, int length, int nChannels)
@@ -118,6 +150,17 @@ void swizzleRGBtoBGRpacked(uint8_t* pixels, int length, int nChannels)
         pixels[i] = pixels[j];
         pixels[j] = temp;
     }
+}
+
+void dumpFB(unsigned int *p)
+{
+    for (int i = 0; i < 64; i++)
+    {
+        if (i && !(i % 8)) { TCNL; }
+        // TCC(i);  
+        TCX(p[i]);
+    }
+    TCNL;
 }
 
 
@@ -154,38 +197,5 @@ void Controller::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
 
         _GrabFrameAsync(frameGrabber);
     }, task_continuation_context::use_current());
-}
-
-
-void Controller::listDevices( /* Platform::WriteOnlyArray<Platform::String^> ^dev */ ) {
-
-    devices = ref new Platform::Array<Platform::String^>(0);
-
-    auto settings = ref new MediaCaptureInitializationSettings();
-    settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
-
-    create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
-        .then([this,settings](task<DeviceInformationCollection^> findTask)
-    {
-        auto devInfo = findTask.get();
-
-        devices = ref new Platform::Array<Platform::String^>(devInfo->Size);
-        for (size_t i = 0; i < devInfo->Size; i++)
-        {
-            auto d = devInfo->GetAt(i);
-            devices[i] = d->Name;
-            // TODO: load into dev
-        }
-    });
-
-    /*
-    TCC("video devices:"); TCNL;
-    for (size_t i = 0; i < devices->Length; i++)
-    {
-        TC(i);  TCSW(devices[i]->Data());  TCNL;
-    }
-    */
-
-//    dev = devices;
 }
 
