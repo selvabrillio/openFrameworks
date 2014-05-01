@@ -23,7 +23,7 @@ using namespace Windows::Foundation;
 
 
 ofWinrtVideoGrabber::ofWinrtVideoGrabber()
-    : _capture(nullptr)
+    : m_capture(nullptr)
 {
 
     // common
@@ -49,31 +49,32 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
     height = h;
     bytesPerPixel = 3;
     bGrabberInited = false;
-    pixels.allocate(w, h, bytesPerPixel );
+
+    m_frontBuffer = std::unique_ptr<ofPixels>(new ofPixels);
+    m_backBuffer = std::unique_ptr<ofPixels>(new ofPixels);
+    m_frontBuffer->allocate(w, h, bytesPerPixel);
+    m_backBuffer->allocate(w, h, bytesPerPixel);
     frameCounter = 0;
     currentFrame = 0;
 
     auto settings = ref new MediaCaptureInitializationSettings();
     settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
 
-    _capture = ref new MediaCapture();
-    create_task(_capture->InitializeAsync(settings)).then([this](){
+    m_capture = ref new MediaCapture();
+    create_task(m_capture->InitializeAsync(settings)).then([this](){
 
-        auto props = safe_cast<VideoEncodingProperties^>(_capture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
+        auto props = safe_cast<VideoEncodingProperties^>(m_capture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
         props->Subtype = MediaEncodingSubtypes::Rgb24; 
         props->Width = width;
         props->Height = height;
 
-        return ::Media::CaptureFrameGrabber::CreateAsync(_capture.Get(), props);
+        return ::Media::CaptureFrameGrabber::CreateAsync(m_capture.Get(), props);
 
     }).then([this](::Media::CaptureFrameGrabber^ frameGrabber)
     {
+        bGrabberInited = true;
         _GrabFrameAsync(frameGrabber);
     });
-
-
-    // not really - everything is async
-    bGrabberInited = true;
 
     return true;
 }
@@ -85,29 +86,34 @@ void ofWinrtVideoGrabber::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGra
         // do the RGB swizzle while copying the pixels from the IMF2DBuffer2
         BYTE *pbScanline;
         LONG plPitch;
-        uint8_t* buf = reinterpret_cast<uint8_t*>(pixels.getPixels());
         unsigned int numBytes = width * bytesPerPixel;
 
         CHK(buffer->Lock2D(&pbScanline, &plPitch));
-        for (unsigned int row = 0; row < height; row++)
         {
-            unsigned int i = 0;
-            unsigned int j = numBytes - 1;
+            std::lock_guard<std::mutex> lock(m_mutex);
+            uint8_t* buf = reinterpret_cast<uint8_t*>(m_backBuffer->getPixels());
 
-            while (i < numBytes)
+            for (unsigned int row = 0; row < height; row++)
             {
-                // reverse the scan line
-                buf[j--] = pbScanline[i++];
-                buf[j--] = pbScanline[i++];
-                buf[j--] = pbScanline[i++];
+                unsigned int i = 0;
+                unsigned int j = numBytes - 1;
+
+                while (i < numBytes)
+                {
+                    // reverse the scan line
+                    buf[j--] = pbScanline[i++];
+                    buf[j--] = pbScanline[i++];
+                    buf[j--] = pbScanline[i++];
+                }
+                pbScanline += plPitch;
+                buf += numBytes;
             }
-            pbScanline += plPitch;
-            buf += numBytes;
+            CHK(buffer->Unlock2D());
+
+            frameCounter++;
+
         }
-        CHK(buffer->Unlock2D());
-
-        frameCounter++;
-
+ 
         _GrabFrameAsync(frameGrabber);
     }, task_continuation_context::use_current());
 }
@@ -188,10 +194,26 @@ void ofWinrtVideoGrabber::update()
 {
     if (bGrabberInited == true)
     {
-        // TODO
-        //bIsFrameNew = controller->isFrameNew();
+        SwapBuffers();
     }
 }
+
+void ofWinrtVideoGrabber::SwapBuffers()
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    if (currentFrame != frameCounter)
+    {
+        bIsFrameNew = true;
+        currentFrame = frameCounter;
+        std::swap(m_backBuffer, m_frontBuffer);
+    }
+    else
+    {
+        bIsFrameNew = false;
+    }
+}
+
 
 void ofWinrtVideoGrabber::close()
 {
@@ -201,17 +223,17 @@ void ofWinrtVideoGrabber::close()
 
 void ofWinrtVideoGrabber::clearMemory()
 {
-    pixels.clear();
+    m_frontBuffer->clear();
 }
 
 unsigned char * ofWinrtVideoGrabber::getPixels()
 {
-    return pixels.getPixels();
+    return m_frontBuffer->getPixels();
 }
 
 ofPixelsRef ofWinrtVideoGrabber::getPixelsRef()
 {
-    return pixels;
+    return *m_frontBuffer.get();
 }
 
 float ofWinrtVideoGrabber::getWidth()
@@ -226,7 +248,7 @@ float ofWinrtVideoGrabber::getHeight()
 
 bool  ofWinrtVideoGrabber::isFrameNew()
 {
-    return currentFrame != frameCounter;
+    return bIsFrameNew;
 }
 
 void ofWinrtVideoGrabber::setVerbose(bool bTalkToMe)

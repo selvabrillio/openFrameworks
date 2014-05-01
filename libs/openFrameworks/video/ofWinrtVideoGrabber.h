@@ -9,14 +9,14 @@
 #include <collection.h>
 #include <ppltasks.h>
 #include <agile.h>
-
-
+#include <mutex>
+#include <memory>
+#include <atomic>
 
 class ofWinrtVideoGrabber : public ofBaseVideoGrabber
 {
 
 public:
-
 	ofWinrtVideoGrabber();
 	virtual ~ofWinrtVideoGrabber();
 
@@ -44,18 +44,14 @@ public:
 	void					setDeviceID(int _deviceID);
 	void					setDesiredFrameRate(int framerate);
 
-
-
-
 //protected:
 
 	bool					bChooseDevice;
 	bool 					bVerbose;
-	bool 					bGrabberInited;
+	std::atomic<bool>       bGrabberInited;
 	int						deviceID;
-	ofPixels		 		pixels;
-	int						attemptFramerate;
-	bool 					bIsFrameNew;
+    int						attemptFramerate;
+    std::atomic<bool>       bIsFrameNew;
 	int						width, height;
     int                     bytesPerPixel;
     unsigned long           frameCounter;
@@ -63,6 +59,10 @@ public:
 
 private:
     void                    _GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber);
-    Platform::Agile<WMC::MediaCapture> _capture;
+    void                    SwapBuffers();
 
+    std::unique_ptr<ofPixels>   m_frontBuffer;
+    std::unique_ptr<ofPixels>   m_backBuffer;
+    Platform::Agile<WMC::MediaCapture> m_capture;
+    std::mutex              m_mutex;
 };
