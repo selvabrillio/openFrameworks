@@ -24,6 +24,7 @@ using namespace Windows::Foundation;
 
 ofWinrtVideoGrabber::ofWinrtVideoGrabber()
     : m_capture(nullptr)
+    , m_deviceID(0)
 {
 
     // common
@@ -31,7 +32,6 @@ ofWinrtVideoGrabber::ofWinrtVideoGrabber()
     bVerbose = false;
     bGrabberInited = false;
     bChooseDevice = false;
-    deviceID = 0;
     width = 320;	// default setting
     height = 240;	// default setting
     bytesPerPixel = 3;
@@ -57,8 +57,18 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
     frameCounter = 0;
     currentFrame = 0;
 
+    if (bChooseDevice){
+        bChooseDevice = false;
+        ofLogNotice("ofDirectShowGrabber") << "initGrabber(): choosing " << m_deviceID;
+    }
+    else {
+        m_deviceID = 0;
+    }
+
+
     auto settings = ref new MediaCaptureInitializationSettings();
     settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
+    settings->VideoDeviceId = m_devices.Get()->GetAt(m_deviceID)->Id;
 
     m_capture = ref new MediaCapture();
     create_task(m_capture->InitializeAsync(settings)).then([this](){
@@ -79,7 +89,7 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
     return true;
 }
 
-void ofWinrtVideoGrabber::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
+void ofWinrtVideoGrabber::_GrabFrameAsync(Media::CaptureFrameGrabber^ frameGrabber)
 {
     create_task(frameGrabber->GetFrameAsync()).then([this, frameGrabber](const ComPtr<IMF2DBuffer2>& buffer)
     {
@@ -141,7 +151,7 @@ std::string PlatformStringToString(Platform::String^ s) {
     return std::string(t.begin(), t.end());
 }
 
-vector <ofVideoDevice> listDevicesTask()
+vector <ofVideoDevice> ofWinrtVideoGrabber::listDevicesTask()
 {
     std::atomic<bool> ready(false);
 
@@ -150,15 +160,15 @@ vector <ofVideoDevice> listDevicesTask()
     vector <ofVideoDevice> devices;
 
     create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
-        .then([&devices, &ready](task<DeviceInformationCollection^> findTask)
+        .then([this, &devices, &ready](task<DeviceInformationCollection^> findTask)
     {
         auto devInfo = findTask.get();
 
+        m_devices = devInfo;
         for (size_t i = 0; i < devInfo->Size; i++)
         {
             ofVideoDevice deviceInfo;
             auto d = devInfo->GetAt(i);
-            deviceInfo.id = i;
             deviceInfo.bAvailable = true;
             deviceInfo.deviceName = PlatformStringToString(d->Name);
             deviceInfo.hardwareName = deviceInfo.deviceName;
@@ -183,7 +193,7 @@ vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices()
 {
     // synchronous version of listing video devices on WinRT
     // not a recommended practice but oF expects synchronous device enumeration
-    std::future<vector <ofVideoDevice>> result = std::async(std::launch::async, listDevicesTask);
+    std::future<vector <ofVideoDevice>> result = std::async(std::launch::async, &ofWinrtVideoGrabber::listDevicesTask, this);
     return result.get();
 }
 
@@ -256,9 +266,9 @@ void ofWinrtVideoGrabber::setVerbose(bool bTalkToMe)
     bVerbose = bTalkToMe;
 }
 
-void ofWinrtVideoGrabber::setDeviceID(int _deviceID)
+void ofWinrtVideoGrabber::setDeviceID(int deviceID)
 {
-    deviceID = _deviceID;
+    m_deviceID = deviceID;
     bChooseDevice = true;
 }
 

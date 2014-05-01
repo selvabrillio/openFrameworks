@@ -13,6 +13,7 @@
 #include <memory>
 #include <atomic>
 
+
 class ofWinrtVideoGrabber : public ofBaseVideoGrabber
 {
 
@@ -41,7 +42,7 @@ public:
 	float					getHeight();
 
 	void					setVerbose(bool bTalkToMe);
-	void					setDeviceID(int _deviceID);
+	void					setDeviceID(int deviceID);
 	void					setDesiredFrameRate(int framerate);
 
 //protected:
@@ -49,7 +50,7 @@ public:
 	bool					bChooseDevice;
 	bool 					bVerbose;
 	std::atomic<bool>       bGrabberInited;
-	int						deviceID;
+	int						m_deviceID;
     int						attemptFramerate;
     std::atomic<bool>       bIsFrameNew;
 	int						width, height;
@@ -58,11 +59,14 @@ public:
     unsigned long           currentFrame;
 
 private:
-    void                    _GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber);
+    void                    _GrabFrameAsync(Media::CaptureFrameGrabber^ frameGrabber);
+    std::vector <ofVideoDevice> listDevicesTask();
+
     void                    SwapBuffers();
 
     std::unique_ptr<ofPixels>   m_frontBuffer;
     std::unique_ptr<ofPixels>   m_backBuffer;
-    Platform::Agile<WMC::MediaCapture> m_capture;
+    Platform::Agile<Windows::Media::Capture::MediaCapture> m_capture;
+    Platform::Agile<Windows::Devices::Enumeration::DeviceInformationCollection> m_devices;
     std::mutex              m_mutex;
 };
