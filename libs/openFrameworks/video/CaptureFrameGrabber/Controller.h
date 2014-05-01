@@ -12,15 +12,6 @@
 
 #pragma once
 
-#include <mutex>
-
-// #include "MainPage.g.h"
-
-//namespace Media
-//{
-//    ref class CaptureFrameGrabber;
-//}
-
 namespace CaptureFrameGrabber
 {
     public ref class Controller sealed
@@ -40,17 +31,7 @@ namespace CaptureFrameGrabber
 
         void listDevices( /* Platform::WriteOnlyArray<Platform::String^> ^dev */ );
 
-        // static void GetVideoCamerasAsync(GetMediaDevicesDelegate^ func);
-
-        // box for WinRT ABI from uint8_t *
-        //Platform::Object ^getPixels() {
-        //    return reinterpret_cast<Platform::Object^>(_buffer); 
-        //}
-
-        // Windows::UI::Xaml::Media::Imaging::WriteableBitmap ^bitmap;
-
     protected:
-//        virtual void OnNavigatedTo(Windows::UI::Xaml::Navigation::NavigationEventArgs^ e) override;
 
     private:
         void _GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber);
@@ -67,7 +48,5 @@ namespace CaptureFrameGrabber
         unsigned int _frameCounter;
 
         Platform::Array<Platform::String^> ^devices;
-
-        std::mutex enum_mtx;
     };
 }
