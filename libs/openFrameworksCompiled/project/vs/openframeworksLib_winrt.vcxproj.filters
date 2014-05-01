@@ -43,6 +43,9 @@
     <Filter Include="libs\openFrameworks\ThreadEmulation">
       <UniqueIdentifier>{79e9adc8-4ade-4cc9-b562-37e392cd7349}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libs\openFrameworks\video\CaptureFrameGrabber">
+      <UniqueIdentifier>{5f2717d3-d7a5-4cc8-9333-81d06a75c329}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\openFrameworks\ofMain.h">
@@ -267,6 +270,18 @@
     <ClInclude Include="..\..\..\openFrameworks\video\ofMediaFoundationPlayer.h">
       <Filter>libs\openFrameworks\video</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\CaptureFrameGrabber.h">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaSink.h">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaStreamSink.h">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\MFIncludes.h">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppRunner.cpp">
@@ -454,6 +469,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\video\ofMediaFoundationPlayer.cpp">
       <Filter>libs\openFrameworks\video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\CaptureFrameGrabber.cpp">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaStreamSink.cpp">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

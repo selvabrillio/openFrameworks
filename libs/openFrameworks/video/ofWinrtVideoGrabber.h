@@ -4,15 +4,13 @@
 #include "ofTexture.h"
 #include "ofBaseTypes.h"
 #include "ofPixels.h"
+#include "CaptureFrameGrabber/CaptureFrameGrabber.h"
 
 #include <collection.h>
 #include <ppltasks.h>
 #include <agile.h>
 
 
-namespace CaptureFrameGrabber {
-    ref class Controller;
-}
 
 class ofWinrtVideoGrabber : public ofBaseVideoGrabber
 {
@@ -59,7 +57,12 @@ public:
 	int						attemptFramerate;
 	bool 					bIsFrameNew;
 	int						width, height;
+    int                     bytesPerPixel;
+    unsigned long           frameCounter;
+    unsigned long           currentFrame;
 
 private:
-    CaptureFrameGrabber::Controller ^controller;
+    void                    _GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber);
+    Platform::Agile<WMC::MediaCapture> _capture;
+
 };

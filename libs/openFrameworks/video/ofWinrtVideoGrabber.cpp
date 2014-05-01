@@ -23,6 +23,7 @@ using namespace Windows::Foundation;
 
 
 ofWinrtVideoGrabber::ofWinrtVideoGrabber()
+    : _capture(nullptr)
 {
 
     // common
@@ -33,11 +34,8 @@ ofWinrtVideoGrabber::ofWinrtVideoGrabber()
     deviceID = 0;
     width = 320;	// default setting
     height = 240;	// default setting
+    bytesPerPixel = 3;
     attemptFramerate = -1;
-    
-    //m_frame = nullptr;
-
-    controller = ref new CaptureFrameGrabber::Controller;
 }
 
 ofWinrtVideoGrabber::~ofWinrtVideoGrabber()
@@ -49,22 +47,69 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
 {
     width = w;
     height = h;
-    int bytesPerPixel = 3;
+    bytesPerPixel = 3;
     bGrabberInited = false;
     pixels.allocate(w, h, bytesPerPixel );
+    frameCounter = 0;
+    currentFrame = 0;
 
-    // box for call across ABI
-    // nb. adr must be a value type
-    auto adr = reinterpret_cast<unsigned int>(pixels.getPixels());
-    Platform::Object^ buffer = adr;
+    auto settings = ref new MediaCaptureInitializationSettings();
+    settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
 
-    controller->Setup(deviceID, w, h, bytesPerPixel, buffer);
-    controller->Start(deviceID);
+    _capture = ref new MediaCapture();
+    create_task(_capture->InitializeAsync(settings)).then([this](){
+
+        auto props = safe_cast<VideoEncodingProperties^>(_capture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
+        props->Subtype = MediaEncodingSubtypes::Rgb24; 
+        props->Width = width;
+        props->Height = height;
+
+        return ::Media::CaptureFrameGrabber::CreateAsync(_capture.Get(), props);
+
+    }).then([this](::Media::CaptureFrameGrabber^ frameGrabber)
+    {
+        _GrabFrameAsync(frameGrabber);
+    });
+
 
     // not really - everything is async
     bGrabberInited = true;
 
     return true;
+}
+
+void ofWinrtVideoGrabber::_GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber)
+{
+    create_task(frameGrabber->GetFrameAsync()).then([this, frameGrabber](const ComPtr<IMF2DBuffer2>& buffer)
+    {
+        // do the RGB swizzle while copying the pixels from the IMF2DBuffer2
+        BYTE *pbScanline;
+        LONG plPitch;
+        uint8_t* buf = reinterpret_cast<uint8_t*>(pixels.getPixels());
+        unsigned int numBytes = width * bytesPerPixel;
+
+        CHK(buffer->Lock2D(&pbScanline, &plPitch));
+        for (unsigned int row = 0; row < height; row++)
+        {
+            unsigned int i = 0;
+            unsigned int j = numBytes - 1;
+
+            while (i < numBytes)
+            {
+                // reverse the scan line
+                buf[j--] = pbScanline[i++];
+                buf[j--] = pbScanline[i++];
+                buf[j--] = pbScanline[i++];
+            }
+            pbScanline += plPitch;
+            buf += numBytes;
+        }
+        CHK(buffer->Unlock2D());
+
+        frameCounter++;
+
+        _GrabFrameAsync(frameGrabber);
+    }, task_continuation_context::use_current());
 }
 
 bool ofWinrtVideoGrabber::setPixelFormat(ofPixelFormat pixelFormat)
@@ -143,7 +188,8 @@ void ofWinrtVideoGrabber::update()
 {
     if (bGrabberInited == true)
     {
-        bIsFrameNew = controller->isFrameNew();
+        // TODO
+        //bIsFrameNew = controller->isFrameNew();
     }
 }
 
@@ -180,7 +226,7 @@ float ofWinrtVideoGrabber::getHeight()
 
 bool  ofWinrtVideoGrabber::isFrameNew()
 {
-    return bIsFrameNew;
+    return currentFrame != frameCounter;
 }
 
 void ofWinrtVideoGrabber::setVerbose(bool bTalkToMe)

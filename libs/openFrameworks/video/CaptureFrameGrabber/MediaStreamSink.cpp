@@ -5,7 +5,7 @@
 //
 //*@@@---@@@@******************************************************************
 
-#include "pch.h"
+#include "MFIncludes.h"
 #include "MediaStreamSink.h"
 
 using namespace Media;
