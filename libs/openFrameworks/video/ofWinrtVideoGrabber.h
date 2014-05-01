@@ -54,6 +54,7 @@ public:
 
 	bool					bChooseDevice;
 	bool 					bVerbose;
+    bool                    bFlipImageX;
 	std::atomic<bool>       bGrabberInited;
 	int						m_deviceID;
     int						attemptFramerate;
