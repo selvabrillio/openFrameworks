@@ -4,6 +4,7 @@
 #include "ofTexture.h"
 #include "ofBaseTypes.h"
 #include "ofPixels.h"
+#include "ofEvents.h"
 #include "CaptureFrameGrabber/CaptureFrameGrabber.h"
 
 #include <collection.h>
@@ -45,6 +46,10 @@ public:
 	void					setDeviceID(int deviceID);
 	void					setDesiredFrameRate(int framerate);
 
+    void                    appResume(ofAppResumeEventArgs &e);
+    void                    appSuspend(ofAppSuspendEventArgs &e);
+
+
 //protected:
 
 	bool					bChooseDevice;
@@ -60,13 +65,16 @@ public:
 
 private:
     void                    _GrabFrameAsync(Media::CaptureFrameGrabber^ frameGrabber);
+    void                    closeCaptureDevice();
+
     std::vector <ofVideoDevice> listDevicesTask();
 
     void                    SwapBuffers();
 
     std::unique_ptr<ofPixels>   m_frontBuffer;
     std::unique_ptr<ofPixels>   m_backBuffer;
-    Platform::Agile<Windows::Media::Capture::MediaCapture> m_capture;
     Platform::Agile<Windows::Devices::Enumeration::DeviceInformationCollection> m_devices;
+
+    ::Media::CaptureFrameGrabber^ m_frameGrabber;
     std::mutex              m_mutex;
 };

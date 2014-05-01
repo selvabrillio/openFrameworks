@@ -1,5 +1,6 @@
 #include "ofWinrtVideoGrabber.h"
 #include "ofUtils.h"
+#include "ofEvents.h"
 
 #if defined (TARGET_WINRT)
 
@@ -23,7 +24,7 @@ using namespace Windows::Foundation;
 
 
 ofWinrtVideoGrabber::ofWinrtVideoGrabber()
-    : m_capture(nullptr)
+    : m_frameGrabber(nullptr)
     , m_deviceID(0)
 {
 
@@ -36,11 +37,16 @@ ofWinrtVideoGrabber::ofWinrtVideoGrabber()
     height = 240;	// default setting
     bytesPerPixel = 3;
     attemptFramerate = -1;
+
+    ofAddListener(ofEvents().appSuspend, this, &ofWinrtVideoGrabber::appSuspend, ofEventOrder::OF_EVENT_ORDER_BEFORE_APP);
+
 }
 
 ofWinrtVideoGrabber::~ofWinrtVideoGrabber()
 {
     close();
+    ofRemoveListener(ofEvents().appResume, this, &ofWinrtVideoGrabber::appResume);
+    ofRemoveListener(ofEvents().appSuspend, this, &ofWinrtVideoGrabber::appSuspend);
 }
 
 bool ofWinrtVideoGrabber::initGrabber(int w, int h)
@@ -70,21 +76,24 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
     settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
     settings->VideoDeviceId = m_devices.Get()->GetAt(m_deviceID)->Id;
 
-    m_capture = ref new MediaCapture();
-    create_task(m_capture->InitializeAsync(settings)).then([this](){
+    auto capture = ref new MediaCapture();
+    create_task(capture->InitializeAsync(settings)).then([this, capture](){
 
-        auto props = safe_cast<VideoEncodingProperties^>(m_capture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
+        auto props = safe_cast<VideoEncodingProperties^>(capture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
         props->Subtype = MediaEncodingSubtypes::Rgb24; 
         props->Width = width;
         props->Height = height;
 
-        return ::Media::CaptureFrameGrabber::CreateAsync(m_capture.Get(), props);
+        return ::Media::CaptureFrameGrabber::CreateAsync(capture, props);
 
     }).then([this](::Media::CaptureFrameGrabber^ frameGrabber)
     {
+        m_frameGrabber = frameGrabber;
         bGrabberInited = true;
         _GrabFrameAsync(frameGrabber);
+        ofAddListener(ofEvents().appResume, this, &ofWinrtVideoGrabber::appResume, ofEventOrder::OF_EVENT_ORDER_AFTER_APP);
     });
+
 
     return true;
 }
@@ -124,9 +133,14 @@ void ofWinrtVideoGrabber::_GrabFrameAsync(Media::CaptureFrameGrabber^ frameGrabb
 
         }
  
-        _GrabFrameAsync(frameGrabber);
+        if (bGrabberInited)
+        {
+            _GrabFrameAsync(frameGrabber);
+        }
     }, task_continuation_context::use_current());
 }
+
+
 
 bool ofWinrtVideoGrabber::setPixelFormat(ofPixelFormat pixelFormat)
 {
@@ -177,6 +191,7 @@ vector <ofVideoDevice> ofWinrtVideoGrabber::listDevicesTask()
         ready = true;
     });
 
+    // wait for async task to complete
     int count = 0;
     while (!ready)
     {
@@ -223,11 +238,37 @@ void ofWinrtVideoGrabber::SwapBuffers()
     }
 }
 
+void ofWinrtVideoGrabber::appResume(ofAppResumeEventArgs &e)
+{
+    if (m_frameGrabber == nullptr)
+    {
+        ofRemoveListener(ofEvents().appResume, this, &ofWinrtVideoGrabber::appResume);
+        initGrabber(width, height);
+    }
+}
+
+void ofWinrtVideoGrabber::appSuspend(ofAppSuspendEventArgs &e)
+{
+    closeCaptureDevice();
+}
+
+
+void ofWinrtVideoGrabber::closeCaptureDevice()
+{
+    bGrabberInited = false;
+    if (m_frameGrabber != nullptr)
+    {
+        m_frameGrabber->FinishAsync().then([this]() {
+            m_frameGrabber = nullptr;
+        });
+    }
+}
 
 void ofWinrtVideoGrabber::close()
 {
     bGrabberInited = false;
     clearMemory();
+ 
 }
 
 void ofWinrtVideoGrabber::clearMemory()
