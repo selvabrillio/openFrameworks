@@ -258,9 +258,13 @@ void ofWinrtVideoGrabber::closeCaptureDevice()
     bGrabberInited = false;
     if (m_frameGrabber != nullptr)
     {
+        m_frameGrabber = nullptr;
+#if 0
         m_frameGrabber->FinishAsync().then([this]() {
             m_frameGrabber = nullptr;
         });
+#endif // 0
+
     }
 }
 

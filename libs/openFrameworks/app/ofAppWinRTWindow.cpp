@@ -297,9 +297,7 @@ void ofAppWinRTWindow::WinRTHandler::OnVisibilityChanged(CoreWindow^ sender, Vis
     else
     {
         ofNotifyAppSuspend();
-
     }
-
 }
 
 void ofAppWinRTWindow::WinRTHandler::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
