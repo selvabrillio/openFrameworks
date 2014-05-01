@@ -12,20 +12,6 @@
 
 namespace CaptureFrameGrabber {
     ref class Controller;
-
-    public ref class VideoDeviceInfo sealed
-    {
-    public:
-        property Platform::String^  devName;
-        property Platform::Boolean  isFrontFacing;
-        property Platform::Boolean  isBackFacing;
-
-    };
-
-    public delegate void GetMediaDevicesDelegate(const Platform::Array<VideoDeviceInfo^>^ devices);
-
-    // static void GetVideoCamerasAsync(GetMediaDevicesDelegate^ func);
-
 }
 
 class ofWinrtVideoGrabber : public ofBaseVideoGrabber
@@ -45,7 +31,7 @@ public:
 	bool					setPixelFormat(ofPixelFormat pixelFormat);
 	ofPixelFormat			getPixelFormat();
 
-	unsigned char		* 	getPixels();
+	unsigned char * 	    getPixels();
 	ofPixelsRef				getPixelsRef();
 
 	void					close();
@@ -71,21 +57,9 @@ public:
 	int						deviceID;
 	ofPixels		 		pixels;
 	int						attemptFramerate;
-	bool 					bIsFrameNew1;
-	bool 					bIsFrameNew2;
-
+	bool 					bIsFrameNew;
 	int						width, height;
 
 private:
-
     CaptureFrameGrabber::Controller ^controller;
-
-    // not possible due to use of pch and other conflicts in the custom media sink:
-    //
-    //void _GrabFrameAsync(::Media::CaptureFrameGrabber^ frameGrabber);
-    //Platform::Agile<Windows::Media::Capture::MediaCapture> capture;
-    //unsigned int frameCounter;
-
-	// Windows::Storage::Streams::Buffer ^m_buffer;
-	// Windows::Storage::Streams::InMemoryRandomAccessStream ^m_recording;
 };
