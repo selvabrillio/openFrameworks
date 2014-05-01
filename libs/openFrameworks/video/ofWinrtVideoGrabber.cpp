@@ -162,13 +162,12 @@ vector <ofVideoDevice> ofWinrtVideoGrabber::listDevicesTask()
     create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
         .then([this, &devices, &ready](task<DeviceInformationCollection^> findTask)
     {
-        auto devInfo = findTask.get();
+        m_devices = findTask.get();
 
-        m_devices = devInfo;
-        for (size_t i = 0; i < devInfo->Size; i++)
+        for (size_t i = 0; i < m_devices->Size; i++)
         {
             ofVideoDevice deviceInfo;
-            auto d = devInfo->GetAt(i);
+            auto d = m_devices->GetAt(i);
             deviceInfo.bAvailable = true;
             deviceInfo.deviceName = PlatformStringToString(d->Name);
             deviceInfo.hardwareName = deviceInfo.deviceName;
