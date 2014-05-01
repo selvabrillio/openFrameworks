@@ -31,6 +31,7 @@ ofWinrtVideoGrabber::ofWinrtVideoGrabber()
     // common
     bIsFrameNew = false;
     bVerbose = false;
+    bFlipImageX = false;
     bGrabberInited = false;
     bChooseDevice = false;
     width = 320;	// default setting
@@ -65,16 +66,24 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
 
     if (bChooseDevice){
         bChooseDevice = false;
-        ofLogNotice("ofDirectShowGrabber") << "initGrabber(): choosing " << m_deviceID;
+        ofLogNotice("ofWinrtVideoGrabber") << "initGrabber(): choosing " << m_deviceID;
     }
     else {
         m_deviceID = 0;
     }
 
-
     auto settings = ref new MediaCaptureInitializationSettings();
     settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
-    settings->VideoDeviceId = m_devices.Get()->GetAt(m_deviceID)->Id;
+    if (!m_devices.Get()) {
+        ofLogError("ofWinrtVideoGrabber") << "listDevices must be called before initGrabber";
+        return false;
+    }
+    auto devInfo = m_devices.Get()->GetAt(m_deviceID);
+    settings->VideoDeviceId = devInfo->Id;
+
+    auto location = devInfo->EnclosureLocation;
+    if (location != nullptr && location->Panel == Windows::Devices::Enumeration::Panel::Front)
+        bFlipImageX = true;
 
     auto capture = ref new MediaCapture();
     create_task(capture->InitializeAsync(settings)).then([this, capture](){
@@ -94,7 +103,6 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
         ofAddListener(ofEvents().appResume, this, &ofWinrtVideoGrabber::appResume, ofEventOrder::OF_EVENT_ORDER_AFTER_APP);
     });
 
-
     return true;
 }
 
@@ -107,32 +115,53 @@ void ofWinrtVideoGrabber::_GrabFrameAsync(Media::CaptureFrameGrabber^ frameGrabb
         LONG plPitch;
         unsigned int numBytes = width * bytesPerPixel;
 
-        CHK(buffer->Lock2D(&pbScanline, &plPitch));
-        {
-            std::lock_guard<std::mutex> lock(m_mutex);
-            uint8_t* buf = reinterpret_cast<uint8_t*>(m_backBuffer->getPixels());
-
-            for (unsigned int row = 0; row < height; row++)
+        if (bFlipImageX) {
+            CHK(buffer->Lock2D(&pbScanline, &plPitch));
             {
-                unsigned int i = 0;
-                unsigned int j = numBytes - 1;
+                std::lock_guard<std::mutex> lock(m_mutex);
+                uint8_t* buf = reinterpret_cast<uint8_t*>(m_backBuffer->getPixels());
 
-                while (i < numBytes)
+                for (unsigned int row = 0; row < height; row++)
                 {
-                    // reverse the scan line
-                    buf[j--] = pbScanline[i++];
-                    buf[j--] = pbScanline[i++];
-                    buf[j--] = pbScanline[i++];
+                    unsigned int i = 0;
+                    unsigned int j = numBytes - 1;
+
+                    while (i < numBytes)
+                    {
+                        // reverse the scan line
+                        // as a side effect this also swizzles R and B channels
+                        buf[j--] = pbScanline[i++];
+                        buf[j--] = pbScanline[i++];
+                        buf[j--] = pbScanline[i++];
+                    }
+                    pbScanline += plPitch;
+                    buf += numBytes;
                 }
-                pbScanline += plPitch;
-                buf += numBytes;
+                CHK(buffer->Unlock2D());
             }
-            CHK(buffer->Unlock2D());
+        } else {
+            CHK(buffer->Lock2D(&pbScanline, &plPitch));
+            {
+                std::lock_guard<std::mutex> lock(m_mutex);
+                uint8_t* buf = reinterpret_cast<uint8_t*>(m_backBuffer->getPixels());
 
-            frameCounter++;
-
+                for (unsigned int row = 0; row < height; row++)
+                {
+                    for (unsigned int i = 0; i < numBytes; i += bytesPerPixel)
+                    {
+                        // swizzle the R and B values (BGR to RGB)
+                        buf[i] = pbScanline[i + 2];
+                        buf[i + 1] = pbScanline[i + 1];
+                        buf[i + 2] = pbScanline[i];
+                    }
+                    pbScanline += plPitch;
+                    buf += numBytes;
+                }
+                CHK(buffer->Unlock2D());
+            } 
         }
- 
+        frameCounter++;
+
         if (bGrabberInited)
         {
             _GrabFrameAsync(frameGrabber);
