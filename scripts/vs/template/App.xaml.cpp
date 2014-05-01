@@ -30,7 +30,9 @@ using namespace Windows::UI::Xaml::Navigation;
 App::App()
 {
 	InitializeComponent();
-	Suspending += ref new SuspendingEventHandler(this, &App::OnSuspending);
+    Suspending += ref new SuspendingEventHandler(this, &App::OnSuspending);
+    Resuming += ref new EventHandler<Object^>(this, &App::OnResuming);
+
 }
 
 /// <summary>
@@ -64,4 +66,17 @@ void App::OnSuspending(Object^ sender, SuspendingEventArgs^ args)
 	(void) args; // Unused parameter.
 
 	m_directXPage->SaveInternalState(ApplicationData::Current->LocalSettings->Values);
+}
+
+/// <summary>
+/// Invoked when application execution is being resumed.
+/// </summary>
+/// <param name="sender">The source of the resume request.</param>
+/// <param name="args">Details about the resume request.</param>
+void App::OnResuming(Object ^sender, Object ^args)
+{
+    (void) sender; // Unused parameter
+    (void) args; // Unused parameter
+
+    m_directXPage->LoadInternalState(ApplicationData::Current->LocalSettings->Values);
 }

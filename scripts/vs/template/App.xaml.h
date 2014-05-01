@@ -20,7 +20,8 @@ namespace ofXamlApp
 		virtual void OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEventArgs^ args) override;
 
 	private:
-		void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ args);
-		DirectXPage^ m_directXPage;
+        void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ args);
+        void OnResuming(Platform::Object^ sender, Platform::Object ^args);
+        DirectXPage^ m_directXPage;
 	};
 }

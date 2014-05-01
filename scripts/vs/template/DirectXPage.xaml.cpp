@@ -47,7 +47,10 @@ DirectXPage::DirectXPage() :
 
     DisplayInformation::DisplayContentsInvalidated +=
         ref new TypedEventHandler<DisplayInformation^, Platform::Object^>(this, &DirectXPage::OnDisplayContentsInvalidated);
-	
+
+    Window::Current->CoreWindow->VisibilityChanged +=
+        ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &DirectXPage::OnVisibilityChanged);
+
 	m_eventToken = CompositionTarget::Rendering::add(ref new EventHandler<Object^>(this, &DirectXPage::OnRendering));
 
 	//m_timer = ref new BasicTimer();
@@ -129,6 +132,12 @@ void DirectXPage::OnNextColorPressed(Object^ sender, RoutedEventArgs^ args)
 	//m_renderer->BackgroundColorNext();
 	m_renderNeeded = true;
 }
+
+void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
+{
+    m_renderer->OnVisibilityChanged(args->Visible);
+}
+
 
 void DirectXPage::SaveInternalState(IPropertySet^ state)
 {
