@@ -14,6 +14,20 @@ ofXamlAppMain::ofXamlAppMain()
 {
 }
 
+
+
+void ofXamlAppMain::OnVisibilityChanged(bool isVisible)
+{
+    if (isVisible)
+    {
+        ofNotifyAppResume();
+    }
+    else
+    {
+        ofNotifyAppSuspend();
+    }
+}
+
 // Updates the application state once per frame.
 void ofXamlAppMain::Update() 
 {

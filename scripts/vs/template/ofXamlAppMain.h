@@ -14,7 +14,7 @@ namespace ofXamlApp
 		// Method for updating time-dependent objects.
 		void Update();
 		virtual void OnOrientationChanged() override;
-
+        virtual void OnVisibilityChanged(bool isVisible);
 	protected:
 		virtual void OnRender() override;
 		virtual void CreateGLResources() override;
