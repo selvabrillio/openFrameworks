@@ -361,6 +361,11 @@ void ofWinrtVideoGrabber::setDesiredFrameRate(int framerate)
 
 void ofWinrtVideoGrabber::videoSettings(void)
 {
+
+    if (bGrabberInited == true)
+    {
+        m_frameGrabber->ShowCameraSettings();
+    }
 }
 
 #endif

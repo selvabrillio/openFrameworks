@@ -3,6 +3,8 @@
 // Microsoft Windows Media Foundation
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //
+// Portions Copyright (c) Microsoft Open Technologies, Inc. 
+//
 //*@@@---@@@@******************************************************************
 
 #pragma once
@@ -26,6 +28,8 @@ public:
 
     // IClosable
     virtual ~CaptureFrameGrabber();
+
+    virtual void ShowCameraSettings();
 
 internal:
 

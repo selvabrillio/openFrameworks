@@ -3,6 +3,8 @@
 // Microsoft Windows Media Foundation
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //
+// Portions Copyright (c) Microsoft Open Technologies, Inc. 
+//
 //*@@@---@@@@******************************************************************
 
 #include "MediaStreamSink.h"
@@ -75,6 +77,15 @@ Media::CaptureFrameGrabber::~CaptureFrameGrabber()
     }
     _mediaExtension = nullptr;
     _capture = nullptr;
+}
+
+void Media::CaptureFrameGrabber::ShowCameraSettings()
+{
+    if (_state == State::Started)
+    {
+        CameraOptionsUI::Show(_capture.Get());
+    }
+
 }
 
 task<void> Media::CaptureFrameGrabber::FinishAsync()
