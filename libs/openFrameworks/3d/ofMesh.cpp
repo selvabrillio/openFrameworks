@@ -995,7 +995,11 @@ void ofMesh::load(string path){
 }
 
 void ofMesh::save(string path, bool useBinary) const{
+#ifdef TARGET_WINRT
+	ofFile os(WinrtLocalDirPath(ofToDataPath(path, true)), ofFile::WriteOnly);
+#else
 	ofFile os(path, ofFile::WriteOnly);
+#endif
 	const ofMesh& data = *this;
 
 	os << "ply" << endl;
