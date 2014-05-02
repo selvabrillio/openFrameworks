@@ -105,3 +105,8 @@ Desktop.ini
 /makefile
 /nbproject
 reference_files
+
+#########################
+# examples
+#########################
+examples/
