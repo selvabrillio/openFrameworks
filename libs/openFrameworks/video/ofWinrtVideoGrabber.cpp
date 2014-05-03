@@ -82,7 +82,7 @@ bool ofWinrtVideoGrabber::initGrabber(int w, int h)
         listDevices();
         if (!m_devices.Get()) 
         {
-            ofLogError("ofWinrtVideoGrabber") << "not video devices are available";
+            ofLogError("ofWinrtVideoGrabber") << "no video devices are available";
             return false;
         }
     }
