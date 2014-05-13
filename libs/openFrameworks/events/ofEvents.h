@@ -85,6 +85,16 @@ class ofAudioEventArgs : public ofEventArgs {
 	int nChannels;
 };
 
+class ofAppResumeEventArgs : public ofEventArgs {
+public:
+    int state;
+};
+
+class ofAppSuspendEventArgs : public ofEventArgs {
+public:
+    int state;
+};
+
 class ofResizeEventArgs : public ofEventArgs {
   public:
 	int width;
@@ -106,6 +116,9 @@ class ofCoreEvents {
 	ofEvent<ofEventArgs> 		update;
 	ofEvent<ofEventArgs> 		draw;
 	ofEvent<ofEventArgs> 		exit;
+
+    ofEvent<ofAppResumeEventArgs>	appResume;
+    ofEvent<ofAppSuspendEventArgs>	appSuspend;
 
 	ofEvent<ofEntryEventArgs>	windowEntered;
 	ofEvent<ofResizeEventArgs> 	windowResized;
@@ -264,5 +277,7 @@ void ofNotifyMouseEvent(const ofMouseEventArgs & mouseEvent);
 void ofNotifyExit();
 void ofNotifyWindowResized(int width, int height);
 void ofNotifyWindowEntry(int state);
+void ofNotifyAppResume(int state = 0);
+void ofNotifyAppSuspend(int tate = 0);
 
 void ofNotifyDragEvent(ofDragInfo info);

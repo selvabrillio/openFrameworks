@@ -289,6 +289,15 @@ void ofAppWinRTWindow::WinRTHandler::Uninitialize()
 
 void ofAppWinRTWindow::WinRTHandler::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
 {
+    m_windowVisible = args->Visible;
+    if (m_windowVisible)
+    {
+        ofNotifyAppResume();
+    }
+    else
+    {
+        ofNotifyAppSuspend();
+    }
 }
 
 void ofAppWinRTWindow::WinRTHandler::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
@@ -655,13 +664,12 @@ void ofAppWinRTWindow::WinRTHandler::OnSuspending(Platform::Object^ sender, Susp
 	// indicates that the application is busy performing suspending operations. Be
 	// aware that a deferral may not be held indefinitely. After about five seconds,
 	// the app will be forced to exit.
+
 	SuspendingDeferral^ deferral = args->SuspendingOperation->GetDeferral();
-	//m_renderer->ReleaseResourcesForSuspending();
 
 	create_task([this, deferral]()
 	{
-		// Insert your code here.
-
+        ofNotifyAppSuspend();
 		deferral->Complete();
 	});
 }
@@ -672,6 +680,9 @@ void ofAppWinRTWindow::WinRTHandler::OnResuming(Platform::Object^ sender, Platfo
 	// and state are persisted when resuming from suspend. Note that this event
 	// does not occur if the app was previously terminated.
 	// m_renderer->CreateWindowSizeDependentResources();
+
+    ofNotifyAppResume();
+
 }
 
 void ofAppWinRTWindow::WinRTHandler::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)

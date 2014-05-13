@@ -33,6 +33,7 @@ namespace ofXamlApp
         void OnOrientationChanged(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ args);
         void OnDisplayContentsInvalidated(Windows::Graphics::Display::DisplayInformation^ sender, Platform::Object^ arg);
 		void OnRendering(Object^ sender, Object^ args);
+        void OnVisibilityChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::VisibilityChangedEventArgs^ args);
 
 		Windows::Foundation::EventRegistrationToken m_eventToken;
 

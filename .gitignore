@@ -102,3 +102,11 @@ Desktop.ini
 
 .mailmap
 
+/makefile
+/nbproject
+reference_files
+
+#########################
+# examples
+#########################
+examples/

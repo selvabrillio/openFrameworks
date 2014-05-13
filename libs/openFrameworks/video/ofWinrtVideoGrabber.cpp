@@ -1,455 +1,371 @@
 #include "ofWinrtVideoGrabber.h"
 #include "ofUtils.h"
+#include "ofEvents.h"
+
 #if defined (TARGET_WINRT)
-using namespace Windows::System;
-using namespace Windows::Foundation;
-using namespace Platform;
-using namespace Windows::UI;
-using namespace Windows::UI::Core;
-using namespace Windows::UI::Xaml;
-using namespace Windows::UI::Xaml::Controls;
-using namespace Windows::UI::Xaml::Navigation;
-using namespace Windows::UI::Xaml::Data;
-using namespace Windows::UI::Xaml::Media;
-using namespace Windows::Storage;
-using namespace Windows::Media;
-using namespace Windows::Media::MediaProperties;
-using namespace Windows::Media::Capture;
-using namespace Windows::Storage::Streams;
-using namespace Windows::System;
-using namespace Windows::UI::Xaml::Media::Imaging;
+
+#include <ppltasks.h>
+#include <ppl.h>
+#include <agile.h>
+#include <future>
+#include <vector>
+#include <atomic>
+
 
 using namespace concurrency;
-//--------------------------------------------------------------------
-ofWinrtVideoGrabber::ofWinrtVideoGrabber(){
+using namespace Microsoft::WRL;
+using namespace Windows::Media::Devices;
+using namespace Windows::Media::MediaProperties;
+using namespace Windows::Media::Capture;
+using namespace Windows::UI::Xaml::Media::Imaging;
+using namespace Windows::Devices::Enumeration;
+using namespace Platform;
+using namespace Windows::Foundation;
 
-	//---------------------------------
-#ifdef OF_VIDEO_CAPTURE_DIRECTSHOW
-	//---------------------------------
 
-	bVerbose = false;
-	bDoWeNeedToResize = false;
+ofWinrtVideoGrabber::ofWinrtVideoGrabber()
+    : m_frameGrabber(nullptr)
+    , m_deviceID(0)
+{
 
-	//---------------------------------
-#endif
-	//---------------------------------
+    // common
+    bIsFrameNew = false;
+    bVerbose = false;
+    bFlipImageX = false;
+    bGrabberInited = false;
+    bChooseDevice = false;
+    width = 320;	// default setting
+    height = 240;	// default setting
+    bytesPerPixel = 3;
+    attemptFramerate = -1;
 
-	// common
-	bIsFrameNew1 = false;
-	bIsFrameNew2 = true;
-	bVerbose = false;
-	bGrabberInited = false;
-	bChooseDevice = false;
-	deviceID = 0;
-	width = 320;	// default setting
-	height = 240;	// default setting
-	attemptFramerate = -1;
-	//m_frame = nullptr;
+    ofAddListener(ofEvents().appSuspend, this, &ofWinrtVideoGrabber::appSuspend, ofEventOrder::OF_EVENT_ORDER_BEFORE_APP);
+
+}
+
+ofWinrtVideoGrabber::~ofWinrtVideoGrabber()
+{
+    close();
+    ofRemoveListener(ofEvents().appResume, this, &ofWinrtVideoGrabber::appResume);
+    ofRemoveListener(ofEvents().appSuspend, this, &ofWinrtVideoGrabber::appSuspend);
+}
+
+bool ofWinrtVideoGrabber::initGrabber(int w, int h)
+{
+    width = w;
+    height = h;
+    bytesPerPixel = 3;
+    bGrabberInited = false;
+
+    m_frontBuffer = std::unique_ptr<ofPixels>(new ofPixels);
+    m_backBuffer = std::unique_ptr<ofPixels>(new ofPixels);
+    m_frontBuffer->allocate(w, h, bytesPerPixel);
+    m_backBuffer->allocate(w, h, bytesPerPixel);
+    frameCounter = 0;
+    currentFrame = 0;
+
+    if (bChooseDevice){
+        bChooseDevice = false;
+        ofLogNotice("ofWinrtVideoGrabber") << "initGrabber(): choosing " << m_deviceID;
+    }
+    else {
+        m_deviceID = 0;
+    }
+
+    auto settings = ref new MediaCaptureInitializationSettings();
+    settings->StreamingCaptureMode = StreamingCaptureMode::Video; // Video-only capture
+
+    // we need to have at least one video device
+    // call listdevices() to find the default (first) video device
+    if (!m_devices.Get()) 
+    {
+        listDevices();
+        if (!m_devices.Get()) 
+        {
+            ofLogError("ofWinrtVideoGrabber") << "no video devices are available";
+            return false;
+        }
+    }
+
+    auto devInfo = m_devices.Get()->GetAt(m_deviceID);
+    settings->VideoDeviceId = devInfo->Id;
+
+    auto location = devInfo->EnclosureLocation;
+    if (location != nullptr && location->Panel == Windows::Devices::Enumeration::Panel::Front)
+    {
+        bFlipImageX = true;
+    }
+
+    auto capture = ref new MediaCapture();
+    create_task(capture->InitializeAsync(settings)).then([this, capture](){
+
+        auto props = safe_cast<VideoEncodingProperties^>(capture->VideoDeviceController->GetMediaStreamProperties(MediaStreamType::VideoPreview));
+        props->Subtype = MediaEncodingSubtypes::Rgb24; 
+        props->Width = width;
+        props->Height = height;
+
+        return ::Media::CaptureFrameGrabber::CreateAsync(capture, props);
+
+    }).then([this](::Media::CaptureFrameGrabber^ frameGrabber)
+    {
+        m_frameGrabber = frameGrabber;
+        bGrabberInited = true;
+        _GrabFrameAsync(frameGrabber);
+        ofAddListener(ofEvents().appResume, this, &ofWinrtVideoGrabber::appResume, ofEventOrder::OF_EVENT_ORDER_AFTER_APP);
+    });
+
+    return true;
+}
+
+void ofWinrtVideoGrabber::_GrabFrameAsync(Media::CaptureFrameGrabber^ frameGrabber)
+{
+    create_task(frameGrabber->GetFrameAsync()).then([this, frameGrabber](const ComPtr<IMF2DBuffer2>& buffer)
+    {
+        // do the RGB swizzle while copying the pixels from the IMF2DBuffer2
+        BYTE *pbScanline;
+        LONG plPitch;
+        unsigned int numBytes = width * bytesPerPixel;
+        CHK(buffer->Lock2D(&pbScanline, &plPitch));
+
+        if (bFlipImageX) 
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            uint8_t* buf = reinterpret_cast<uint8_t*>(m_backBuffer->getPixels());
+
+            for (unsigned int row = 0; row < height; row++)
+            {
+                unsigned int i = 0;
+                unsigned int j = numBytes - 1;
+
+                while (i < numBytes)
+                {
+                    // reverse the scan line
+                    // as a side effect this also swizzles R and B channels
+                    buf[j--] = pbScanline[i++];
+                    buf[j--] = pbScanline[i++];
+                    buf[j--] = pbScanline[i++];
+                }
+                pbScanline += plPitch;
+                buf += numBytes;
+            }
+        } 
+        else 
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            uint8_t* buf = reinterpret_cast<uint8_t*>(m_backBuffer->getPixels());
+
+            for (unsigned int row = 0; row < height; row++)
+            {
+                for (unsigned int i = 0; i < numBytes; i += bytesPerPixel)
+                {
+                    // swizzle the R and B values (BGR to RGB)
+                    buf[i] = pbScanline[i + 2];
+                    buf[i + 1] = pbScanline[i + 1];
+                    buf[i + 2] = pbScanline[i];
+                }
+                pbScanline += plPitch;
+                buf += numBytes;
+            }
+        }
+        CHK(buffer->Unlock2D());
+
+        frameCounter++;
+
+        if (bGrabberInited)
+        {
+            _GrabFrameAsync(frameGrabber);
+        }
+    }, task_continuation_context::use_current());
+}
+
+
+
+bool ofWinrtVideoGrabber::setPixelFormat(ofPixelFormat pixelFormat)
+{
+    //note as we only support RGB we are just confirming that this pixel format is supported
+    if (pixelFormat == OF_PIXELS_RGB)
+    {
+        return true;
+    }
+    ofLogWarning("ofWinrtVideoGrabber") << "setPixelFormat(): requested pixel format not supported";
+    return false;
+}
+
+ofPixelFormat ofWinrtVideoGrabber::getPixelFormat()
+{
+    //note if you support more than one pixel format you will need to return a ofPixelFormat variable. 
+    return OF_PIXELS_RGB;
+}
+
+
+std::string PlatformStringToString(Platform::String^ s) {
+    std::wstring t = std::wstring(s->Data());
+    return std::string(t.begin(), t.end());
+}
+
+vector <ofVideoDevice> ofWinrtVideoGrabber::listDevicesTask()
+{
+    std::atomic<bool> ready(false);
+
+    auto settings = ref new MediaCaptureInitializationSettings();
+
+    vector <ofVideoDevice> devices;
+
+    create_task(DeviceInformation::FindAllAsync(DeviceClass::VideoCapture))
+        .then([this, &devices, &ready](task<DeviceInformationCollection^> findTask)
+    {
+        m_devices = findTask.get();
+
+        for (size_t i = 0; i < m_devices->Size; i++)
+        {
+            ofVideoDevice deviceInfo;
+            auto d = m_devices->GetAt(i);
+            deviceInfo.bAvailable = true;
+            deviceInfo.deviceName = PlatformStringToString(d->Name);
+            deviceInfo.hardwareName = deviceInfo.deviceName;
+            devices.push_back(deviceInfo);
+        }
+
+        ready = true;
+    });
+
+    // wait for async task to complete
+    int count = 0;
+    while (!ready)
+    {
+        count++;
+    }
+
+    return devices;
 }
 
 
 //--------------------------------------------------------------------
-ofWinrtVideoGrabber::~ofWinrtVideoGrabber(){
-	close();
+vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices()
+{
+    // synchronous version of listing video devices on WinRT
+    // not a recommended practice but oF expects synchronous device enumeration
+    std::future<vector <ofVideoDevice>> result = std::async(std::launch::async, &ofWinrtVideoGrabber::listDevicesTask, this);
+    return result.get();
 }
 
 
 //--------------------------------------------------------------------
-bool ofWinrtVideoGrabber::initGrabber(int w, int h){
-	width = w;
-	height = h;
-	bGrabberInited = false;
-	pixels.allocate(w, h, 3);
-	m_buffer = ref new Buffer(w * h * 400);
-	try
-	{
-		auto mediaCapture = ref new Windows::Media::Capture::MediaCapture();
-		m_mediaCaptureMgr = mediaCapture;
 
-		create_task(m_mediaCaptureMgr->InitializeAsync()).then([this](task<void> initTask)
-		{
-			initTask.get();
-
-			auto mediaCapture = m_mediaCaptureMgr.Get();
-
-			if (mediaCapture->MediaCaptureSettings->VideoDeviceId == nullptr)// && mediaCapture->MediaCaptureSettings->AudioDeviceId != nullptr)
-			{
-				//mediaCapture->RecordLimitationExceeded += ref new Windows::Media::Capture::RecordLimitationExceededEventHandler(this, &BasicCapture::RecordLimitationExceeded);
-				//mediaCapture->Failed += ref new Windows::Media::Capture::MediaCaptureFailedEventHandler(this, &BasicCapture::Failed);
-				ofLogWarning("ofWinrtVideoGrabber") << "initGrabber(): can't access camera";
-			}
-			m_recording = ref new InMemoryRandomAccessStream();
-			MediaEncodingProfile ^profile = ref new MediaEncodingProfile();
-
-			profile->Video = VideoEncodingProperties::CreateUncompressed(MediaEncodingSubtypes::Bgra8, width, height);
-			profile->Video->FrameRate->Numerator = 10;
-			profile->Video->FrameRate->Denominator = 1;
-
-			profile->Audio = AudioEncodingProperties::CreatePcm(44100, 2, 8);
-			profile->Container->Subtype = "MPEG4";
-			return m_mediaCaptureMgr->StartRecordToStreamAsync(profile, m_recording);
-		}
-		).then([this](void)
-		{
-			bGrabberInited = true;
-		});
-	}
-	catch (Exception ^ e)
-	{
-		OutputDebugStringW(e->Message->Begin());
-	}
-
-	return true;
-	//---------------------------------
-#ifdef OF_VIDEO_CAPTURE_DIRECTSHOW
-	//---------------------------------
-
-	if (bChooseDevice){
-		device = deviceID;
-		ofLogNotice("ofWinrtVideoGrabber") << "initGrabber(): choosing " << deviceID;
-	}
-	else {
-		device = 0;
-	}
-
-	width = w;
-	height = h;
-	bGrabberInited = false;
-
-	if (attemptFramerate >= 0){
-		VI.setIdealFramerate(device, attemptFramerate);
-	}
-	bool bOk = VI.setupDevice(device, width, height);
-
-	int ourRequestedWidth = width;
-	int ourRequestedHeight = height;
-
-	if (bOk == true){
-		bGrabberInited = true;
-		width = VI.getWidth(device);
-		height = VI.getHeight(device);
-
-		if (width == ourRequestedWidth && height == ourRequestedHeight){
-			bDoWeNeedToResize = false;
-		}
-		else {
-			bDoWeNeedToResize = true;
-			width = ourRequestedWidth;
-			height = ourRequestedHeight;
-		}
-
-
-		pixels.allocate(width, height, 3);
-		return true;
-	}
-	else {
-		ofLogError("ofWinrtVideoGrabber") << "initGrabber(): error allocating a video device";
-		ofLogError("ofWinrtVideoGrabber") << "initGrabber(): please check your camera with AMCAP or other software";
-		bGrabberInited = false;
-		return false;
-	}
-
-	//---------------------------------
-#endif
-	//---------------------------------
-
+void ofWinrtVideoGrabber::update()
+{
+    if (bGrabberInited == true)
+    {
+        SwapBuffers();
+    }
 }
 
-//---------------------------------------------------------------------------
-bool ofWinrtVideoGrabber::setPixelFormat(ofPixelFormat pixelFormat){
-	//note as we only support RGB we are just confirming that this pixel format is supported
-	if (pixelFormat == OF_PIXELS_RGB){
-		return true;
-	}
-	ofLogWarning("ofWinrtVideoGrabber") << "setPixelFormat(): requested pixel format not supported";
-	return false;
+void ofWinrtVideoGrabber::SwapBuffers()
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+
+    if (currentFrame != frameCounter)
+    {
+        bIsFrameNew = true;
+        currentFrame = frameCounter;
+        std::swap(m_backBuffer, m_frontBuffer);
+    }
+    else
+    {
+        bIsFrameNew = false;
+    }
 }
 
-//---------------------------------------------------------------------------
-ofPixelFormat ofWinrtVideoGrabber::getPixelFormat(){
-	//note if you support more than one pixel format you will need to return a ofPixelFormat variable. 
-	return OF_PIXELS_RGB;
+void ofWinrtVideoGrabber::appResume(ofAppResumeEventArgs &e)
+{
+    if (m_frameGrabber == nullptr)
+    {
+        ofRemoveListener(ofEvents().appResume, this, &ofWinrtVideoGrabber::appResume);
+        initGrabber(width, height);
+    }
 }
 
-//--------------------------------------------------------------------
-vector<ofVideoDevice> ofWinrtVideoGrabber::listDevices(){
-
-	vector <ofVideoDevice> devices;
-
-	//---------------------------------
-#ifdef OF_VIDEO_CAPTURE_DIRECTSHOW
-	//---------------------------------
-	ofLogNotice() << "---";
-	VI.listDevices();
-	ofLogNotice() << "---";
-
-	vector <string> devList = VI.getDeviceList();
-
-	for (int i = 0; i < devList.size(); i++){
-		ofVideoDevice vd;
-		vd.deviceName = devList[i];
-		vd.id = i;
-		vd.bAvailable = true;
-		devices.push_back(vd);
-	}
-
-	//---------------------------------
-#endif
-	//---------------------------------
-
-	return devices;
-}
-
-//--------------------------------------------------------------------
-void ofWinrtVideoGrabber::update(){
-	if (bGrabberInited == true)
-	{
-		bIsFrameNew1 = false;
-		if (bIsFrameNew2)
-		{
-			bIsFrameNew1 = true;
-			bIsFrameNew2 = false;
-			create_task([this](void)
-			{
-				return m_recording->CloneStream()->ReadAsync(m_buffer, m_buffer->Capacity, InputStreamOptions::None);
-			}).then([this](IBuffer ^buffer)
-			{
-				DataReader ^dataReader = DataReader::FromBuffer(buffer);
-				unsigned bufferSize = dataReader->UnconsumedBufferLength;
-				int framebufferSize = width * height * 3;
-				if (bufferSize >= framebufferSize)
-				{
-					uint8 *pixelDest = pixels.getPixels();
-					int pixelSrcSize = width * height * 4;
-					uint8 *pixelSrc = new unsigned char[pixelSrcSize];
-					Array<uint8> ^pixelArray = ref new Array<uint8>(bufferSize);
-					dataReader->ReadBytes(pixelArray);
-					memcpy(pixelSrc, &pixelArray->get(bufferSize - pixelSrcSize), pixelSrcSize);
-					for (int i = 0, j = 0; i < framebufferSize; i += 3, j += 4)
-					{
-						pixelDest[i + 2] = pixelSrc[j + 0];
-						pixelDest[i + 1] = pixelSrc[j + 1];
-						pixelDest[i + 0] = pixelSrc[j + 2];
-					}
-					delete[] pixelSrc;
-				}
-				//for (unsigned y = 0; y < height; ++y)
-				//{
-				//	for (unsigned x = 0; x < width; ++x)
-				//	{
-				//		int index = (y * width + x) * 3;
-				//		pixels.getPixels()[index + 2] = dataReader->ReadByte();
-				//		pixels.getPixels()[index + 1] = dataReader->ReadByte();
-				//		pixels.getPixels()[index + 0] = dataReader->ReadByte();
-				//		dataReader->ReadByte(); //skip over alpha channel
-				//	}
-				//}
-				//m_recording->Size = 0;
-				m_buffer->Length = 0;
-				bIsFrameNew2 = true;
-			});
-		}
-		//if (bIsFrameNew2)
-		//{
-		//	bIsFrameNew1 = true;
-		//	bIsFrameNew2 = false;
-		//	try {
-		//		create_task(m_photoCapture->CaptureAsync()).then([this](CapturedPhoto^ photo)
-		//		{
-		//			CapturedFrame ^frame = photo->Frame;
-		//			m_frame = frame;
-		//			bIsFrameNew2 = true;
-		//			unsigned capacity = frame->Width * frame->Height * 4;
-		//			Buffer ^buffer = ref new Buffer(capacity);
-		//			return frame->ReadAsync(buffer, capacity, InputStreamOptions::None);
-		//		}).then([this](IBuffer^ buffer)
-		//		{
-		//			DataReader ^dataReader = DataReader::FromBuffer(buffer);
-		//			for (unsigned y = 0; y < height && y < m_frame->Height; ++y)
-		//			{
-		//				for (unsigned x = 0; x < width && x < m_frame->Width; ++x)
-		//				{
-		//					int index = (y * width + x) * 3;
-		//					pixels.getPixels()[index + 2] = dataReader->ReadByte();
-		//					pixels.getPixels()[index + 1] = dataReader->ReadByte();
-		//					pixels.getPixels()[index + 0] = dataReader->ReadByte();
-		//					dataReader->ReadByte(); //skip over alpha channel
-		//				}
-		//			}
-		//		});
-		//	}
-		//	catch (Exception ^e)
-		//	{
-		//		OutputDebugStringW(e->Message->Begin());
-		//	}
-		//}
-	}
-	//---------------------------------
-#ifdef OF_VIDEO_CAPTURE_DIRECTSHOW
-	//---------------------------------
-
-	if (bGrabberInited == true){
-		bIsFrameNew = false;
-		if (VI.isFrameNew(device)){
-
-			bIsFrameNew = true;
-
-
-			/*
-			rescale --
-			currently this is nearest neighbor scaling
-			not the greatest, but fast
-			this can be optimized too
-			with pointers, etc
-
-			better --
-			make sure that you ask for a "good" size....
-
-			*/
-
-			unsigned char * viPixels = VI.getPixels(device, true, true);
-
-
-			if (bDoWeNeedToResize == true){
-
-				int inputW = VI.getWidth(device);
-				int inputH = VI.getHeight(device);
-
-				float scaleW = (float)inputW / (float)width;
-				float scaleH = (float)inputH / (float)height;
-
-				for (int i = 0; i<width; i++){
-					for (int j = 0; j<height; j++){
-
-						float posx = i * scaleW;
-						float posy = j * scaleH;
-
-						/*
-
-						// start of calculating
-						// for linear interpolation
-
-						int xbase = (int)floor(posx);
-						int xhigh = (int)ceil(posx);
-						float pctx = (posx - xbase);
-
-						int ybase = (int)floor(posy);
-						int yhigh = (int)ceil(posy);
-						float pcty = (posy - ybase);
-						*/
-
-						int posPix = (((int)posy * inputW * 3) + ((int)posx * 3));
-
-						pixels.getPixels()[(j*width * 3) + i * 3] = viPixels[posPix];
-						pixels.getPixels()[(j*width * 3) + i * 3 + 1] = viPixels[posPix + 1];
-						pixels.getPixels()[(j*width * 3) + i * 3 + 2] = viPixels[posPix + 2];
-
-					}
-				}
-
-			}
-			else {
-
-				pixels.setFromPixels(viPixels, width, height, OF_IMAGE_COLOR);
-
-			}
-
-
-		}
-	}
-
-	//---------------------------------
-#endif
-	//---------------------------------
-
-}
-
-//--------------------------------------------------------------------
-void ofWinrtVideoGrabber::close(){
-
-	//---------------------------------
-#ifdef OF_VIDEO_CAPTURE_DIRECTSHOW
-	//---------------------------------
-
-	if (bGrabberInited == true){
-		VI.stopDevice(device);
-		bGrabberInited = false;
-	}
-
-	//---------------------------------
-#endif
-	//---------------------------------
-	bGrabberInited = false;
-	//create_task(m_photoCapture->FinishAsync()).then([this](task<void> closePhotoTask)
-	//{
-	//	closePhotoTask.get();
-	//	//m_mediaCaptureMgr->Close();
-		m_mediaCaptureMgr = nullptr;
-	//	m_photoCapture = nullptr;
-	//});
-	clearMemory();
-
+void ofWinrtVideoGrabber::appSuspend(ofAppSuspendEventArgs &e)
+{
+    closeCaptureDevice();
 }
 
 
-//--------------------------------------------------------------------
-void ofWinrtVideoGrabber::clearMemory(){
-	pixels.clear();
+void ofWinrtVideoGrabber::closeCaptureDevice()
+{
+    bGrabberInited = false;
+    if (m_frameGrabber != nullptr)
+    {
+        m_frameGrabber = nullptr;
+#if 0
+        m_frameGrabber->FinishAsync().then([this]() {
+            m_frameGrabber = nullptr;
+        });
+#endif // 0
+
+    }
 }
 
-//---------------------------------------------------------------------------
-unsigned char * ofWinrtVideoGrabber::getPixels(){
-	return pixels.getPixels();
+void ofWinrtVideoGrabber::close()
+{
+    bGrabberInited = false;
+    clearMemory();
+ 
 }
 
-//---------------------------------------------------------------------------
-ofPixelsRef ofWinrtVideoGrabber::getPixelsRef(){
-	return pixels;
+void ofWinrtVideoGrabber::clearMemory()
+{
+    m_frontBuffer->clear();
 }
 
-//--------------------------------------------------------------------
-float ofWinrtVideoGrabber::getWidth(){
-	return width;
+unsigned char * ofWinrtVideoGrabber::getPixels()
+{
+    return m_frontBuffer->getPixels();
 }
 
-//--------------------------------------------------------------------
-float ofWinrtVideoGrabber::getHeight(){
-	return height;
+ofPixelsRef ofWinrtVideoGrabber::getPixelsRef()
+{
+    return *m_frontBuffer.get();
 }
 
-//---------------------------------------------------------------------------
-bool  ofWinrtVideoGrabber::isFrameNew(){
-	return bIsFrameNew1;
+float ofWinrtVideoGrabber::getWidth()
+{
+    return width;
 }
 
-//--------------------------------------------------------------------
-void ofWinrtVideoGrabber::setVerbose(bool bTalkToMe){
-	bVerbose = bTalkToMe;
+float ofWinrtVideoGrabber::getHeight()
+{
+    return height;
 }
 
-//--------------------------------------------------------------------
-void ofWinrtVideoGrabber::setDeviceID(int _deviceID){
-	deviceID = _deviceID;
-	bChooseDevice = true;
+bool  ofWinrtVideoGrabber::isFrameNew()
+{
+    return bIsFrameNew;
 }
 
-//--------------------------------------------------------------------
-void ofWinrtVideoGrabber::setDesiredFrameRate(int framerate){
-	attemptFramerate = framerate;
+void ofWinrtVideoGrabber::setVerbose(bool bTalkToMe)
+{
+    bVerbose = bTalkToMe;
 }
 
-
-//--------------------------------------------------------------------
-void ofWinrtVideoGrabber::videoSettings(void){
-
-	//---------------------------------
-#ifdef OF_VIDEO_CAPTURE_DIRECTSHOW
-	//---------------------------------
-
-	if (bGrabberInited == true) VI.showSettingsWindow(device);
-
-	//---------------------------------
-#endif
-	//---------------------------------
+void ofWinrtVideoGrabber::setDeviceID(int deviceID)
+{
+    m_deviceID = deviceID;
+    bChooseDevice = true;
 }
+
+void ofWinrtVideoGrabber::setDesiredFrameRate(int framerate)
+{
+    attemptFramerate = framerate;
+}
+
+void ofWinrtVideoGrabber::videoSettings(void)
+{
+
+    if (bGrabberInited == true)
+    {
+        m_frameGrabber->ShowCameraSettings();
+    }
+}
+
 #endif

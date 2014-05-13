@@ -294,6 +294,10 @@
     </ClInclude>
     <ClInclude Include="..\..\..\openFrameworks\utils\ofUtils.h" />
     <ClInclude Include="..\..\..\openFrameworks\utils\ofXml.h" />
+    <ClInclude Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\CaptureFrameGrabber.h" />
+    <ClInclude Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaSink.h" />
+    <ClInclude Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaStreamSink.h" />
+    <ClInclude Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\MFIncludes.h" />
     <ClInclude Include="..\..\..\openFrameworks\video\ofDirectShowGrabber.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
@@ -390,6 +394,8 @@
     </ClCompile>
     <ClCompile Include="..\..\..\openFrameworks\utils\ofUtils.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\utils\ofXml.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\CaptureFrameGrabber.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaStreamSink.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\video\ofDirectShowGrabber.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>

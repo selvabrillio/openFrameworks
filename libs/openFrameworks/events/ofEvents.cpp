@@ -408,3 +408,20 @@ void ofNotifyWindowEntry( int state ) {
 	ofNotifyEvent(ofEvents().windowEntered, entryArgs);
 	
 }
+
+void ofNotifyAppResume(int state) {
+
+    static ofAppResumeEventArgs entryArgs;
+    entryArgs.state = state;
+    ofNotifyEvent(ofEvents().appResume, entryArgs);
+
+}
+
+void ofNotifyAppSuspend(int state) {
+
+    static ofAppSuspendEventArgs entryArgs;
+    entryArgs.state = state;
+    ofNotifyEvent(ofEvents().appSuspend, entryArgs);
+
+}
+

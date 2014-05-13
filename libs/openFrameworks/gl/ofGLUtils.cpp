@@ -209,6 +209,7 @@ int ofGetGlTypeFromInternal(int glInternalFormat){
 		case GL_RGBA:
 		case GL_LUMINANCE:
 		case GL_LUMINANCE_ALPHA:
+        case GL_BGRA_EXT:
 #ifndef TARGET_OPENGLES
 		case GL_RGB8:
 		case GL_RGBA8:
