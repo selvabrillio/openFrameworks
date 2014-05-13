@@ -12,6 +12,7 @@
 #include <mferror.h>
 #include <wrl.h>
 #include <mfmediaengine.h>
+#include <d3d11.h>
 
 class MediaEngineNotifyCallback
 {
@@ -102,8 +103,13 @@ protected:
     void MFRate(float rate);
 
     // Media Engine related
-    Microsoft::WRL::ComPtr<IMFMediaEngine>      m_spMediaEngine;
-    Microsoft::WRL::ComPtr<IMFMediaEngineEx>    m_spEngineEx;
+    Microsoft::WRL::ComPtr<IMFMediaEngine>       m_spMediaEngine;
+    Microsoft::WRL::ComPtr<IMFMediaEngineEx>     m_spEngineEx;
+	Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> m_spDXGIManager;
+	Microsoft::WRL::ComPtr<ID3D11Device>         m_spDX11Device;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext>  m_spDX11DeviceContext;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>      m_spReadTexture;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D>      m_spWriteTexture;
 
     void start();
 
