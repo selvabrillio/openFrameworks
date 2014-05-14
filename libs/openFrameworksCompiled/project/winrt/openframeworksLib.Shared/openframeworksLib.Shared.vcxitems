@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{16015845-c9c3-4dba-a313-23db1ebccf79}</ItemsProjectGuid>
+    <ItemsRootNamespace>openframeworksLib</ItemsRootNamespace>
+    <ItemsProjectName>openframeworksLib.Shared</ItemsProjectName>
+    <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\of3dPrimitives.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\of3dUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\ofCamera.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\ofEasyCam.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\ofMesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\ofNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppNoWindow.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppRunner.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppWinRTWindow.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\events\ofEvents.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofFbo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofGLUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofLight.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofMaterial.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofTexture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofVbo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofVboMesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\of3dGraphics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofBitmapFont.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofCairoRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofGraphics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofImage.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofPath.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofPixels.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofPolyline.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofRendererCollection.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofTessellator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofTrueTypeFont.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofMath.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofMatrix3x3.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofMatrix4x4.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofQuaternion.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofVec2f.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofVec4f.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofFmodSoundPlayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofOpenALSoundPlayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofRtAudioSoundStream.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofSoundPlayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofSoundStream.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\ThreadEmulation\ThreadEmulation.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofBaseTypes.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofColor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofParameter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofParameterGroup.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofRectangle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofFileUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofLog.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofMatrixStack.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofSystemUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofThread.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofURLFileLoader.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofXml.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofMediaFoundationPlayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofQtUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofVideoGrabber.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofVideoPlayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofWinrtVideoGrabber.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\of3dPrimitives.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\of3dUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\ofCamera.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\ofEasyCam.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\ofMesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\ofNode.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppBaseWindow.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppNoWindow.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppRunner.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppWinRTWindow.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofBaseApp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofIcon.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\events\ofDelegate.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\events\ofEvents.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\events\ofEventUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofFbo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofGLProgrammableRenderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofGLUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofLight.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofMaterial.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofShader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofTexture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofVbo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\gl\ofVboMesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\of3dGraphics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofBitmapFont.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofCairoRenderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofGraphics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofImage.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofPath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofPixels.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofPolyline.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofRendererCollection.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofTessellator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\graphics\ofTrueTypeFont.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofMath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofMatrix3x3.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofMatrix4x4.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofQuaternion.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofVec2f.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofVec3f.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofVec4f.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\math\ofVectorMath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\ofMain.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofBaseSoundPlayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofBaseSoundStream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofFmodSoundPlayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofOpenALSoundPlayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofRtAudioSoundStream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofSoundPlayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\sound\ofSoundStream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\ThreadEmulation\ThreadEmulation.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofBaseTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofColor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofParameter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofParameterGroup.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofPoint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofRectangle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\types\ofTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofConstants.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofFileUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofLog.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofMatrixStack.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofNoise.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofSystemUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofThread.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofURLFileLoader.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofXml.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofMediaFoundationPlayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofQtUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofVideoGrabber.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofVideoPlayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofWinrtVideoGrabber.h" />
+  </ItemGroup>
+</Project>
