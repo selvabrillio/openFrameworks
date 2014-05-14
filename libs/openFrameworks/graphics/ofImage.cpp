@@ -419,7 +419,7 @@ static void saveImage(ofPixels_<PixelType> & pix, string fileName, ofImageQualit
 	create_task(localFolder->GetFileAsync(ref new Platform::String(wFileName.c_str())), task_continuation_context::use_arbitrary()).then(
 	[](StorageFile^ file)
 	{
-		create_task(KnownFolders::PicturesLibrary->CreateFolderAsync(Windows::ApplicationModel::Package::Current->DisplayName, CreationCollisionOption::OpenIfExists)).then(
+		create_task(KnownFolders::PicturesLibrary->CreateFolderAsync(Windows::ApplicationModel::Package::Current->Id->FullName, CreationCollisionOption::OpenIfExists)).then(
 		[file](StorageFolder^ folder)
 		{
 			file->CopyAsync(folder, file->Name, NameCollisionOption::ReplaceExisting);
