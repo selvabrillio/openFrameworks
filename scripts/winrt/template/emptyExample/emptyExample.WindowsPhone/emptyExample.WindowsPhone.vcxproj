@@ -113,6 +113,11 @@
       <SubType>Designer</SubType>
     </AppxManifest>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\libs\openFrameworksCompiled\project\winrt\openframeworksLib.WindowsPhone\openframeworksLib.WindowsPhone.vcxproj">
+      <Project>{66673a05-3c6d-4c38-a88c-156489a84e16}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ImageContentTask.targets" />
