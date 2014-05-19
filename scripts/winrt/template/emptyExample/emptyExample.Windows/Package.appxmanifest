@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
 
-  <Identity Name="afc54f3c-a4ce-4f24-8bca-9315606aa875"
+  <Identity Name="615b9756-b888-409e-acb0-a504201f976f"
             Publisher="CN=v-schith"
             Version="1.0.0.0" />
 
@@ -24,15 +24,16 @@
     <Application Id="App"
         Executable="$targetnametoken$.exe"
         EntryPoint="emptyExample_Windows.App">
-        <m2:VisualElements
+        <VisualElements
             DisplayName="emptyExample.Windows"
-            Square150x150Logo="Assets\Logo.png"
-            Square30x30Logo="Assets\SmallLogo.png"
+            Logo="Assets\Logo.png"
+            SmallLogo="Assets\SmallLogo.png"
             Description="emptyExample.Windows"
             ForegroundText="light"
             BackgroundColor="#464646">
-            <m2:SplashScreen Image="Assets\SplashScreen.png" />
-        </m2:VisualElements>
+            <DefaultTile ShowName="allLogos" />
+            <SplashScreen Image="Assets\SplashScreen.png" />
+        </VisualElements>
     </Application>
   </Applications>
   <Capabilities>

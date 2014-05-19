@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_PropertySheetDisplayName>openFrameworksDebug</_PropertySheetDisplayName>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\..\..\libs\angle\include;..\..\..\..\..\libs\openFrameworks;..\..\..\..\..\libs\openFrameworks\graphics;..\..\..\..\..\libs\openFrameworks\app;..\..\..\..\..\libs\openFrameworks\sound;..\..\..\..\..\libs\openFrameworks\utils;..\..\..\..\..\libs\openFrameworks\communication;..\..\..\..\..\libs\openFrameworks\video;..\..\..\..\..\libs\openFrameworks\types;..\..\..\..\..\libs\openFrameworks\math;..\..\..\..\..\libs\openFrameworks\3d;..\..\..\..\..\libs\openFrameworks\gl;..\..\..\..\..\libs\openFrameworks\events;..\..\..\..\..\libs\glut\include;..\..\..\..\..\libs\rtAudio\include;..\..\..\..\..\libs\quicktime\include;..\..\..\..\..\libs\freetype\include;..\..\..\..\..\libs\freetype\include\freetype2;..\..\..\..\..\libs\freeImage\include;..\..\..\..\..\libs\fmodex\include;..\..\..\..\..\libs\videoInput\include;..\..\..\..\..\libs\glew\include\;..\..\..\..\..\libs\glu\include;..\..\..\..\..\libs\tess2\include;..\..\..\..\..\libs\cairo\include\cairo;..\..\..\..\..\libs\poco\include;..\..\..\..\..\libs\glfw\include;..\..\..\..\..\libs\openssl\include;..\..\..\..\..\addons;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\..\..\..\..\libs\angle\lib\vs\winrt_arm;..\..\..\..\..\libs\rtAudio\lib\vs\winrt_arm;..\..\..\..\..\libs\FreeImage\lib\vs\winrt_arm;..\..\..\..\..\libs\freetype\lib\vs\winrt_arm;..\..\..\..\..\libs\fmodex\lib\vs;..\..\..\..\..\libs\cairo\lib\vs;..\..\..\..\..\libs\openssl\lib\vs;..\..\..\..\..\libs\Poco\lib\vs\winrt_arm;..\..\..\..\..\libs\tess2\lib\vs\winrt_arm;..\..\..\..\..\libs\openFrameworksCompiled\lib\vs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;libfreetype.lib;FreeImage.lib;fmodexMetroarm_vc.lib;PocoFoundationmdd.lib;tess2.lib;rtAudioD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>PocoFoundationmdd.lib;atlthunk.lib;msvcrt;libcmt;LIBC;LIBCMTD</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

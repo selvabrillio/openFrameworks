@@ -1,35 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>e089f597-0689-4117-ad1d-16e57ed119f9</UniqueIdentifier>
+    </Filter>
     <Filter Include="Assets">
-      <UniqueIdentifier>{16520178-48d4-4dbd-bc55-f384b4c51503}</UniqueIdentifier>
+      <UniqueIdentifier>53bf61c1-64e9-4b2b-bddb-ba37d14090a6</UniqueIdentifier>
       <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="MainPage.xaml.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MainPage.xaml.h" />
+    <Filter Include="Content">
+      <UniqueIdentifier>21e7d4fd-1bd3-46d9-8c99-74a917833024</UniqueIdentifier>
+    </Filter>
+    <Image Include="Assets\Logo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SmallLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Filter Include="x86 dlls">
+      <UniqueIdentifier>{7e3475a7-5887-4862-8b95-a4e56ab286b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="emptyExample.Windows_TemporaryKey.pfx" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Assets\Logo.scale-100.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\SmallLogo.scale-100.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\StoreLogo.scale-100.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\SplashScreen.scale-100.png">
-      <Filter>Assets</Filter>
-    </Image>
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\fmodexMetro.dll">
+      <Filter>x86 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\fmodexMetroL.dll">
+      <Filter>x86 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\FreeImage.dll">
+      <Filter>x86 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\libEGL.dll">
+      <Filter>x86 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\libGLESv2.dll">
+      <Filter>x86 dlls</Filter>
+    </None>
   </ItemGroup>
 </Project>

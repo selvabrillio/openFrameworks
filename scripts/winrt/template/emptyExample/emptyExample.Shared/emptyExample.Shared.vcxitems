@@ -3,9 +3,10 @@
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>0899d22d-83c9-4830-b907-fc51bc041d6d</SharedGUID>
-    <ItemsProjectGuid>{42364e4f-7848-47e2-8845-c9afe9e1332d}</ItemsProjectGuid>
+    <ItemsProjectGuid>{dfc93a90-79e4-40c9-b596-81652659637f}</ItemsProjectGuid>
     <ItemsRootNamespace>emptyExample</ItemsRootNamespace>
+    <ItemsProjectName>emptyExample.Shared</ItemsProjectName>
+    <SharedGUID>f2a05b7a-84fc-483a-ba8c-c57c93f1b071</SharedGUID>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -14,5 +15,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\ofApp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\ofApp.h" />
   </ItemGroup>
 </Project>

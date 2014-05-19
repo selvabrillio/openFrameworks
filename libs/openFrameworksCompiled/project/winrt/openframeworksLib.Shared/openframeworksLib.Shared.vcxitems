@@ -74,6 +74,8 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofUtils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofXml.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\CaptureFrameGrabber.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaStreamSink.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofMediaFoundationPlayer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofQtUtils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofVideoGrabber.cpp" />
@@ -152,6 +154,10 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofUtils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\utils\ofXml.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\CaptureFrameGrabber.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaSink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaStreamSink.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\MFIncludes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofMediaFoundationPlayer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofQtUtils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofVideoGrabber.h" />

@@ -40,6 +40,9 @@
     <Filter Include="libs\openFrameworks\video">
       <UniqueIdentifier>{27f313a2-2e29-4fd3-a23a-3bf0bd89a4f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libs\openFrameworks\video\CaptureFrameGrabber">
+      <UniqueIdentifier>{74ffcf9a-0f18-4b84-8c66-4795805939b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\3d\of3dPrimitives.cpp">
@@ -221,6 +224,12 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\ofWinrtVideoGrabber.cpp">
       <Filter>libs\openFrameworks\video</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\CaptureFrameGrabber.cpp">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaStreamSink.cpp">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -445,6 +454,18 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\ofMain.h">
       <Filter>libs\openFrameworks</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\CaptureFrameGrabber.h">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaSink.h">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaStreamSink.h">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\MFIncludes.h">
+      <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
