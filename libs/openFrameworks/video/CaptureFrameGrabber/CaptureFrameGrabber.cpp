@@ -11,6 +11,8 @@
 #include "MediaSink.h"
 #include "CaptureFrameGrabber.h"
 
+#include <stdexcept>
+
 using namespace Media;
 using namespace Platform;
 using namespace Windows::Foundation;
@@ -81,11 +83,14 @@ Media::CaptureFrameGrabber::~CaptureFrameGrabber()
 
 void Media::CaptureFrameGrabber::ShowCameraSettings()
 {
+#if WINAPI_FAMILY==WINAPI_FAMILY_PHONE_APP
+    throw std::runtime_error("ShowCameraSettings not implemented on Windows Phone");
+#else
     if (_state == State::Started)
     {
         CameraOptionsUI::Show(_capture.Get());
     }
-
+#endif
 }
 
 task<void> Media::CaptureFrameGrabber::FinishAsync()
