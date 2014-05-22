@@ -24,7 +24,10 @@
       <Filter>Assets</Filter>
     </Image>
     <Filter Include="x86 dlls">
-      <UniqueIdentifier>{7e3475a7-5887-4862-8b95-a4e56ab286b9}</UniqueIdentifier>
+      <UniqueIdentifier>{4f94207a-2998-489d-b0f0-c5673c07e4fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arm dlls">
+      <UniqueIdentifier>{b0077e82-f595-4aa9-8ba0-2da8614e375a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -32,6 +35,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="emptyExample.Windows_TemporaryKey.pfx" />
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\fmodexMetroarm.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\fmodexMetroLarm.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\FreeImage.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\libEGL.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\libGLESv2.dll">
+      <Filter>arm dlls</Filter>
+    </None>
     <None Include="..\..\..\..\..\export\vs\winrt_win32\fmodexMetro.dll">
       <Filter>x86 dlls</Filter>
     </None>

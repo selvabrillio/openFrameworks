@@ -11,6 +11,12 @@
     <Filter Include="Content">
       <UniqueIdentifier>$guid3$</UniqueIdentifier>
     </Filter>
+    <Filter Include="arm dlls">
+      <UniqueIdentifier>{b21d0de1-d36b-46e9-8b8e-ecb2ece22e28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="x86 dlls">
+      <UniqueIdentifier>{c42ecc80-de7d-4272-9a12-c48daae81c73}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Logo.scale-240.png">
