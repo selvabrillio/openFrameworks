@@ -86,7 +86,7 @@ bool visualStudioProject::createProjectFile(){
 	
     findandreplaceInTexfile(project,"emptyExample",projectName);
     findandreplaceInTexfile(filters,"emptyExample",projectName);
-	findandreplaceInTexfile(projectDir + "Package.appxmanifest", "emptyExample", projectName);
+	findandreplaceInTexfile(appMan, "emptyExample", projectName);
 	
 	{
 		ofFile filterFile(filters);
@@ -340,7 +340,7 @@ bool visualStudioProject::loadProjectFile(){
 #endif
 
 	//change the GUID in the Package.appxmanifest file
-	ofFile appManifestFile(projectDir + "Package.appxmanifest");
+	ofFile appManifestFile(projectDir + projectName + "/" + projectName + ".Windows/" + "Package.appxmanifest");
 	if(!appManifestFile.exists())
 	{
 		ofLogError(LOG_NAME) << "error loading " << appManifestFile.path() << " doesn't exist";
