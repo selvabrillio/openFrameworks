@@ -132,12 +132,16 @@
       <AdditionalIncludeDirectories>..\..\..\..\angle\include;..\..\..\..\openFrameworks;..\..\..\..\openFrameworks\graphics;..\..\..\..\openFrameworks\app;..\..\..\..\openFrameworks\sound;..\..\..\..\openFrameworks\utils;..\..\..\..\openFrameworks\communication;..\..\..\..\openFrameworks\video;..\..\..\..\openFrameworks\types;..\..\..\..\openFrameworks\math;..\..\..\..\openFrameworks\3d;..\..\..\..\openFrameworks\gl;..\..\..\..\openFrameworks\events;..\..\..\..\rtAudio\include;..\..\..\..\quicktime\include;..\..\..\..\freetype\include;..\..\..\..\freetype\include\freetype2;..\..\..\..\freeImage\include;..\..\..\..\fmodex\include;..\..\..\..\videoInput\include;..\..\..\..\tess2\include;..\..\..\..\cairo\include\cairo;..\..\..\..\poco\include;..\..\..\..\gl\include;..\..\..\..\openssl\include;..\..\..\..\addons;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <WarningLevel>Level1</WarningLevel>
       <PreprocessorDefinitions>OF_VIDEO_PLAYER_MEDIAFOUNDATION;USE_PROGRAMMABLE_GL;WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4244;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
+    <Lib>
+      <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -147,12 +151,16 @@
       <AdditionalIncludeDirectories>..\..\..\..\angle\include;..\..\..\..\openFrameworks;..\..\..\..\openFrameworks\graphics;..\..\..\..\openFrameworks\app;..\..\..\..\openFrameworks\sound;..\..\..\..\openFrameworks\utils;..\..\..\..\openFrameworks\communication;..\..\..\..\openFrameworks\video;..\..\..\..\openFrameworks\types;..\..\..\..\openFrameworks\math;..\..\..\..\openFrameworks\3d;..\..\..\..\openFrameworks\gl;..\..\..\..\openFrameworks\events;..\..\..\..\rtAudio\include;..\..\..\..\quicktime\include;..\..\..\..\freetype\include;..\..\..\..\freetype\include\freetype2;..\..\..\..\freeImage\include;..\..\..\..\fmodex\include;..\..\..\..\videoInput\include;..\..\..\..\tess2\include;..\..\..\..\cairo\include\cairo;..\..\..\..\poco\include;..\..\..\..\gl\include;..\..\..\..\openssl\include;..\..\..\..\addons;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <WarningLevel>Level1</WarningLevel>
       <PreprocessorDefinitions>OF_VIDEO_PLAYER_MEDIAFOUNDATION;USE_PROGRAMMABLE_GL;WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4244;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
+    <Lib>
+      <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
     <ClCompile>
@@ -162,12 +170,16 @@
       <AdditionalIncludeDirectories>..\..\..\..\angle\include;..\..\..\..\openFrameworks;..\..\..\..\openFrameworks\graphics;..\..\..\..\openFrameworks\app;..\..\..\..\openFrameworks\sound;..\..\..\..\openFrameworks\utils;..\..\..\..\openFrameworks\communication;..\..\..\..\openFrameworks\video;..\..\..\..\openFrameworks\types;..\..\..\..\openFrameworks\math;..\..\..\..\openFrameworks\3d;..\..\..\..\openFrameworks\gl;..\..\..\..\openFrameworks\events;..\..\..\..\rtAudio\include;..\..\..\..\quicktime\include;..\..\..\..\freetype\include;..\..\..\..\freetype\include\freetype2;..\..\..\..\freeImage\include;..\..\..\..\fmodex\include;..\..\..\..\videoInput\include;..\..\..\..\tess2\include;..\..\..\..\cairo\include\cairo;..\..\..\..\poco\include;..\..\..\..\gl\include;..\..\..\..\openssl\include;..\..\..\..\addons;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <WarningLevel>Level1</WarningLevel>
       <PreprocessorDefinitions>OF_VIDEO_PLAYER_MEDIAFOUNDATION;USE_PROGRAMMABLE_GL;WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4244;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
+    <Lib>
+      <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
     <ClCompile>
@@ -177,12 +189,16 @@
       <AdditionalIncludeDirectories>..\..\..\..\angle\include;..\..\..\..\openFrameworks;..\..\..\..\openFrameworks\graphics;..\..\..\..\openFrameworks\app;..\..\..\..\openFrameworks\sound;..\..\..\..\openFrameworks\utils;..\..\..\..\openFrameworks\communication;..\..\..\..\openFrameworks\video;..\..\..\..\openFrameworks\types;..\..\..\..\openFrameworks\math;..\..\..\..\openFrameworks\3d;..\..\..\..\openFrameworks\gl;..\..\..\..\openFrameworks\events;..\..\..\..\rtAudio\include;..\..\..\..\quicktime\include;..\..\..\..\freetype\include;..\..\..\..\freetype\include\freetype2;..\..\..\..\freeImage\include;..\..\..\..\fmodex\include;..\..\..\..\videoInput\include;..\..\..\..\tess2\include;..\..\..\..\cairo\include\cairo;..\..\..\..\poco\include;..\..\..\..\gl\include;..\..\..\..\openssl\include;..\..\..\..\addons;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <WarningLevel>Level1</WarningLevel>
       <PreprocessorDefinitions>OF_VIDEO_PLAYER_MEDIAFOUNDATION;USE_PROGRAMMABLE_GL;WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4244;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
+    <Lib>
+      <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -192,12 +208,16 @@
       <AdditionalIncludeDirectories>..\..\..\..\angle\include;..\..\..\..\openFrameworks;..\..\..\..\openFrameworks\graphics;..\..\..\..\openFrameworks\app;..\..\..\..\openFrameworks\sound;..\..\..\..\openFrameworks\utils;..\..\..\..\openFrameworks\communication;..\..\..\..\openFrameworks\video;..\..\..\..\openFrameworks\types;..\..\..\..\openFrameworks\math;..\..\..\..\openFrameworks\3d;..\..\..\..\openFrameworks\gl;..\..\..\..\openFrameworks\events;..\..\..\..\rtAudio\include;..\..\..\..\quicktime\include;..\..\..\..\freetype\include;..\..\..\..\freetype\include\freetype2;..\..\..\..\freeImage\include;..\..\..\..\fmodex\include;..\..\..\..\videoInput\include;..\..\..\..\tess2\include;..\..\..\..\cairo\include\cairo;..\..\..\..\poco\include;..\..\..\..\gl\include;..\..\..\..\openssl\include;..\..\..\..\addons;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <WarningLevel>Level1</WarningLevel>
       <PreprocessorDefinitions>OF_VIDEO_PLAYER_MEDIAFOUNDATION;USE_PROGRAMMABLE_GL;WIN32;_DEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4244;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
+    <Lib>
+      <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -207,12 +227,16 @@
       <AdditionalIncludeDirectories>..\..\..\..\angle\include;..\..\..\..\openFrameworks;..\..\..\..\openFrameworks\graphics;..\..\..\..\openFrameworks\app;..\..\..\..\openFrameworks\sound;..\..\..\..\openFrameworks\utils;..\..\..\..\openFrameworks\communication;..\..\..\..\openFrameworks\video;..\..\..\..\openFrameworks\types;..\..\..\..\openFrameworks\math;..\..\..\..\openFrameworks\3d;..\..\..\..\openFrameworks\gl;..\..\..\..\openFrameworks\events;..\..\..\..\rtAudio\include;..\..\..\..\quicktime\include;..\..\..\..\freetype\include;..\..\..\..\freetype\include\freetype2;..\..\..\..\freeImage\include;..\..\..\..\fmodex\include;..\..\..\..\videoInput\include;..\..\..\..\tess2\include;..\..\..\..\cairo\include\cairo;..\..\..\..\poco\include;..\..\..\..\gl\include;..\..\..\..\openssl\include;..\..\..\..\addons;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <WarningLevel>Level1</WarningLevel>
       <PreprocessorDefinitions>OF_VIDEO_PLAYER_MEDIAFOUNDATION;USE_PROGRAMMABLE_GL;WIN32;NDEBUG;_CONSOLE;POCO_STATIC;CAIRO_WIN32_STATIC_BUILD;DISABLE_SOME_FLOATING_POINT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4244;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
+    <Lib>
+      <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
