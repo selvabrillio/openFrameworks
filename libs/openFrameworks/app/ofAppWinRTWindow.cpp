@@ -106,7 +106,8 @@ void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 
     // Specify the orientation of your application here
     // The choices are DisplayOrientations::Portrait or DisplayOrientations::Landscape or DisplayOrientations::LandscapeFlipped
-	//DisplayProperties::AutoRotationPreferences = DisplayOrientations::Portrait | DisplayOrientations::Landscape | DisplayOrientations::LandscapeFlipped;
+    //DisplayProperties::AutoRotationPreferences = DisplayOrientations::Portrait | DisplayOrientations::Landscape | DisplayOrientations::LandscapeFlipped;
+    DisplayProperties::AutoRotationPreferences = DisplayOrientations::Landscape;
 
 	window->VisibilityChanged +=
 		ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &WinRTHandler::OnVisibilityChanged);
@@ -156,6 +157,11 @@ void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 	EGLConfig config;
 
 	ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_11_0;
+
+#ifdef TARGET_WP8
+    featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
+#endif
+
 	HRESULT hr = CreateWinrtEglWindow(WINRT_EGL_IUNKNOWN(m_window.Get()), featureLevel, m_eglWindow.GetAddressOf());
 	if(FAILED(hr)){
 		ofLogError("ofAppWinRTWindow") << "couldn't create EGL window";
