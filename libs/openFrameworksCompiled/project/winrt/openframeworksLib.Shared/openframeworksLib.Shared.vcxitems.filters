@@ -66,9 +66,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppNoWindow.cpp">
       <Filter>libs\openFrameworks\app</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppRunner.cpp">
-      <Filter>libs\openFrameworks\app</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppWinRTWindow.cpp">
       <Filter>libs\openFrameworks\app</Filter>
     </ClCompile>
@@ -230,6 +227,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\video\CaptureFrameGrabber\MediaStreamSink.cpp">
       <Filter>libs\openFrameworks\video\CaptureFrameGrabber</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\openFrameworks\app\ofAppRunner.cpp">
+      <Filter>libs\openFrameworks\app</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
