@@ -23,6 +23,10 @@
 	#include "Poco/Net/NetSSL.h"
 #endif
 
+#ifdef TARGET_WP8
+#include "ThreadEmulation.h"
+using namespace ThreadEmulation;
+#endif
 
 // TODO: closing seems wonky.
 // adding this for vc2010 compile: error C3861: 'closeQuicktime': identifier not found
@@ -381,7 +385,7 @@ void ofExit(int status){
 //--------------------------------------
 void ofSleepMillis(int millis){
 	#if defined (TARGET_WIN32) || defined (TARGET_WINRT)
-		Sleep(millis);			//windows sleep in milliseconds
+        Sleep(millis);			//windows sleep in milliseconds
 	#else
 		usleep(millis * 1000);	//mac sleep in microseconds - cooler :)
 	#endif
