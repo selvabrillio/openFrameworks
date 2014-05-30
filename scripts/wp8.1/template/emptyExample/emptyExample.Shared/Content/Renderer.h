@@ -9,7 +9,7 @@ namespace emptyExample
 	class Renderer
 	{
 	public:
-		Renderer(const std::shared_ptr<DX::DeviceResources>& deviceResources);
+		Renderer(const std::shared_ptr<Angle::DeviceResources>& deviceResources);
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
@@ -22,7 +22,7 @@ namespace emptyExample
 
 	private:
 		// Cached pointer to device resources.
-		std::shared_ptr<DX::DeviceResources> m_deviceResources;
+        std::shared_ptr<Angle::DeviceResources> m_deviceResources;
 
 		// Variables used with the rendering loop.
 		bool	m_loadingComplete;

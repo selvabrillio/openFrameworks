@@ -8,7 +8,7 @@ using namespace Windows::System::Threading;
 using namespace Concurrency;
 
 // Loads and initializes application assets when the application is loaded.
-emptyExampleMain::emptyExampleMain(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
+emptyExampleMain::emptyExampleMain(const std::shared_ptr<Angle::DeviceResources>& deviceResources) :
 	m_deviceResources(deviceResources), m_pointerLocationX(0.0f)
 {
 	// Register to be notified if the Device is lost or recreated

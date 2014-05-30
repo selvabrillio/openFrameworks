@@ -55,7 +55,7 @@ DirectXPage::DirectXPage():
 
 	// At this point we have access to the device. 
 	// We can create the device-dependent resources.
-	m_deviceResources = std::make_shared<DX::DeviceResources>();
+    m_deviceResources = std::make_shared<Angle::DeviceResources>();
 	m_deviceResources->SetSwapChainPanel(swapChainPanel);
 
 	// Register our SwapChainPanel to get independent input pointer events

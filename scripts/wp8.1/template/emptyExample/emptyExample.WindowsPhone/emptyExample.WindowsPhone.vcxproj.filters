@@ -11,6 +11,12 @@
     <Filter Include="Content">
       <UniqueIdentifier>$guid3$</UniqueIdentifier>
     </Filter>
+    <Filter Include="arm dlls">
+      <UniqueIdentifier>{973e7a23-a6a4-4860-91dd-0f5609a20987}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win32 dlls">
+      <UniqueIdentifier>{2fd568d6-b5b4-4f8e-b306-304314b7db90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
@@ -48,5 +54,25 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="DirectXPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_win32\fmodex_81_x86.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_win32\fmodex_81L_x86.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_win32\FreeImage.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_arm\fmodex_81_arm.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_arm\fmodex_81L_arm.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_arm\FreeImage.dll">
+      <Filter>arm dlls</Filter>
+    </None>
   </ItemGroup>
 </Project>

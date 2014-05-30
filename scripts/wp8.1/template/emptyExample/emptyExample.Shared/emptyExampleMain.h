@@ -7,10 +7,10 @@
 // Renders Direct2D and 3D content on the screen.
 namespace emptyExample
 {
-	class emptyExampleMain : public DX::IDeviceNotify
+	class emptyExampleMain : public Angle::IDeviceNotify
 	{
 	public:
-		emptyExampleMain(const std::shared_ptr<DX::DeviceResources>& deviceResources);
+        emptyExampleMain(const std::shared_ptr<Angle::DeviceResources>& deviceResources);
 		~emptyExampleMain();
 		void CreateWindowSizeDependentResources();
 		void StartTracking() { m_renderer->StartTracking(); }
@@ -31,7 +31,7 @@ namespace emptyExample
 		bool Render();
 
 		// Cached pointer to device resources.
-		std::shared_ptr<DX::DeviceResources> m_deviceResources;
+        std::shared_ptr<Angle::DeviceResources> m_deviceResources;
 
 		// TODO: Replace with your own content renderers.
 		std::unique_ptr<Renderer> m_renderer;

@@ -1,6 +1,13 @@
 ﻿#pragma once
 
-namespace DX
+#include "EGL/egl.h"
+#include "EGL/eglext.h"
+#include "EGL/eglplatform.h"
+#include "GLES2/gl2.h"
+#include "GLES2/gl2ext.h"
+#include "Angle/include/common/winrtangle.h"
+
+namespace Angle
 {
     // Provides an interface for an application that owns DeviceResources to be notified of the device being lost or created.
 	interface IDeviceNotify
@@ -53,6 +60,13 @@ namespace DX
 		float											m_dpi;
 		float											m_compositionScaleX;
 		float											m_compositionScaleY;
+
+        // EGL stuff
+        bool m_bAngleInitialized;
+        EGLDisplay m_eglDisplay;
+        EGLContext m_eglContext;
+        EGLSurface m_eglSurface;
+        Microsoft::WRL::ComPtr<IWinrtEglWindow> m_eglWindow;
 
 		// Transforms used for display orientation.
 		D2D1::Matrix3x2F	m_orientationTransform2D;
