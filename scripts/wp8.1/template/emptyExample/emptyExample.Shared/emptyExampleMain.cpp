@@ -15,7 +15,7 @@ emptyExampleMain::emptyExampleMain(const std::shared_ptr<DX::DeviceResources>& d
 	m_deviceResources->RegisterDeviceNotify(this);
 
 	// TODO: Replace this with your app's content initialization.
-	m_sceneRenderer = std::unique_ptr<Sample3DSceneRenderer>(new Sample3DSceneRenderer(m_deviceResources));
+	m_renderer = std::unique_ptr<Renderer>(new Renderer(m_deviceResources));
 
 	// TODO: Change the timer settings if you want something other than the default variable timestep mode.
 	// e.g. for 60 FPS fixed timestep update logic, call:
@@ -35,7 +35,7 @@ emptyExampleMain::~emptyExampleMain()
 void emptyExampleMain::CreateWindowSizeDependentResources() 
 {
 	// TODO: Replace this with the size-dependent initialization of your app's content.
-	m_sceneRenderer->CreateWindowSizeDependentResources();
+	m_renderer->CreateWindowSizeDependentResources();
 }
 
 void emptyExampleMain::StartRenderLoop()
@@ -79,7 +79,7 @@ void emptyExampleMain::Update()
 	m_timer.Tick([&]()
 	{
 		// TODO: Replace this with your app's content update functions.
-		m_sceneRenderer->Update(m_timer);
+		m_renderer->Update(m_timer);
 	});
 }
 
@@ -87,7 +87,7 @@ void emptyExampleMain::Update()
 void emptyExampleMain::ProcessInput()
 {
 	// TODO: Add per frame input handling here.
-	m_sceneRenderer->TrackingUpdate(m_pointerLocationX);
+	m_renderer->TrackingUpdate(m_pointerLocationX);
 }
 
 // Renders the current frame according to the current application state.
@@ -116,7 +116,7 @@ bool emptyExampleMain::Render()
 
 	// Render the scene objects.
 	// TODO: Replace this with your app's content rendering functions.
-	m_sceneRenderer->Render();
+	m_renderer->Render();
 
 	return true;
 }
@@ -124,12 +124,12 @@ bool emptyExampleMain::Render()
 // Notifies renderers that device resources need to be released.
 void emptyExampleMain::OnDeviceLost()
 {
-	m_sceneRenderer->ReleaseDeviceDependentResources();
+	m_renderer->ReleaseDeviceDependentResources();
 }
 
 // Notifies renderers that device resources may now be recreated.
 void emptyExampleMain::OnDeviceRestored()
 {
-	m_sceneRenderer->CreateDeviceDependentResources();
+	m_renderer->CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
 }

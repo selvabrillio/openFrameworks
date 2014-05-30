@@ -12,7 +12,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Content\Renderer.h">
       <Filter>Content</Filter>
     </ClInclude>
   </ItemGroup>
@@ -22,7 +22,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Content\Renderer.cpp">
       <Filter>Content</Filter>
     </ClCompile>
   </ItemGroup>
