@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)emptyExampleMain.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DirectXHelper.h">
       <Filter>Common</Filter>
@@ -12,26 +11,31 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)emptyExampleMain.h">
+      <Filter>Common</Filter>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Content\Renderer.h">
-      <Filter>Content</Filter>
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)emptyExampleMain.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)emptyExampleMain.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Renderer.cpp">
-      <Filter>Content</Filter>
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">
       <UniqueIdentifier>{02b91ee5-c452-46d4-8504-4ed9eee8fde1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Content">
-      <UniqueIdentifier>{14087258-89bb-4fa6-9130-4314a257c716}</UniqueIdentifier>
+    <Filter Include="OpenFrameworks">
+      <UniqueIdentifier>{90220a9b-9be0-48e0-a1ea-3b82656c92c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

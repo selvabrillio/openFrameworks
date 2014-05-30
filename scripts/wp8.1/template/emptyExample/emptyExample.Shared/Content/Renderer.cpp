@@ -86,7 +86,6 @@ void Renderer::Render()
 		return;
 	}
 
-	auto context = m_deviceResources->GetD3DDeviceContext();
 }
 
 void Renderer::CreateDeviceDependentResources()
