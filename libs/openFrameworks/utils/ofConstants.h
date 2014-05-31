@@ -163,7 +163,10 @@ enum ofTargetPlatform{
 	#ifndef _WIN32_WINNT
 		#define _WIN32_WINNT _WIN32_WINNT_WIN8
 	#endif
-	#define WIN32_LEAN_AND_MEAN
+
+#ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
+#endif
 
 	#if (_MSC_VER)
 		#define NOMINMAX		
