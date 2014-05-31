@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "emptyExampleMain.h"
-#include "Common\DirectXHelper.h"
+#include "Common\AngleHelper.h"
 
 using namespace emptyExample;
 using namespace Windows::Foundation;

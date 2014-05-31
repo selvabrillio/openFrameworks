@@ -1,7 +1,9 @@
 ﻿#include "pch.h"
 #include "DeviceResources.h"
-#include "DirectXHelper.h"
+#include "AngleHelper.h"
+
 #include <windows.ui.xaml.media.dxinterop.h>
+#include <stdexcept>
 
 using namespace D2D1;
 using namespace DirectX;
@@ -62,10 +64,15 @@ namespace Angle
         m_dpi(-1.0f),
         m_compositionScaleX(1.0f),
         m_compositionScaleY(1.0f),
-        m_deviceNotify(nullptr)
+        m_deviceNotify(nullptr),
+        m_eglWindow(nullptr),
+        m_eglContext(nullptr),
+        m_eglDisplay(nullptr),
+        m_eglSurface(nullptr),
+        m_swapChainPanel(nullptr),
+        m_bAngleInitialized(false)
     {
-        CreateDeviceIndependentResources();
-        CreateDeviceResources();
+
     }
 
     // Configures resources that don't depend on the Direct3D device.
@@ -75,13 +82,125 @@ namespace Angle
 
     }
 
+    void DeviceResources::Release()
+    {
+        eglMakeCurrent(NULL, NULL, NULL, NULL);
+
+        if (m_eglDisplay && m_eglContext)
+        {
+            eglDestroyContext(m_eglDisplay, m_eglContext);
+            m_eglContext = nullptr;
+        }
+
+        if (m_eglDisplay && m_eglSurface)
+        {
+            eglDestroySurface(m_eglDisplay, m_eglSurface);
+            m_eglSurface = nullptr;
+        }
+
+        if (m_eglDisplay)
+        {
+            eglTerminate(m_eglDisplay);
+            m_eglDisplay = nullptr;
+        }
+
+        m_eglWindow = nullptr;
+        m_bAngleInitialized = false;
+    }
+
+
     // Configures the Direct3D device, and stores handles to it and the device context.
     void DeviceResources::CreateDeviceResources()
     {
-        // This flag adds support for surfaces with a different color channel ordering
-        // than the API default. It is required for compatibility with Direct2D.
-        UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+        Release();
 
+        // setup EGL
+        EGLint configAttribList [] = {
+            EGL_RED_SIZE, 8,
+            EGL_GREEN_SIZE, 8,
+            EGL_BLUE_SIZE, 8,
+            EGL_ALPHA_SIZE, 8,
+            EGL_DEPTH_SIZE, 8,
+            EGL_STENCIL_SIZE, 8,
+            EGL_SAMPLE_BUFFERS, 0,
+            EGL_NONE
+        };
+        EGLint surfaceAttribList [] = {
+            EGL_NONE, EGL_NONE
+        };
+
+        EGLint numConfigs;
+        EGLint majorVersion;
+        EGLint minorVersion;
+        EGLDisplay display;
+        EGLContext context;
+        EGLSurface surface;
+        EGLConfig config;
+
+        ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_11_0;
+
+#ifdef TARGET_WP8
+        featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
+#endif
+
+        HRESULT hr = CreateWinrtEglWindow(WINRT_EGL_IUNKNOWN(m_swapChainPanel), featureLevel, m_eglWindow.GetAddressOf());
+        if (FAILED(hr)){
+            throw std::runtime_error("DeviceResouces: couldn't create EGL window");
+            return;
+        }
+
+        display = eglGetDisplay(m_eglWindow);
+        if (display == EGL_NO_DISPLAY){
+            throw std::runtime_error("DeviceResouces: couldn't get EGL display");
+            return;
+        }
+
+        if (!eglInitialize(display, &majorVersion, &minorVersion)){
+            throw std::runtime_error("DeviceResouces: failed to initialize EGL");
+            return;
+        }
+
+        // Get configs
+        if (!eglGetConfigs(display, NULL, 0, &numConfigs)){
+            throw std::runtime_error("DeviceResouces: failed to get configurations");
+            return;
+        }
+
+        // Choose config
+        if (!eglChooseConfig(display, configAttribList, &config, 1, &numConfigs)){
+            throw std::runtime_error("DeviceResouces: failed to choose configuration");
+            return;
+        }
+
+        // Create a surface
+        surface = eglCreateWindowSurface(display, config, m_eglWindow, surfaceAttribList);
+        if (surface == EGL_NO_SURFACE){
+            throw std::runtime_error("DeviceResouces: failed to create EGL window surface");
+            return;
+        }
+
+        // Create a GL context
+        EGLint contextAttribs [] = { EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE, EGL_NONE };
+        context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
+        if (context == EGL_NO_CONTEXT){
+            EGLint contextAttribs [] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
+            context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
+            if (context == EGL_NO_CONTEXT){
+                throw std::runtime_error("DeviceResouces: failed to create EGL context");
+                return;
+            }
+        }
+
+        // Make the context current
+        if (!eglMakeCurrent(display, surface, surface, context)){
+            throw std::runtime_error("DeviceResouces: failed to make EGL context current");
+            return;
+        }
+
+        m_eglDisplay = display;
+        m_eglSurface = surface;
+        m_eglContext = context;
+        m_bAngleInitialized = true;
     }
 
     // These resources need to be recreated every time the window size is changed.
@@ -180,25 +299,24 @@ namespace Angle
             spSwapChain2->SetMatrixTransform(&inverseScale)
             );
 #endif // 0
-
-
-
     }
 
     // This method is called when the XAML control is created (or re-created).
     void DeviceResources::SetSwapChainPanel(SwapChainPanel^ panel)
     {
-        DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
-
         m_swapChainPanel = panel;
-        m_logicalSize = Windows::Foundation::Size(static_cast<float>(panel->ActualWidth), static_cast<float>(panel->ActualHeight));
-        m_nativeOrientation = currentDisplayInformation->NativeOrientation;
-        m_currentOrientation = currentDisplayInformation->CurrentOrientation;
-        m_compositionScaleX = panel->CompositionScaleX;
-        m_compositionScaleY = panel->CompositionScaleY;
-        m_dpi = currentDisplayInformation->LogicalDpi;
 
-        CreateWindowSizeDependentResources();
+            
+            DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
+            m_logicalSize = Windows::Foundation::Size(static_cast<float>(panel->ActualWidth), static_cast<float>(panel->ActualHeight));
+            m_nativeOrientation = currentDisplayInformation->NativeOrientation;
+            m_currentOrientation = currentDisplayInformation->CurrentOrientation;
+            m_compositionScaleX = panel->CompositionScaleX;
+            m_compositionScaleY = panel->CompositionScaleY;
+            m_dpi = currentDisplayInformation->LogicalDpi;
+
+            CreateDeviceIndependentResources();
+            CreateDeviceResources();
     }
 
     // This method is called in the event handler for the SizeChanged event.
@@ -247,30 +365,25 @@ namespace Angle
     // This method is called in the event handler for the DisplayContentsInvalidated event.
     void DeviceResources::ValidateDevice()
     {
-
+        HandleDeviceLost();
     }
 
     // Recreate all device resources and set them back to the current state.
     void DeviceResources::HandleDeviceLost()
     {
-#if 0
-        m_swapChain = nullptr;
-
+        Release();
         if (m_deviceNotify != nullptr)
         {
             m_deviceNotify->OnDeviceLost();
         }
 
         CreateDeviceResources();
-        m_d2dContext->SetDpi(m_dpi, m_dpi);
         CreateWindowSizeDependentResources();
 
         if (m_deviceNotify != nullptr)
         {
             m_deviceNotify->OnDeviceRestored();
         }
-#endif // 0
-
     }
 
     // Register our DeviceNotify to be informed on device lost and creation.
@@ -283,12 +396,16 @@ namespace Angle
     // is entering an idle state and that temporary buffers can be reclaimed for use by other apps.
     void DeviceResources::Trim()
     {
-#if 0
-        ComPtr<IDXGIDevice3> dxgiDevice;
-        m_d3dDevice.As(&dxgiDevice);
-
-        dxgiDevice->Trim();
-#endif
+        if (m_eglWindow)
+        {
+            Microsoft::WRL::ComPtr<IUnknown> device = m_eglWindow->GetAngleD3DDevice();
+            Microsoft::WRL::ComPtr<IDXGIDevice3> dxgiDevice;
+            HRESULT result = device.As(&dxgiDevice);
+            if (SUCCEEDED(result))
+            {
+                dxgiDevice->Trim();
+            }
+        }
     }
 
     // Present the contents of the swap chain to the screen.

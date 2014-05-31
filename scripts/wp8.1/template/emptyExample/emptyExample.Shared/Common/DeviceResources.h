@@ -45,7 +45,7 @@ namespace Angle
 		void CreateDeviceResources();
 		void CreateWindowSizeDependentResources();
 		DXGI_MODE_ROTATION ComputeDisplayRotation();
-
+        void Release();
 
 		// Cached reference to the XAML panel.
 		Windows::UI::Xaml::Controls::SwapChainPanel^    m_swapChainPanel;
@@ -74,5 +74,6 @@ namespace Angle
 
 		// The IDeviceNotify can be held directly as it owns the DeviceResources.
 		IDeviceNotify* m_deviceNotify;
+
 	};
 }

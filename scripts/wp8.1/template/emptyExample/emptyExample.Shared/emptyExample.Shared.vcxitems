@@ -22,7 +22,7 @@
     </ClCompile>
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DirectXHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\AngleHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Content\Renderer.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Renderer.cpp" />

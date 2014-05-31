@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "Renderer.h"
 
-#include "..\Common\DirectXHelper.h"
+#include "..\Common\AngleHelper.h"
 
 using namespace emptyExample;
 
