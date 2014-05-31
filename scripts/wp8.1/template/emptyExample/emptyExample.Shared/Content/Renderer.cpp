@@ -14,8 +14,7 @@ Renderer::Renderer(const std::shared_ptr<Angle::DeviceResources>& deviceResource
 	m_tracking(false),
 	m_deviceResources(deviceResources)
 {
-	CreateDeviceDependentResources();
-	CreateWindowSizeDependentResources();
+
 }
 
 // Initializes view parameters when the window size changes.
@@ -28,7 +27,7 @@ void Renderer::CreateWindowSizeDependentResources()
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
-void Renderer::Update(DX::StepTimer const& timer)
+void Renderer::Update(Angle::StepTimer const& timer)
 {
 	if (!m_tracking)
 	{

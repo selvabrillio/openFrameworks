@@ -13,7 +13,7 @@ namespace emptyExample
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
-		void Update(DX::StepTimer const& timer);
+		void Update(Angle::StepTimer const& timer);
 		void Render();
 		void StartTracking();
 		void TrackingUpdate(float positionX);

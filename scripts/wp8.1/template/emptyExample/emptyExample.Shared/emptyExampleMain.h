@@ -40,7 +40,7 @@ namespace emptyExample
 		Concurrency::critical_section m_criticalSection;
 
 		// Rendering loop timer.
-		DX::StepTimer m_timer;
+		Angle::StepTimer m_timer;
 
 		// Track current input pointer position.
 		float m_pointerLocationX;
