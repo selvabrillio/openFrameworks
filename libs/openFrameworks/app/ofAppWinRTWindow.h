@@ -1,14 +1,13 @@
 #pragma once
 
+#include "ofConstants.h"
 #include "ofBaseApp.h"
-
 #include "ofAppBaseWindow.h"
 #include "ofThread.h"
 #include "ofAppRunner.h"
 
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include "common/winrtangle.h"
+#include <queue>
+#include <map>
 
 class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 	public:
@@ -19,6 +18,7 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		virtual void setupOpenGL(int w, int h, int screenMode);
 		virtual void initializeWindow();
 		virtual void runAppViaInfiniteLoop(ofBaseApp * appPtr);
+        void RunOnce();
 
 		//virtual void hideCursor() {}
 		//virtual void showCursor() {}
@@ -62,25 +62,44 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		//#endif
 		void display();
 
-		void SetWindowXaml(Windows::UI::Core::CoreWindow^ window);
-		
-		// EGL stuff
-		//EGLDisplay eglDisplay;
-		//EGLContext eglContext;
-		//EGLSurface eglSurface;
-		
-		ref class WinRTHandler;
+        void OnPointerPressed(Windows::UI::Core::PointerEventArgs^ args);
+        void OnPointerMoved(Windows::UI::Core::PointerEventArgs^ args);
+        void OnPointerReleased(Windows::UI::Core::PointerEventArgs^ args);
+        void OnKeyPressed(Windows::UI::Core::KeyEventArgs^ args);
+        void OnKeyReleased(Windows::UI::Core::KeyEventArgs^ args);
+
+#if 0
+
+        void OnActivated(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView, Windows::ApplicationModel::Activation::IActivatedEventArgs^ args);
+        void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ args);
+        void OnResuming(Platform::Object^ sender, Platform::Object^ args);
+        void OnWindowClosed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CoreWindowEventArgs^ args);
+        void OnVisibilityChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::VisibilityChangedEventArgs^ args);
+
+        void OnWindowSizeChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args);
+#endif // 0
+
+
+
+
+
 	private:
-		ofOrientation orientation;
+        void rotateMouseXY(ofOrientation orientation, double &x, double &y);
+        void NotifyTouchEvent(int id, ofEvent<ofTouchEventArgs>& touchEvents, Windows::UI::Core::PointerEventArgs^ args);
+            
+        ofOrientation orientation;
 		ofBaseApp * ofAppPtr;
-		WinRTHandler ^ winrtHandler;
-		
+
 		// Window dimensions
 		int windowWidth;
 		int windowHeight;
-
+        int currentTouchIndex;
 		int mouseInUse;
 		bool bEnableSetupScreen;
 		bool bMousePressed;
+
+        map<int, int> touchInputTracker;
+        queue<int> availableTouchIndices;
+
 };
 
