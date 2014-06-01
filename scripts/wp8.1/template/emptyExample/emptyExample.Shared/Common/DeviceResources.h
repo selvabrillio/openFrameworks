@@ -56,7 +56,6 @@ namespace Angle
 
 		// Cached device properties.
 		D3D_FEATURE_LEVEL								m_d3dFeatureLevel;
-		Windows::Foundation::Size						m_d3dRenderTargetSize;
 		Windows::Foundation::Size						m_outputSize;
 		Windows::Foundation::Size						m_logicalSize;
 		Windows::Graphics::Display::DisplayOrientations	m_nativeOrientation;

@@ -55,7 +55,6 @@ namespace Angle
     // Constructor for DeviceResources.
     DeviceResources::DeviceResources() :
         m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1),
-        m_d3dRenderTargetSize(),
         m_outputSize(0.0f, 0.0f),
         m_logicalSize(0.0f, 0.0f),
         m_nativeOrientation(DisplayOrientations::None),
@@ -234,9 +233,6 @@ namespace Angle
         // orientation, the dimensions must be reversed.
         DXGI_MODE_ROTATION displayRotation = ComputeDisplayRotation();
 
-        bool swapDimensions = displayRotation == DXGI_MODE_ROTATION_ROTATE90 || displayRotation == DXGI_MODE_ROTATION_ROTATE270;
-        m_d3dRenderTargetSize.Width = swapDimensions ? m_outputSize.Height : m_outputSize.Width;
-        m_d3dRenderTargetSize.Height = swapDimensions ? m_outputSize.Width : m_outputSize.Height;
 
         // Set the proper orientation for the swap chain, and generate 2D and
         // 3D matrix transformations for rendering to the rotated swap chain.
@@ -280,7 +276,7 @@ namespace Angle
         HRESULT result = m_eglWindow.As(&dimensions);
         if (SUCCEEDED(result))
         {
-            dimensions->SetWindowDimensions(m_d3dRenderTargetSize.Width, m_d3dRenderTargetSize.Height);
+            dimensions->SetWindowDimensions(m_outputSize.Width, m_outputSize.Height);
         }
     }
 
