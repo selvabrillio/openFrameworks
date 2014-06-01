@@ -220,6 +220,16 @@ namespace Angle
     // These resources need to be recreated every time the window size is changed.
     void DeviceResources::CreateWindowSizeDependentResources()
     {
+        if (m_logicalSize.Width == 0)
+        {
+            m_logicalSize.Width = 1;
+        }
+
+        if (m_logicalSize.Height == 0)
+        {
+            m_logicalSize.Height = 1;
+        }
+
         // Calculate the necessary swap chain and render target size in pixels.
         m_outputSize.Width = m_logicalSize.Width * m_compositionScaleX;
         m_outputSize.Height = m_logicalSize.Height * m_compositionScaleY;
@@ -276,7 +286,8 @@ namespace Angle
         HRESULT result = m_eglWindow.As(&dimensions);
         if (SUCCEEDED(result))
         {
-            dimensions->SetWindowDimensions(m_outputSize.Width, m_outputSize.Height);
+            //dimensions->SetWindowDimensions(m_outputSize.Width, m_outputSize.Height);
+            dimensions->SetWindowDimensions(m_logicalSize.Width, m_logicalSize.Height);
         }
     }
 

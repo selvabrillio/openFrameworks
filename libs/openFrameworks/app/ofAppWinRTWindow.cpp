@@ -196,23 +196,14 @@ void ofAppWinRTWindow::WinRTHandler::OnResuming(Platform::Object^ sender, Platfo
 
 }
 
-void ofAppWinRTWindow::WinRTHandler::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
-{
-	float dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
-	float scale = dpi / 96.0f;
-	int w = args->Size.Width * scale;
-	int h = args->Size.Height * scale;
-	appWindow->windowWidth = w;
-	appWindow->windowHeight = h;
-	ofNotifyWindowResized(w, h);
-}
+
 #endif
 
 ofAppWinRTWindow::ofAppWinRTWindow()
     : ofAppBaseWindow() 
 {
 
-	windowWidth = windowHeight = 0;
+	windowWidth = windowHeight = 1;
 	orientation = OF_ORIENTATION_DEFAULT;
     currentTouchIndex = 2;
 	ofAppPtr = NULL;
@@ -225,8 +216,8 @@ ofAppWinRTWindow::~ofAppWinRTWindow(){
 }
 
 void ofAppWinRTWindow::setupOpenGL(int w, int h, int screenMode){
-	windowWidth = w;
-	windowHeight = h;
+	windowWidth = w > 0 ? w : 1;
+    windowHeight = h > 0 ? h : 1;
 }
 
 void ofAppWinRTWindow::initializeWindow(){
@@ -638,7 +629,7 @@ void ofAppWinRTWindow::OnKeyReleased(KeyEventArgs^ args)
 
 void ofAppWinRTWindow::OnWindowSizeChanged(int width, int height)
 {
-    windowWidth = width;
-    windowHeight = height;
+    windowWidth = width > 0 ? width : 1;
+    windowHeight = height > 0 ? height : 1;
     ofNotifyWindowResized(windowWidth, windowHeight);
 }

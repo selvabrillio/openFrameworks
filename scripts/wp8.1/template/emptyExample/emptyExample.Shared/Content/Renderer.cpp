@@ -24,13 +24,14 @@ Renderer::Renderer(const std::shared_ptr<Angle::DeviceResources>& deviceResource
 // Initializes view parameters when the window size changes.
 void Renderer::CreateWindowSizeDependentResources()
 {
-	Size outputSize = m_deviceResources->GetOutputSize();
-	XMFLOAT4X4 orientation = m_deviceResources->GetOrientationTransform3D();
-
+    
     if (m_loadingComplete)
     {
+        Size outputSize = m_deviceResources->GetOutputSize();
+        Size logicalSize = m_deviceResources->GetLogicalSize();
         ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
-        window->OnWindowSizeChanged(outputSize.Width, outputSize.Height);
+        //window->OnWindowSizeChanged(outputSize.Width, outputSize.Height);
+        window->OnWindowSizeChanged(logicalSize.Width, logicalSize.Height);
     }
 }
 
