@@ -638,11 +638,7 @@ void ofAppWinRTWindow::OnKeyReleased(KeyEventArgs^ args)
 
 void ofAppWinRTWindow::OnWindowSizeChanged(int width, int height)
 {
-    float dpi = DisplayInformation::GetForCurrentView()->LogicalDpi;
-    float scale = dpi / 96.0f;
-    int w = width * scale;
-    int h = height * scale;
-    windowWidth = w;
-    windowHeight = h;
-    ofNotifyWindowResized(w, h);
+    windowWidth = width;
+    windowHeight = height;
+    ofNotifyWindowResized(windowWidth, windowHeight);
 }
