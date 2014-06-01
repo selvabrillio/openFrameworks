@@ -50,9 +50,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest" />
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="DirectXPage.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -74,5 +71,8 @@
     <None Include="..\..\..\..\..\export\vs\wp8.1_arm\FreeImage.dll">
       <Filter>arm dlls</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
 </Project>

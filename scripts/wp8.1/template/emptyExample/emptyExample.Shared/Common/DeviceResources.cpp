@@ -221,9 +221,6 @@ namespace Angle
     // These resources need to be recreated every time the window size is changed.
     void DeviceResources::CreateWindowSizeDependentResources()
     {
-        // Clear the previous window size specific context.
-
-
         // Calculate the necessary swap chain and render target size in pixels.
         m_outputSize.Width = m_logicalSize.Width * m_compositionScaleX;
         m_outputSize.Height = m_logicalSize.Height * m_compositionScaleY;
@@ -241,22 +238,6 @@ namespace Angle
         m_d3dRenderTargetSize.Width = swapDimensions ? m_outputSize.Height : m_outputSize.Width;
         m_d3dRenderTargetSize.Height = swapDimensions ? m_outputSize.Width : m_outputSize.Height;
 
-#if 0
-        // Associate swap chain with SwapChainPanel
-        // UI changes will need to be dispatched back to the UI thread
-        m_swapChainPanel->Dispatcher->RunAsync(CoreDispatcherPriority::High, ref new DispatchedHandler([=]()
-        {
-            // Get backing native interface for SwapChainPanel
-            ComPtr<ISwapChainPanelNative> panelNative;
-            ThrowIfFailed(
-                reinterpret_cast<IUnknown*>(m_swapChainPanel)->QueryInterface(IID_PPV_ARGS(&panelNative))
-                );
-
-            ThrowIfFailed(
-                panelNative->SetSwapChain(m_swapChain.Get())
-                );
-        }, CallbackContext::Any));
-#endif
         // Set the proper orientation for the swap chain, and generate 2D and
         // 3D matrix transformations for rendering to the rotated swap chain.
         // Note the rotation angle for the 2D and 3D transforms are different.
@@ -294,26 +275,7 @@ namespace Angle
         default:
             throw ref new FailureException();
         }
-
-#if 0
-        ThrowIfFailed(
-            m_swapChain->SetRotation(displayRotation)
-            );
-
-
-        // Setup inverse scale on the swap chain
-        DXGI_MATRIX_3X2_F inverseScale = { 0 };
-        inverseScale._11 = 1.0f / m_compositionScaleX;
-        inverseScale._22 = 1.0f / m_compositionScaleY;
-        ComPtr<IDXGISwapChain2> spSwapChain2;
-        ThrowIfFailed(
-            m_swapChain.As<IDXGISwapChain2>(&spSwapChain2)
-            );
-
-        ThrowIfFailed(
-            spSwapChain2->SetMatrixTransform(&inverseScale)
-            );
-#endif // 0
+        CreateDeviceResources();
     }
 
     // This method is called when the XAML control is created (or re-created).
@@ -327,9 +289,7 @@ namespace Angle
         m_compositionScaleX = panel->CompositionScaleX;
         m_compositionScaleY = panel->CompositionScaleY;
         m_dpi = currentDisplayInformation->LogicalDpi;
-
-//            CreateDeviceIndependentResources();
- //           CreateDeviceResources();
+        CreateWindowSizeDependentResources();
     }
 
     // This method is called in the event handler for the SizeChanged event.
@@ -338,7 +298,6 @@ namespace Angle
         if (m_logicalSize != logicalSize)
         {
             m_logicalSize = logicalSize;
-            CreateDeviceResources();
             CreateWindowSizeDependentResources();
         }
     }

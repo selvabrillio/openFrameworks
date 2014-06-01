@@ -18,6 +18,7 @@ Renderer::Renderer(const std::shared_ptr<Angle::DeviceResources>& deviceResource
 	m_tracking(false),
 	m_deviceResources(deviceResources)
 {
+    CreateDeviceDependentResources();
 }
 
 // Initializes view parameters when the window size changes.
@@ -25,7 +26,15 @@ void Renderer::CreateWindowSizeDependentResources()
 {
 	Size outputSize = m_deviceResources->GetOutputSize();
 	XMFLOAT4X4 orientation = m_deviceResources->GetOrientationTransform3D();
-
+#if 0
+    if (m_loadingComplete)
+    {
+        auto app = ofGetAppPtr();
+        m_deviceResources->aquireContext();
+        app->setup();
+        m_deviceResources->releaseContext();
+    }
+#endif // 0
 
 }
 
@@ -60,11 +69,6 @@ void Renderer::StopTracking()
 // Renders one frame using the vertex and pixel shaders.
 void Renderer::Render()
 {
-    if (!m_loadingComplete)
-    {
-        CreateDeviceDependentResources();
-    }
-
 	if (m_loadingComplete)
 	{
         m_deviceResources->aquireContext();
@@ -84,10 +88,13 @@ void Renderer::Render()
 
 void Renderer::CreateDeviceDependentResources()
 {
-    m_deviceResources->aquireContext();
-    ofmain();
-    m_loadingComplete = true;
-    m_deviceResources->releaseContext();
+    if (!m_loadingComplete)
+    {
+        m_deviceResources->aquireContext();
+        ofmain();
+        m_loadingComplete = true;
+        m_deviceResources->releaseContext();
+    }
 }
 
 void Renderer::ReleaseDeviceDependentResources()

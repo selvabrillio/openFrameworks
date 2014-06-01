@@ -57,34 +57,37 @@ DirectXPage::DirectXPage():
 	swapChainPanel->SizeChanged +=
 		ref new SizeChangedEventHandler(this, &DirectXPage::OnSwapChainPanelSizeChanged);
 
-	// At this point we have access to the device. 
-	// We can create the device-dependent resources.
+#if 0
+    // At this point we have access to the device. 
+    // We can create the device-dependent resources.
     m_deviceResources = std::make_shared<Angle::DeviceResources>();
-	m_deviceResources->SetSwapChainPanel(swapChainPanel);
+    m_deviceResources->SetSwapChainPanel(swapChainPanel);
 
-	// Register our SwapChainPanel to get independent input pointer events
-	auto workItemHandler = ref new WorkItemHandler([this] (IAsyncAction ^)
-	{
-		// The CoreIndependentInputSource will raise pointer events for the specified device types on whichever thread it's created on.
-		m_coreInput = swapChainPanel->CreateCoreIndependentInputSource(
-			Windows::UI::Core::CoreInputDeviceTypes::Mouse |
-			Windows::UI::Core::CoreInputDeviceTypes::Touch |
-			Windows::UI::Core::CoreInputDeviceTypes::Pen
-			);
+    // Register our SwapChainPanel to get independent input pointer events
+    auto workItemHandler = ref new WorkItemHandler([this](IAsyncAction ^)
+    {
+        // The CoreIndependentInputSource will raise pointer events for the specified device types on whichever thread it's created on.
+        m_coreInput = swapChainPanel->CreateCoreIndependentInputSource(
+            Windows::UI::Core::CoreInputDeviceTypes::Mouse |
+            Windows::UI::Core::CoreInputDeviceTypes::Touch |
+            Windows::UI::Core::CoreInputDeviceTypes::Pen
+            );
 
-		// Register for pointer events, which will be raised on the background thread.
-		m_coreInput->PointerPressed += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerPressed);
-		m_coreInput->PointerMoved += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerMoved);
-		m_coreInput->PointerReleased += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerReleased);
+        // Register for pointer events, which will be raised on the background thread.
+        m_coreInput->PointerPressed += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerPressed);
+        m_coreInput->PointerMoved += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerMoved);
+        m_coreInput->PointerReleased += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerReleased);
 
-		// Begin processing input messages as they're delivered.
-		m_coreInput->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
-	});
+        // Begin processing input messages as they're delivered.
+        m_coreInput->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
+    });
 
-	// Run task on a dedicated high priority background thread.
-	m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
+    // Run task on a dedicated high priority background thread.
+    m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 
-	m_main = std::unique_ptr<emptyExampleMain>(new emptyExampleMain(m_deviceResources));
+    m_main = std::unique_ptr<emptyExampleMain>(new emptyExampleMain(m_deviceResources));
+#endif // 0
+
 }
 
 DirectXPage::~DirectXPage()
@@ -120,6 +123,10 @@ void DirectXPage::LoadInternalState(IPropertySet^ state)
 void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
 {
 	m_windowVisible = args->Visible;
+
+    if (m_main == nullptr)
+        return;
+
 	if (m_windowVisible)
 	{
 		m_main->StartRenderLoop();
@@ -135,21 +142,21 @@ void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEvent
 void DirectXPage::OnDpiChanged(DisplayInformation^ sender, Object^ args)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->SetDpi(sender->LogicalDpi);
-	m_main->CreateWindowSizeDependentResources();
+	//m_deviceResources->SetDpi(sender->LogicalDpi);
+	//m_main->CreateWindowSizeDependentResources();
 }
 
 void DirectXPage::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->SetCurrentOrientation(sender->CurrentOrientation);
-	m_main->CreateWindowSizeDependentResources();
+	//m_deviceResources->SetCurrentOrientation(sender->CurrentOrientation);
+	//m_main->CreateWindowSizeDependentResources();
 }
 
 
 void DirectXPage::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
 {
-	critical_section::scoped_lock lock(m_main->GetCriticalSection());
+	//critical_section::scoped_lock lock(m_main->GetCriticalSection());
 	//m_deviceResources->ValidateDevice();
 }
 
@@ -177,15 +184,44 @@ void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ e)
 void DirectXPage::OnCompositionScaleChanged(SwapChainPanel^ sender, Object^ args)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->SetCompositionScale(sender->CompositionScaleX, sender->CompositionScaleY);
-	m_main->CreateWindowSizeDependentResources();
+	//m_deviceResources->SetCompositionScale(sender->CompositionScaleX, sender->CompositionScaleY);
+	//m_main->CreateWindowSizeDependentResources();
 }
 
 void DirectXPage::OnSwapChainPanelSizeChanged(Object^ sender, SizeChangedEventArgs^ e)
 {
-	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->SetLogicalSize(e->NewSize);
-	m_main->CreateWindowSizeDependentResources();
+	//critical_section::scoped_lock lock(m_main->GetCriticalSection());
+	//m_deviceResources->SetLogicalSize(e->NewSize);
+	//m_main->CreateWindowSizeDependentResources();
+
+    // At this point we have access to the device. 
+    // We can create the device-dependent resources.
+    m_deviceResources = std::make_shared<Angle::DeviceResources>();
+    m_deviceResources->SetSwapChainPanel(swapChainPanel);
+
+    // Register our SwapChainPanel to get independent input pointer events
+    auto workItemHandler = ref new WorkItemHandler([this](IAsyncAction ^)
+    {
+        // The CoreIndependentInputSource will raise pointer events for the specified device types on whichever thread it's created on.
+        m_coreInput = swapChainPanel->CreateCoreIndependentInputSource(
+            Windows::UI::Core::CoreInputDeviceTypes::Mouse |
+            Windows::UI::Core::CoreInputDeviceTypes::Touch |
+            Windows::UI::Core::CoreInputDeviceTypes::Pen
+            );
+
+        // Register for pointer events, which will be raised on the background thread.
+        m_coreInput->PointerPressed += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerPressed);
+        m_coreInput->PointerMoved += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerMoved);
+        m_coreInput->PointerReleased += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerReleased);
+
+        // Begin processing input messages as they're delivered.
+        m_coreInput->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
+    });
+
+    // Run task on a dedicated high priority background thread.
+    m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
+
+    m_main = std::unique_ptr<emptyExampleMain>(new emptyExampleMain(m_deviceResources));
     m_main->StartRenderLoop();
 }
 

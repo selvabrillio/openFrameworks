@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Common">
@@ -8,7 +8,7 @@
       <UniqueIdentifier>5c3c2c70-ed60-4059-8d3c-cce5d2f9173c</UniqueIdentifier>
       <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
     </Filter>
-	<Filter Include="Content">
+    <Filter Include="Content">
       <UniqueIdentifier>6fddacd2-e007-4df2-aafc-c8a89a42d794</UniqueIdentifier>
     </Filter>
     <Image Include="Assets\Logo.png">
@@ -23,5 +23,49 @@
     <Image Include="Assets\SplashScreen.png">
       <Filter>Assets</Filter>
     </Image>
+    <Filter Include="arm dlls">
+      <UniqueIdentifier>{6d891f0f-9b4e-4b53-96ec-44086f549cc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win32 dlls">
+      <UniqueIdentifier>{acdb3282-8a99-4146-ad6f-60e4777d1a18}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.xaml.cpp" />
+    <ClCompile Include="DirectXPage.xaml.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.xaml.h" />
+    <ClInclude Include="DirectXPage.xaml.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="emptyExample.Windows_TemporaryKey.pfx" />
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\fmodexMetro.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\fmodexMetroL.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\FreeImage.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\fmodexMetroarm.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\fmodexMetroLarm.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\FreeImage.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="DirectXPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
 </Project>
