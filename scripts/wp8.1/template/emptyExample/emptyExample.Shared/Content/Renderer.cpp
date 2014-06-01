@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
 #include "Renderer.h"
+#include "ofAppRunner.h"
+#include "ofAppWinRTWindow.h"
 
 #include "..\Common\AngleHelper.h"
 
@@ -8,13 +10,14 @@ using namespace emptyExample;
 using namespace DirectX;
 using namespace Windows::Foundation;
 
+extern int ofmain();
+
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
 Renderer::Renderer(const std::shared_ptr<Angle::DeviceResources>& deviceResources) :
 	m_loadingComplete(false),
 	m_tracking(false),
 	m_deviceResources(deviceResources)
 {
-
 }
 
 // Initializes view parameters when the window size changes.
@@ -57,17 +60,34 @@ void Renderer::StopTracking()
 // Renders one frame using the vertex and pixel shaders.
 void Renderer::Render()
 {
-	// Loading is asynchronous. Only draw geometry after it's loaded.
-	if (!m_loadingComplete)
-	{
-		return;
-	}
+    if (!m_loadingComplete)
+    {
+        CreateDeviceDependentResources();
+    }
 
+	if (m_loadingComplete)
+	{
+        m_deviceResources->aquireContext();
+
+#if 0
+        glClearColor(1.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+#else
+
+        ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
+        window->RunOnce();
+#endif
+        m_deviceResources->Present();
+        m_deviceResources->releaseContext();
+    }
 }
 
 void Renderer::CreateDeviceDependentResources()
 {
-
+    m_deviceResources->aquireContext();
+    ofmain();
+    m_loadingComplete = true;
+    m_deviceResources->releaseContext();
 }
 
 void Renderer::ReleaseDeviceDependentResources()

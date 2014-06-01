@@ -54,10 +54,8 @@ void emptyExampleMain::StartRenderLoop()
 		{
 			critical_section::scoped_lock lock(m_criticalSection);
 			Update();
-			if (Render())
-			{
-				m_deviceResources->Present();
-			}
+            Render();
+
 		}
 	});
 

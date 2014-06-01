@@ -30,6 +30,10 @@ DirectXPage::DirectXPage():
 {
 	InitializeComponent();
 
+    // Hide the Status bar
+    Windows::UI::ViewManagement::StatusBar::GetForCurrentView()->HideAsync();
+    Application::Current->DebugSettings->EnableFrameRateCounter = false;
+
 	// Register event handlers for page lifecycle.
 	CoreWindow^ window = Window::Current->CoreWindow;
 
@@ -81,7 +85,6 @@ DirectXPage::DirectXPage():
 	m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 
 	m_main = std::unique_ptr<emptyExampleMain>(new emptyExampleMain(m_deviceResources));
-	m_main->StartRenderLoop();
 }
 
 DirectXPage::~DirectXPage()
@@ -147,7 +150,7 @@ void DirectXPage::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
 void DirectXPage::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->ValidateDevice();
+	//m_deviceResources->ValidateDevice();
 }
 
 void DirectXPage::OnPointerPressed(Object^ sender, PointerEventArgs^ e)
@@ -183,6 +186,7 @@ void DirectXPage::OnSwapChainPanelSizeChanged(Object^ sender, SizeChangedEventAr
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
 	m_deviceResources->SetLogicalSize(e->NewSize);
 	m_main->CreateWindowSizeDependentResources();
+    m_main->StartRenderLoop();
 }
 
 // Uncomment this if using the app bar in your phone application.

@@ -6,7 +6,7 @@
 #include "GLES2/gl2.h"
 #include "GLES2/gl2ext.h"
 #include "Angle/include/common/winrtangle.h"
-
+#include <mutex>
 namespace Angle
 {
     // Provides an interface for an application that owns DeviceResources to be notified of the device being lost or created.
@@ -39,6 +39,9 @@ namespace Angle
 		// D3D Accessors.
 		DirectX::XMFLOAT4X4		GetOrientationTransform3D() const		{ return m_orientationTransform3D; }
 		D2D1::Matrix3x2F		GetOrientationTransform2D() const		{ return m_orientationTransform2D; }
+
+        void aquireContext();
+        void releaseContext();
 
 	private:
 		void CreateDeviceIndependentResources();
@@ -74,6 +77,6 @@ namespace Angle
 
 		// The IDeviceNotify can be held directly as it owns the DeviceResources.
 		IDeviceNotify* m_deviceNotify;
-
+        std::mutex m_mutex;
 	};
 }

@@ -14,6 +14,9 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\ofApp.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\ofApp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)emptyExampleMain.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)emptyExampleMain.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />

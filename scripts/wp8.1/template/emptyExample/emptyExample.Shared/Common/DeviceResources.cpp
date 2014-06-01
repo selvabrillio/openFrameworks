@@ -16,7 +16,6 @@ using namespace Platform;
 
 namespace Angle
 {
-
     // Constants used to calculate screen rotations.
     namespace ScreenRotation
     {
@@ -108,6 +107,22 @@ namespace Angle
         m_bAngleInitialized = false;
     }
 
+
+    void DeviceResources::aquireContext()
+    {
+        std::lock_guard<std::mutex> guard(m_mutex);
+        if (!eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext)){
+            throw std::runtime_error("DeviceResouces: failed to make EGL context current");
+        }
+    }
+
+    void DeviceResources::releaseContext()
+    {
+        std::lock_guard<std::mutex> guard(m_mutex);
+        if (!eglMakeCurrent(NULL, NULL, NULL, NULL)){
+            throw std::runtime_error("DeviceResouces: failed to set EGL context to NULL");
+        }
+    }
 
     // Configures the Direct3D device, and stores handles to it and the device context.
     void DeviceResources::CreateDeviceResources()
@@ -305,18 +320,16 @@ namespace Angle
     void DeviceResources::SetSwapChainPanel(SwapChainPanel^ panel)
     {
         m_swapChainPanel = panel;
+        DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
+        m_logicalSize = Windows::Foundation::Size(static_cast<float>(panel->ActualWidth), static_cast<float>(panel->ActualHeight));
+        m_nativeOrientation = currentDisplayInformation->NativeOrientation;
+        m_currentOrientation = currentDisplayInformation->CurrentOrientation;
+        m_compositionScaleX = panel->CompositionScaleX;
+        m_compositionScaleY = panel->CompositionScaleY;
+        m_dpi = currentDisplayInformation->LogicalDpi;
 
-            
-            DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
-            m_logicalSize = Windows::Foundation::Size(static_cast<float>(panel->ActualWidth), static_cast<float>(panel->ActualHeight));
-            m_nativeOrientation = currentDisplayInformation->NativeOrientation;
-            m_currentOrientation = currentDisplayInformation->CurrentOrientation;
-            m_compositionScaleX = panel->CompositionScaleX;
-            m_compositionScaleY = panel->CompositionScaleY;
-            m_dpi = currentDisplayInformation->LogicalDpi;
-
-            CreateDeviceIndependentResources();
-            CreateDeviceResources();
+//            CreateDeviceIndependentResources();
+ //           CreateDeviceResources();
     }
 
     // This method is called in the event handler for the SizeChanged event.
@@ -325,6 +338,7 @@ namespace Angle
         if (m_logicalSize != logicalSize)
         {
             m_logicalSize = logicalSize;
+            CreateDeviceResources();
             CreateWindowSizeDependentResources();
         }
     }
@@ -411,6 +425,9 @@ namespace Angle
     // Present the contents of the swap chain to the screen.
     void DeviceResources::Present()
     {
+        if (!m_bAngleInitialized)
+            return;
+
         eglSwapBuffers(m_eglDisplay, m_eglSurface);
     }
 
