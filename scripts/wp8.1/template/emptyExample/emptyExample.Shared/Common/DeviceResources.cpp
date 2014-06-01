@@ -275,7 +275,13 @@ namespace Angle
         default:
             throw ref new FailureException();
         }
-        CreateDeviceResources();
+
+        ComPtr<IWinrtEglWindowDimensions> dimensions;
+        HRESULT result = m_eglWindow.As(&dimensions);
+        if (SUCCEEDED(result))
+        {
+            dimensions->SetWindowDimensions(m_d3dRenderTargetSize.Width, m_d3dRenderTargetSize.Height);
+        }
     }
 
     // This method is called when the XAML control is created (or re-created).
@@ -289,7 +295,8 @@ namespace Angle
         m_compositionScaleX = panel->CompositionScaleX;
         m_compositionScaleY = panel->CompositionScaleY;
         m_dpi = currentDisplayInformation->LogicalDpi;
-        CreateWindowSizeDependentResources();
+        CreateDeviceIndependentResources();
+        CreateDeviceResources();
     }
 
     // This method is called in the event handler for the SizeChanged event.
@@ -338,7 +345,7 @@ namespace Angle
     // This method is called in the event handler for the DisplayContentsInvalidated event.
     void DeviceResources::ValidateDevice()
     {
-        HandleDeviceLost();
+        //HandleDeviceLost();
     }
 
     // Recreate all device resources and set them back to the current state.

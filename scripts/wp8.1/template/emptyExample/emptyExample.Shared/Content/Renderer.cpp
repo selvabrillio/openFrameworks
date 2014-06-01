@@ -26,16 +26,12 @@ void Renderer::CreateWindowSizeDependentResources()
 {
 	Size outputSize = m_deviceResources->GetOutputSize();
 	XMFLOAT4X4 orientation = m_deviceResources->GetOrientationTransform3D();
-#if 0
+
     if (m_loadingComplete)
     {
-        auto app = ofGetAppPtr();
-        m_deviceResources->aquireContext();
-        app->setup();
-        m_deviceResources->releaseContext();
+        ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
+        window->OnWindowSizeChanged(outputSize.Width, outputSize.Height);
     }
-#endif // 0
-
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.

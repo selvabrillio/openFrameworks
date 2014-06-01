@@ -67,6 +67,7 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
         void OnPointerReleased(Windows::UI::Core::PointerEventArgs^ args);
         void OnKeyPressed(Windows::UI::Core::KeyEventArgs^ args);
         void OnKeyReleased(Windows::UI::Core::KeyEventArgs^ args);
+        void OnWindowSizeChanged(int width, int height);
 
 #if 0
 

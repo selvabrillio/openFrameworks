@@ -5,8 +5,9 @@
 #include "EGL/eglplatform.h"
 #include "GLES2/gl2.h"
 #include "GLES2/gl2ext.h"
-#include "Angle/include/common/winrtangle.h"
+#include "winrtangle.h"
 #include <mutex>
+
 namespace Angle
 {
     // Provides an interface for an application that owns DeviceResources to be notified of the device being lost or created.

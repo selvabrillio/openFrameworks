@@ -116,6 +116,6 @@ void emptyExampleMain::OnDeviceLost()
 // Notifies renderers that device resources may now be recreated.
 void emptyExampleMain::OnDeviceRestored()
 {
-	m_renderer->CreateDeviceDependentResources();
-	CreateWindowSizeDependentResources();
+	//m_renderer->CreateDeviceDependentResources();
+	//CreateWindowSizeDependentResources();
 }
