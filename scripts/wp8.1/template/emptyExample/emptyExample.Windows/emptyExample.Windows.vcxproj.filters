@@ -46,16 +46,10 @@
     <None Include="..\..\..\..\..\export\vs\winrt_win32\fmodexMetro.dll">
       <Filter>win32 dlls</Filter>
     </None>
-    <None Include="..\..\..\..\..\export\vs\winrt_win32\fmodexMetroL.dll">
-      <Filter>win32 dlls</Filter>
-    </None>
     <None Include="..\..\..\..\..\export\vs\winrt_win32\FreeImage.dll">
       <Filter>win32 dlls</Filter>
     </None>
     <None Include="..\..\..\..\..\export\vs\winrt_arm\fmodexMetroarm.dll">
-      <Filter>arm dlls</Filter>
-    </None>
-    <None Include="..\..\..\..\..\export\vs\winrt_arm\fmodexMetroLarm.dll">
       <Filter>arm dlls</Filter>
     </None>
     <None Include="..\..\..\..\..\export\vs\winrt_arm\FreeImage.dll">

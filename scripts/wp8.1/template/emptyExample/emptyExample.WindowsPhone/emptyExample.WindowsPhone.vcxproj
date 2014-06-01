@@ -90,7 +90,7 @@
   <ItemDefinitionGroup Condition="'$(Platform)'=='ARM'">
     <Link>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>fmodex_81_arm.lib;fmodex_81L_arm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -158,10 +158,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\export\vs\wp8.1_arm\fmodex_81L_arm.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
-    </None>
     <None Include="..\..\..\..\..\export\vs\wp8.1_arm\fmodex_81_arm.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
@@ -169,10 +165,6 @@
     <None Include="..\..\..\..\..\export\vs\wp8.1_arm\FreeImage.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
-    </None>
-    <None Include="..\..\..\..\..\export\vs\wp8.1_win32\fmodex_81L_x86.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </None>
     <None Include="..\..\..\..\..\export\vs\wp8.1_win32\fmodex_81_x86.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>

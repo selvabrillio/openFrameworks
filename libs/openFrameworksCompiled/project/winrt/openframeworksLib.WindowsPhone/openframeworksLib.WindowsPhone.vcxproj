@@ -119,6 +119,7 @@
     </Link>
     <Lib>
       <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>..\..\..\..\..\libs\fmodex\lib\vs</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,6 +139,7 @@
     </Link>
     <Lib>
       <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>..\..\..\..\..\libs\fmodex\lib\vs</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
@@ -157,6 +159,8 @@
     </Link>
     <Lib>
       <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>fmodex_81_arm.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\..\libs\fmodex\lib\vs</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
@@ -176,6 +180,8 @@
     </Link>
     <Lib>
       <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>fmodex_81_arm.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\..\libs\fmodex\lib\vs</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

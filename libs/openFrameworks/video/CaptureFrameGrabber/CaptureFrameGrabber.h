@@ -22,14 +22,14 @@ enum class CaptureStreamType
     Record
 };
 
-ref class CaptureFrameGrabber sealed
+public ref class CaptureFrameGrabber sealed
 {
 public:
 
     // IClosable
     virtual ~CaptureFrameGrabber();
 
-    virtual void ShowCameraSettings();
+    void ShowCameraSettings();
 
 internal:
 

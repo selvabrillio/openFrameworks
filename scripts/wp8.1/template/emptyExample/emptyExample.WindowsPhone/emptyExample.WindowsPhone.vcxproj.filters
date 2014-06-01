@@ -56,16 +56,10 @@
     <None Include="..\..\..\..\..\export\vs\wp8.1_win32\fmodex_81_x86.dll">
       <Filter>win32 dlls</Filter>
     </None>
-    <None Include="..\..\..\..\..\export\vs\wp8.1_win32\fmodex_81L_x86.dll">
-      <Filter>win32 dlls</Filter>
-    </None>
     <None Include="..\..\..\..\..\export\vs\wp8.1_win32\FreeImage.dll">
       <Filter>win32 dlls</Filter>
     </None>
     <None Include="..\..\..\..\..\export\vs\wp8.1_arm\fmodex_81_arm.dll">
-      <Filter>arm dlls</Filter>
-    </None>
-    <None Include="..\..\..\..\..\export\vs\wp8.1_arm\fmodex_81L_arm.dll">
       <Filter>arm dlls</Filter>
     </None>
     <None Include="..\..\..\..\..\export\vs\wp8.1_arm\FreeImage.dll">
