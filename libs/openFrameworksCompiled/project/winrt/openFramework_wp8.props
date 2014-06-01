@@ -4,7 +4,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_PropertySheetDisplayName>openFrameworks_WP8_1</_PropertySheetDisplayName>
-    <OutDir>$(SolutionDir)bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
