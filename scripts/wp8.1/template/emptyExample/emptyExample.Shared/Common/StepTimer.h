@@ -2,7 +2,7 @@
 
 #include <wrl.h>
 
-namespace Angle
+namespace AngleApp
 {
 	// Helper class for animation and simulation timing.
 	class StepTimer

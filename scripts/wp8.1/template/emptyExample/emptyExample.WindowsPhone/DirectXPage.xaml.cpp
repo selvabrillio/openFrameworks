@@ -59,7 +59,7 @@ DirectXPage::DirectXPage():
 
 	// At this point we have access to the device. 
 	// We can create the device-dependent resources.
-    m_deviceResources = std::make_shared<Angle::DeviceResources>();
+    m_deviceResources = std::make_shared<AngleApp::DeviceResources>();
 	m_deviceResources->SetSwapChainPanel(swapChainPanel);
 
 	// Register our SwapChainPanel to get independent input pointer events
@@ -84,7 +84,7 @@ DirectXPage::DirectXPage():
 	// Run task on a dedicated high priority background thread.
 	m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 
-	m_main = std::unique_ptr<emptyExampleMain>(new emptyExampleMain(m_deviceResources));
+    m_main = std::unique_ptr<AngleApp::AngleAppMain>(new AngleApp::AngleAppMain(m_deviceResources));
     m_main->StartRenderLoop();
 }
 
@@ -161,22 +161,17 @@ void DirectXPage::OnDisplayContentsInvalidated(DisplayInformation^ sender, Objec
 void DirectXPage::OnPointerPressed(Object^ sender, PointerEventArgs^ e)
 {
 	// When the pointer is pressed begin tracking the pointer movement.
-	m_main->StartTracking();
+    m_main->OnPointerPressed(e);
 }
 
 void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ e)
 {
-	// Update the pointer tracking code.
-	if (m_main->IsTracking())
-	{
-		m_main->TrackingUpdate(e->CurrentPoint->Position.X);
-	}
+    m_main->OnPointerMoved(e);
 }
 
 void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ e)
 {
-	// Stop tracking pointer movement when the pointer is released.
-	m_main->StopTracking();
+    m_main->OnPointerReleased(e);
 }
 
 void DirectXPage::OnCompositionScaleChanged(SwapChainPanel^ sender, Object^ args)

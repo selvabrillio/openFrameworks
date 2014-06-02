@@ -8,7 +8,7 @@
 #include "DirectXPage.g.h"
 
 #include "Common\DeviceResources.h"
-#include "emptyExampleMain.h"
+#include "AngleAppMain.h"
 
 namespace emptyExample
 {
@@ -51,8 +51,8 @@ namespace emptyExample
 		void OnPointerReleased(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 
 		// Resources used to render the DirectX content in the XAML page background.
-        std::shared_ptr<Angle::DeviceResources> m_deviceResources;
-		std::unique_ptr<emptyExampleMain> m_main; 
+        std::shared_ptr<AngleApp::DeviceResources> m_deviceResources;
+        std::unique_ptr<AngleApp::AngleAppMain> m_main;
 		bool m_windowVisible;
 	};
 }

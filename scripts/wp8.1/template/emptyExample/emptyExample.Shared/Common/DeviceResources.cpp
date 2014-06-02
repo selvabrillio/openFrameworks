@@ -14,7 +14,7 @@ using namespace Windows::UI::Core;
 using namespace Windows::UI::Xaml::Controls;
 using namespace Platform;
 
-namespace Angle
+namespace AngleApp
 {
     // Constants used to calculate screen rotations.
     namespace ScreenRotation

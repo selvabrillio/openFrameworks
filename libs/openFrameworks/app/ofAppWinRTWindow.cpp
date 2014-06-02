@@ -381,7 +381,8 @@ void ofAppWinRTWindow::OnPointerReleased(PointerEventArgs^ args)
 
 void ofAppWinRTWindow::OnPointerMoved(PointerEventArgs^ args)
 {
-    float scale = DisplayInformation::GetForCurrentView()->LogicalDpi / 96.0f;
+    //float scale = DisplayInformation::GetForCurrentView()->LogicalDpi / 96.0f;
+    float scale = 1.0;
     double x = args->CurrentPoint->Position.X * scale;
     double y = args->CurrentPoint->Position.Y * scale;
     rotateMouseXY(ofGetOrientation(), x, y);

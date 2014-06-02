@@ -16,7 +16,7 @@ namespace Media {
 
 class MediaSink;
 
-enum class CaptureStreamType
+public enum class CaptureStreamType
 {
     Preview = 0,
     Record

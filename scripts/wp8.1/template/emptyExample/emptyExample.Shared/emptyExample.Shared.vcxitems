@@ -16,9 +16,13 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\main.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\ofApp.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\InputEvent.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\Renderer.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\ofApp.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)emptyExampleMain.h" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)emptyExampleMain.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\InputEvent.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Renderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AngleAppMain.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AngleAppMain.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -27,8 +31,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\AngleHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Content\Renderer.h" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Content\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />

@@ -159,7 +159,7 @@
     </Link>
     <Lib>
       <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>fmodex_81_arm.lib;</AdditionalDependencies>
+      <AdditionalDependencies>fmodex_81_arm.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\..\libs\fmodex\lib\vs</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -180,7 +180,7 @@
     </Link>
     <Lib>
       <AdditionalOptions> /IGNORE:4264 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>fmodex_81_arm.lib;</AdditionalDependencies>
+      <AdditionalDependencies>fmodex_81_arm.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\..\libs\fmodex\lib\vs</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

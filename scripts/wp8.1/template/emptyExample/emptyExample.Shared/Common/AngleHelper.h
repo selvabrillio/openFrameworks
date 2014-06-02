@@ -2,7 +2,7 @@
 
 #include <ppltasks.h>	// For create_task
 
-namespace Angle
+namespace AngleApp
 {
 	inline void ThrowIfFailed(HRESULT hr)
 	{

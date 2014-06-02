@@ -144,11 +144,16 @@ HRESULT ExceptionBoundary(Lambda&& lambda)
 }
 
 // Wraps an IMFSample in a C++/CX class to be able to define a callback delegate
-ref class MediaSample sealed
+
+namespace Media
+{ 
+public ref class MediaSample sealed
 {
 internal:
     MW::ComPtr<IMFSample> Sample;
 };
 
 delegate void MediaSampleHandler(MediaSample^ sample);
+
+}
 
