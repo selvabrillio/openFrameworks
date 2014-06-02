@@ -237,11 +237,27 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
     </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\libEGL.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_arm\libGLESv2.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
+    </None>
     <None Include="..\..\..\..\..\export\vs\winrt_win32\fmodexMetro.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </None>
     <None Include="..\..\..\..\..\export\vs\winrt_win32\FreeImage.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\libEGL.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\winrt_win32\libGLESv2.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </None>
@@ -256,12 +272,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\angle\projects\src\libEGL_UA\libEGL_UA.Windows\libEGL_UA.Windows.vcxproj">
-      <Project>{19c18022-140e-4b99-bfd8-0f05e63365d7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\angle\projects\src\libGLESv2_UA\libGLESv2_UA.Windows\libGLESv2_UA.Windows.vcxproj">
-      <Project>{2f73e65c-1a04-475b-acaf-b94ae0805a11}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\libs\openFrameworksCompiled\project\winrt\openframeworksLib.Windows\openframeworksLib.Windows.vcxproj">
       <Project>{855aa510-479c-4e83-baca-d8ab874166ea}</Project>
     </ProjectReference>

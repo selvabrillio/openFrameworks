@@ -147,12 +147,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\angle\projects\src\libEGL_UA\libEGL_UA.WindowsPhone\libEGL_UA.WindowsPhone.vcxproj">
-      <Project>{83a28ac5-cd9d-4dce-82bc-aa8416f385d2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\angle\projects\src\libGLESv2_UA\libGLESv2_UA.WindowsPhone\libGLESv2_UA.WindowsPhone.vcxproj">
-      <Project>{c389feeb-2480-42f8-b93c-1f87db06b54d}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\libs\openFrameworksCompiled\project\winrt\openframeworksLib.WindowsPhone\openframeworksLib.WindowsPhone.vcxproj">
       <Project>{66673a05-3c6d-4c38-a88c-156489a84e16}</Project>
     </ProjectReference>
@@ -166,11 +160,27 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
     </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_arm\libEGL.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_arm\libGLESv2.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
+    </None>
     <None Include="..\..\..\..\..\export\vs\wp8.1_win32\fmodex_81_x86.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </None>
     <None Include="..\..\..\..\..\export\vs\wp8.1_win32\FreeImage.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_win32\libEGL.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_win32\libGLESv2.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </None>

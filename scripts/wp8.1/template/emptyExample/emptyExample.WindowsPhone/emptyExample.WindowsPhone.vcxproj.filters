@@ -65,6 +65,18 @@
     <None Include="..\..\..\..\..\export\vs\wp8.1_arm\FreeImage.dll">
       <Filter>arm dlls</Filter>
     </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_arm\libEGL.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_arm\libGLESv2.dll">
+      <Filter>arm dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_win32\libEGL.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
+    <None Include="..\..\..\..\..\export\vs\wp8.1_win32\libGLESv2.dll">
+      <Filter>win32 dlls</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />

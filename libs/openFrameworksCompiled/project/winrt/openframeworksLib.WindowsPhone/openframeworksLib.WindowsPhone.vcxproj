@@ -18,14 +18,6 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\angle\projects\src\libEGL_UA\libEGL_UA.WindowsPhone\libEGL_UA.WindowsPhone.vcxproj">
-      <Project>{83a28ac5-cd9d-4dce-82bc-aa8416f385d2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\..\angle\projects\src\libGLESv2_UA\libGLESv2_UA.WindowsPhone\libGLESv2_UA.WindowsPhone.vcxproj">
-      <Project>{c389feeb-2480-42f8-b93c-1f87db06b54d}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{66673a05-3c6d-4c38-a88c-156489a84e16}</ProjectGuid>
     <RootNamespace>openframeworksLib</RootNamespace>
