@@ -287,7 +287,7 @@ namespace AngleApp
         if (SUCCEEDED(result))
         {
             //dimensions->SetWindowDimensions(m_outputSize.Width, m_outputSize.Height);
-            dimensions->SetWindowDimensions(m_logicalSize.Width, m_logicalSize.Height);
+            dimensions->SetWindowDimensions(static_cast<int>(m_logicalSize.Width), static_cast<int>(m_logicalSize.Height));
         }
     }
 
