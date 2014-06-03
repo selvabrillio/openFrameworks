@@ -36,6 +36,12 @@ bool visualStudioProject::createProjectFile(){
 	ofFile::copyFromTo(innerDirTemplate+"emptyExample.Windows.vcxproj.filters",filters,false, true);
 	ofFile::copyFromTo(innerDirTemplate+"Package.appxmanifest",appMan,false, true);
 	ofFile::copyFromTo(innerDirTemplate+"emptyExample.Windows_TemporaryKey.pfx",tempKey,false, true);
+	ofFile::copyFromTo(innerDirTemplate+"App.xaml",projectDir+innerDir+"App.xaml",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"App.xaml.cpp",projectDir+innerDir+"App.xaml.cpp",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"App.xaml.h",projectDir+innerDir+"App.xaml.h",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"DirectXPage.xaml",projectDir+innerDir+"DirectXPage.xaml",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"DirectXPage.xaml.cpp",projectDir+innerDir+"DirectXPage.xaml.cpp",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"DirectXPage.xaml.h",projectDir+innerDir+"DirectXPage.xaml.h",false, true);
 	ofDirectory(innerDirTemplate+"Assets").copyTo(ofFilePath::join(projectDir, innerDir + "Assets"));
 	
     findandreplaceInTexfile(solution,"emptyExample",projectName);
@@ -43,6 +49,12 @@ bool visualStudioProject::createProjectFile(){
     findandreplaceInTexfile(project,"emptyExample",projectName);
     findandreplaceInTexfile(filters,"emptyExample",projectName);
 	findandreplaceInTexfile(appMan, "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"App.xaml", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"App.xaml.cpp", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"App.xaml.h", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"DirectXPage.xaml", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"DirectXPage.xaml.cpp", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"DirectXPage.xaml.h", "emptyExample", projectName);
 
 	{
 		ofFile filterFile(filters);
@@ -82,11 +94,23 @@ bool visualStudioProject::createProjectFile(){
 	ofFile::copyFromTo(innerDirTemplate+"emptyExample.WindowsPhone.vcxproj",project,false, true);
 	ofFile::copyFromTo(innerDirTemplate+"emptyExample.WindowsPhone.vcxproj.filters",filters,false, true);
 	ofFile::copyFromTo(innerDirTemplate+"Package.appxmanifest",appMan,false, true);
+	ofFile::copyFromTo(innerDirTemplate+"App.xaml",projectDir+innerDir+"App.xaml",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"App.xaml.cpp",projectDir+innerDir+"App.xaml.cpp",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"App.xaml.h",projectDir+innerDir+"App.xaml.h",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"DirectXPage.xaml",projectDir+innerDir+"DirectXPage.xaml",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"DirectXPage.xaml.cpp",projectDir+innerDir+"DirectXPage.xaml.cpp",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"DirectXPage.xaml.h",projectDir+innerDir+"DirectXPage.xaml.h",false, true);
 	ofDirectory(innerDirTemplate+"Assets").copyTo(ofFilePath::join(projectDir, innerDir + "Assets"));
 	
     findandreplaceInTexfile(project,"emptyExample",projectName);
     findandreplaceInTexfile(filters,"emptyExample",projectName);
 	findandreplaceInTexfile(appMan, "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"App.xaml", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"App.xaml.cpp", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"App.xaml.h", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"DirectXPage.xaml", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"DirectXPage.xaml.cpp", "emptyExample", projectName);
+	findandreplaceInTexfile(projectDir+innerDir+"DirectXPage.xaml.h", "emptyExample", projectName);
 	
 	{
 		ofFile filterFile(filters);
@@ -124,6 +148,11 @@ bool visualStudioProject::createProjectFile(){
 	ofDirectory::createDirectory(projectDir + innerDir);
 	ofFile::copyFromTo(innerDirTemplate+"emptyExample.Shared.vcxitems",project,false, true);
 	ofFile::copyFromTo(innerDirTemplate+"emptyExample.Shared.vcxitems.filters",filters,false, true);
+	ofFile::copyFromTo(innerDirTemplate+"AngleAppMain.cpp",projectDir+innerDir+"AngleAppMain.cpp",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"AngleAppMain.h",projectDir+innerDir+"AngleAppMain.h",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"pch.cpp",projectDir+innerDir+"pch.cpp",false, true);
+	ofFile::copyFromTo(innerDirTemplate+"pch.h",projectDir+innerDir+"pch.h",false, true);
+	ofDirectory(innerDirTemplate+"Common").copyTo(ofFilePath::join(projectDir, innerDir + "Common"));
 	
     findandreplaceInTexfile(project,"emptyExample",projectName);
     findandreplaceInTexfile(filters,"emptyExample",projectName);
@@ -192,7 +221,8 @@ bool visualStudioProject::createProjectFile(){
 		{
 			mainLocation = textFile.find("int main( ){");
 			textFile.insert(mainLocation + strlen("int main( ){"), "\n#endif");
-			textFile.insert(mainLocation, "#if defined(TARGET_WINRT)\n[Platform::MTAThread]\nint main(Platform::Array<Platform::String^>^){\n#else\n");
+			//textFile.insert(mainLocation, "#if defined(TARGET_WINRT)\n[Platform::MTAThread]\nint main(Platform::Array<Platform::String^>^){\n#else\n");
+			textFile.insert(mainLocation, "#if defined(TARGET_WINRT)\nint ofmain(){\n#else\n"); //universal app version
 
 			//write back out to the main file
 			fp = fopen(mainFilePath.c_str(), "w");
