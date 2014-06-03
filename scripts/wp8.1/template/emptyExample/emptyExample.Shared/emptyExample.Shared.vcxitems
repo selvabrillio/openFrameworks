@@ -35,4 +35,7 @@
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="$(MSBuildThisFileDirectory)placeholderImage.bmp" />
+  </ItemGroup>
 </Project>

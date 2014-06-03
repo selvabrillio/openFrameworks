@@ -53,4 +53,7 @@
       <UniqueIdentifier>{0a045102-4087-44a0-adca-dae90cc0a0c1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="$(MSBuildThisFileDirectory)placeholderImage.bmp" />
+  </ItemGroup>
 </Project>
