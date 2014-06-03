@@ -85,7 +85,7 @@ string testApp::setupForTarget(int targ){
             break;
         case OF_TARGET_WINVS:
             project = new visualStudioProject;
-            target = "winrt";
+            target = "wp8.1";
             break;
         case OF_TARGET_IPHONE:
             project = new xcodeProject();
