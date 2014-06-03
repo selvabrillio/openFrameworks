@@ -306,8 +306,11 @@ typedef TESSindex ofIndexType;
 #include <cstdlib>
 #endif
 
+#if defined(TARGET_WINRT) //winrt apps shouldn't exit
+#define OF_EXIT_APP(val)
+#else
 #define OF_EXIT_APP(val)		std::exit(val);
-
+#endif
 
 
 
