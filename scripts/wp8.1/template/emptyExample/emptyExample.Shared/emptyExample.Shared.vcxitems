@@ -36,7 +36,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <_CustomResource Include="$(MSBuildThisFileDirectory)data\**\*">
+    <_CustomResource Include="$(MSBuildThisFileDirectory)..\..\bin\data\**\*">
       <Link>data\%(RecursiveDir)%(FileName)%(Extension)</Link>
       <DeploymentContent>true</DeploymentContent>
     </_CustomResource>
