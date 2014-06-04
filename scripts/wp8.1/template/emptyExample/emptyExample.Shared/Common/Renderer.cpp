@@ -10,16 +10,17 @@ using namespace DirectX;
 using namespace Windows::Foundation;
 using namespace Windows::UI::Core;
 
-extern int ofmain();
+extern void ofmain();
 
 namespace AngleApp
 {
 
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
-Renderer::Renderer(const std::shared_ptr<AngleApp::DeviceResources>& deviceResources) :
-	m_loadingComplete(false),
-	m_deviceResources(deviceResources)
+Renderer::Renderer(const std::shared_ptr<AngleApp::DeviceResources>& deviceResources) 
+    : m_loadingComplete(false)
+    , m_setupComplete(false)
+    , m_deviceResources(deviceResources)
 {
     CreateDeviceDependentResources();
 }
@@ -27,13 +28,22 @@ Renderer::Renderer(const std::shared_ptr<AngleApp::DeviceResources>& deviceResou
 // Initializes view parameters when the window size changes.
 void Renderer::CreateWindowSizeDependentResources()
 {
-    if (m_loadingComplete)
+    m_deviceResources->aquireContext();
+    Size outputSize = m_deviceResources->GetOutputSize();
+    Size logicalSize = m_deviceResources->GetLogicalSize();
+    
+    auto window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
+    if (!m_setupComplete)
     {
-        Size outputSize = m_deviceResources->GetOutputSize();
-        Size logicalSize = m_deviceResources->GetLogicalSize();
-        ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
+        window->winrtSetupComplete(logicalSize.Width, logicalSize.Height);
+        m_setupComplete = true;
+    }
+    else
+    {
         window->OnWindowSizeChanged(logicalSize.Width, logicalSize.Height);
     }
+    m_deviceResources->releaseContext();
+
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -83,7 +93,7 @@ void Renderer::ProcessEvents()
 // Renders one frame using the vertex and pixel shaders.
 void Renderer::Render()
 {
-	if (m_loadingComplete)
+    if (m_setupComplete)
 	{
         m_deviceResources->aquireContext();
 
@@ -93,7 +103,7 @@ void Renderer::Render()
         glClear(GL_COLOR_BUFFER_BIT);
 #else
         ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
-        window->RunOnce();
+        window->runOnce();
 #endif
         m_deviceResources->Present();
 
@@ -103,6 +113,7 @@ void Renderer::Render()
 
 void Renderer::CreateDeviceDependentResources()
 {
+
     if (!m_loadingComplete)
     {
         m_deviceResources->aquireContext();

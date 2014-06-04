@@ -33,7 +33,8 @@ namespace AngleApp
         void ProcessEvents();
         
         // Variables used with the rendering loop.
-		bool	m_loadingComplete;
+        bool	m_loadingComplete;
+        bool	m_setupComplete;
 
          std::queue<std::shared_ptr<InputEvent>> mInputEvents;
         std::mutex mMutex;

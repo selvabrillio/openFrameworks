@@ -70,19 +70,7 @@ using namespace Windows::Graphics::Display;
 using namespace concurrency;
 
 #if 0
-void ofAppWinRTWindow::WinRTHandler::Initialize(CoreApplicationView^ applicationView)
-{
-	m_windowClosed = false;
-	m_windowVisible = true;
-	applicationView->Activated +=
-		ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &WinRTHandler::OnActivated);
 
-	CoreApplication::Suspending +=
-		ref new EventHandler<SuspendingEventArgs^>(this, &WinRTHandler::OnSuspending);
-
-	CoreApplication::Resuming +=
-		ref new EventHandler<Platform::Object^>(this, &WinRTHandler::OnResuming);
-}
 
 void ofAppWinRTWindow::WinRTHandler::SetWindow(CoreWindow^ window)
 {
@@ -210,6 +198,8 @@ ofAppWinRTWindow::ofAppWinRTWindow()
 
 	mouseInUse = 0;
 	bEnableSetupScreen = true;
+    m_bWinRTSetupComplete = false;
+    m_screenMode = OF_WINDOW;
 }
 
 ofAppWinRTWindow::~ofAppWinRTWindow(){
@@ -218,21 +208,34 @@ ofAppWinRTWindow::~ofAppWinRTWindow(){
 void ofAppWinRTWindow::setupOpenGL(int w, int h, int screenMode){
 	windowWidth = w > 0 ? w : 1;
     windowHeight = h > 0 ? h : 1;
+    m_screenMode = screenMode;
 }
 
 void ofAppWinRTWindow::initializeWindow(){
 }
 
+// we don't acutally run until winrtSetupComplete is called
 void ofAppWinRTWindow::runAppViaInfiniteLoop(ofBaseApp * appPtr){
 	ofAppPtr = appPtr;
+
+}
+
+void ofAppWinRTWindow::winrtSetupComplete(int width, int height){
+
+    m_bWinRTSetupComplete = true;
+    setupOpenGL(width, height, m_screenMode);
     ofGLReadyCallback();
     ofNotifySetup();
 }
 
-void ofAppWinRTWindow::RunOnce()
+
+void ofAppWinRTWindow::runOnce()
 {
-    ofNotifyUpdate();
-    display();
+    if (m_bWinRTSetupComplete)
+    {
+        ofNotifyUpdate();
+        display();
+    }
 }
 
 
