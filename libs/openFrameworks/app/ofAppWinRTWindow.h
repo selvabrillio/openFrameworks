@@ -70,17 +70,6 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
         void OnKeyReleased(Windows::UI::Core::KeyEventArgs^ args);
         void OnWindowSizeChanged(int width, int height);
 
-#if 0
-
-        void OnActivated(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView, Windows::ApplicationModel::Activation::IActivatedEventArgs^ args);
-        void OnSuspending(Platform::Object^ sender, Windows::ApplicationModel::SuspendingEventArgs^ args);
-        void OnResuming(Platform::Object^ sender, Platform::Object^ args);
-        void OnWindowClosed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CoreWindowEventArgs^ args);
-        void OnVisibilityChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::VisibilityChangedEventArgs^ args);
-
-        void OnWindowSizeChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args);
-#endif // 0
-
 
 
 
