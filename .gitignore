@@ -64,6 +64,7 @@ xcuserdata
 *.aps
 ipch/
 Generated Files/
+*.bak
 
 # Eclipse
 .metadata
