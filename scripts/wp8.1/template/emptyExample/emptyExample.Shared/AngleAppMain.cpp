@@ -115,6 +115,17 @@ void AngleAppMain::OnDeviceRestored()
 	//CreateWindowSizeDependentResources();
 }
 
+void AngleAppMain::OnKeyPressed(Windows::UI::Core::KeyEventArgs^ e)
+{
+	m_renderer->AddKeyboardEvent(KeyboardEventType::KeyDown, e);
+
+}
+
+void AngleAppMain::OnKeyReleased(Windows::UI::Core::KeyEventArgs^ e)
+{
+	m_renderer->AddKeyboardEvent(KeyboardEventType::KeyUp, e);
+}
+
 
 void AngleAppMain::OnPointerPressed(PointerEventArgs^ e)
 {

@@ -19,6 +19,11 @@ namespace AngleApp
         void OnPointerPressed(Windows::UI::Core::PointerEventArgs^ e);
         void OnPointerMoved(Windows::UI::Core::PointerEventArgs^ e);
         void OnPointerReleased(Windows::UI::Core::PointerEventArgs^ e);
+
+		void OnKeyPressed(Windows::UI::Core::KeyEventArgs^ e);
+		void OnKeyReleased( Windows::UI::Core::KeyEventArgs^ e);
+
+
         void StopTracking() { m_tracking = false; }
         bool IsTracking() { return m_tracking; }
         void StartRenderLoop();

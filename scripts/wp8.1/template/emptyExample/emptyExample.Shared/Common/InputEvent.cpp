@@ -52,20 +52,29 @@ void PointerEvent::execute(Renderer* renderer)
 }
 
 KeyboardEvent::KeyboardEvent()
-    : m_text(nullptr)
+    : m_args(nullptr)
 {
 
 }
 
-KeyboardEvent::KeyboardEvent(Platform::String^ text)
-    : m_text(text)
+KeyboardEvent::KeyboardEvent(KeyboardEventType type, Windows::UI::Core::KeyEventArgs^ e)
+	: m_args(e)
+	, m_type(type)
 {
 
 }
 
 void KeyboardEvent::execute(Renderer* renderer)
 {
-    //renderer->OnKeyPressed(m_text.Get());
+	switch (m_type)
+	{
+		case KeyboardEventType::KeyDown:
+			renderer->OnKeyPressed(m_args.Get());
+			break;
+		case KeyboardEventType::KeyUp:
+			renderer->OnKeyReleased(m_args.Get());
+			break;
+	}
 }
 
 }

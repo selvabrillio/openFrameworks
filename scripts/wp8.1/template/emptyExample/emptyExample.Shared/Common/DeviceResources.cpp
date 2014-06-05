@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "DeviceResources.h"
 #include "AngleHelper.h"
+#include "ofConstants.h"
 
 #include <windows.ui.xaml.media.dxinterop.h>
 #include <stdexcept>
