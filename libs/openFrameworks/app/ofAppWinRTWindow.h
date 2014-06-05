@@ -18,7 +18,8 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		virtual void setupOpenGL(int w, int h, int screenMode);
 		virtual void initializeWindow();
 		virtual void runAppViaInfiniteLoop(ofBaseApp * appPtr);
-        void RunOnce();
+        void winrtSetupComplete(int width, int height);
+        void runOnce();
 
 		//virtual void hideCursor() {}
 		//virtual void showCursor() {}
@@ -94,6 +95,7 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		// Window dimensions
 		int windowWidth;
 		int windowHeight;
+        int m_screenMode;
         int currentTouchIndex;
 		int mouseInUse;
 		bool bEnableSetupScreen;
@@ -102,5 +104,6 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
         map<int, int> touchInputTracker;
         queue<int> availableTouchIndices;
 
+        bool m_bWinRTSetupComplete;
 };
 

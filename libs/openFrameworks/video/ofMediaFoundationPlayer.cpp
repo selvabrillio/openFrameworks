@@ -123,9 +123,6 @@ ofMediaFoundationPlayer::~ofMediaFoundationPlayer(){
 
     closeMovie();
     clearMemory();
-
-
-
 }
 
 //---------------------------------------------------------------------------
@@ -228,7 +225,7 @@ void ofMediaFoundationPlayer::update(){
         }
         else
         {
-            bIsFrameNew = true;
+            bIsFrameNew = false;
         }
     }
 }
