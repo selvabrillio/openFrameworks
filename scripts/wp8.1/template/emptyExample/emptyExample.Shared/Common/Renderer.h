@@ -20,10 +20,15 @@ namespace AngleApp
 		void ReleaseDeviceDependentResources();
 		void Update(AngleApp::StepTimer const& timer);
 		void Render();
-        void AddPointerEvent(PointerEventType type, Windows::UI::Core::PointerEventArgs^ args);
-        void OnPointerPressed(Windows::UI::Core::PointerEventArgs^ e);
+		void AddPointerEvent(PointerEventType type, Windows::UI::Core::PointerEventArgs^ args);
+		void AddKeyboardEvent(KeyboardEventType type, Windows::UI::Core::KeyEventArgs^ args);
+
+		void OnPointerPressed(Windows::UI::Core::PointerEventArgs^ e);
         void OnPointerMoved(Windows::UI::Core::PointerEventArgs^ e);
         void OnPointerReleased(Windows::UI::Core::PointerEventArgs^ e);
+
+		void OnKeyPressed(Windows::UI::Core::KeyEventArgs^ e);
+		void OnKeyReleased(Windows::UI::Core::KeyEventArgs^ e);
 
 	private:
        

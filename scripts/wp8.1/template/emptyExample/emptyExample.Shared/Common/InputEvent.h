@@ -41,6 +41,12 @@ enum PointerEventType
     PointerReleased,
 };
 
+enum KeyboardEventType
+{
+	KeyDown,
+	KeyUp
+};
+
 class InputEvent
 {
 public:
@@ -64,11 +70,12 @@ class KeyboardEvent : public InputEvent
 {
 public:
     KeyboardEvent();
-    KeyboardEvent(Platform::String^ text);
+	KeyboardEvent(KeyboardEventType type, Windows::UI::Core::KeyEventArgs^ e);
     virtual void execute(Renderer* renderer);
 
 private:
-    Platform::Agile<Platform::String> m_text;
+	Platform::Agile<Windows::UI::Core::KeyEventArgs> m_args;
+	KeyboardEventType m_type;
 };
 
 

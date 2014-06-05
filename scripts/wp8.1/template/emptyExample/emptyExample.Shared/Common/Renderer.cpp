@@ -70,12 +70,35 @@ void Renderer::OnPointerReleased(PointerEventArgs^ e)
     window->OnPointerReleased(e);
 }
 
+void Renderer::OnKeyPressed(Windows::UI::Core::KeyEventArgs^ e)
+{
+	ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
+	window->OnKeyPressed(e);
+}
+
+void Renderer::OnKeyReleased(Windows::UI::Core::KeyEventArgs^ e)
+{
+	ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
+	window->OnKeyReleased(e);
+}
+
+
+
 void Renderer::AddPointerEvent(PointerEventType type, PointerEventArgs^ args)
 {
     std::lock_guard<std::mutex> guard(mMutex);
-    std::shared_ptr<PointerEvent> e(new PointerEvent(type, args));
+	std::shared_ptr<PointerEvent> e(new PointerEvent(type, args));
     mInputEvents.push(e);
 }
+
+void Renderer::AddKeyboardEvent(KeyboardEventType type, Windows::UI::Core::KeyEventArgs^ args)
+{
+	std::lock_guard<std::mutex> guard(mMutex);
+	std::shared_ptr<KeyboardEvent> e(new KeyboardEvent(type, args));
+	mInputEvents.push(e);
+}
+
+
 
 void Renderer::ProcessEvents()
 {
