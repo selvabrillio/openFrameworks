@@ -50,6 +50,10 @@ namespace emptyExample
 		void OnPointerMoved(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 		void OnPointerReleased(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 
+		void OnKeyPressed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ e);
+		void OnKeyReleased(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ e);
+
+
 		// Resources used to render the DirectX content in the XAML page background.
         std::shared_ptr<AngleApp::DeviceResources> m_deviceResources;
         std::unique_ptr<AngleApp::AngleAppMain> m_main;

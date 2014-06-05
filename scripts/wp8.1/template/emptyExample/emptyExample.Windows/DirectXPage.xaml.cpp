@@ -55,6 +55,13 @@ DirectXPage::DirectXPage():
 	swapChainPanel->SizeChanged +=
 		ref new SizeChangedEventHandler(this, &DirectXPage::OnSwapChainPanelSizeChanged);
 
+	window->KeyDown +=
+		ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &DirectXPage::OnKeyPressed);
+
+	window->KeyUp +=
+		ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &DirectXPage::OnKeyReleased);
+
+
 	// Disable all pointer visual feedback for better performance when touching.
 	auto pointerVisualizationSettings = PointerVisualizationSettings::GetForCurrentView();
 	pointerVisualizationSettings->IsContactFeedbackEnabled = false; 
@@ -179,6 +186,18 @@ void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ e)
 {
     m_main->OnPointerReleased(e);
 }
+
+void DirectXPage::OnKeyPressed(CoreWindow^ sender, KeyEventArgs^ e)
+{
+	m_main->OnKeyPressed(e);
+}
+
+void DirectXPage::OnKeyReleased(CoreWindow^ sender, KeyEventArgs^ e)
+{
+	m_main->OnKeyReleased(e);
+
+}
+
 
 void DirectXPage::OnCompositionScaleChanged(SwapChainPanel^ sender, Object^ args)
 {
