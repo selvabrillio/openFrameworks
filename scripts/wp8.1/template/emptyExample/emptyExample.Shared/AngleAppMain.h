@@ -38,6 +38,9 @@ namespace AngleApp
 		void Update();
 		bool Render();
 
+        void ofNotifyAppResume(int state = 0);
+        void ofNotifyAppSuspend(int state = 0);
+
 		// Cached pointer to device resources.
         std::shared_ptr<AngleApp::DeviceResources> m_deviceResources;
 

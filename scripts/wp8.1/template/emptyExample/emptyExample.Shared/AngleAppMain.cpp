@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "AngleAppMain.h"
+#include "ofEvents.h"
 #include "Common\AngleHelper.h"
 
 using namespace Windows::Foundation;
@@ -42,6 +43,24 @@ void AngleAppMain::CreateWindowSizeDependentResources()
 	m_renderer->CreateWindowSizeDependentResources();
 }
 
+void AngleAppMain::ofNotifyAppResume(int state) 
+{
+    critical_section::scoped_lock lock(m_criticalSection);
+    static ofAppResumeEventArgs entryArgs;
+    entryArgs.state = state;
+    ofNotifyEvent(ofEvents().appResume, entryArgs);
+
+}
+
+void AngleAppMain::ofNotifyAppSuspend(int state) 
+{
+    critical_section::scoped_lock lock(m_criticalSection);
+    static ofAppSuspendEventArgs entryArgs;
+    entryArgs.state = state;
+    ofNotifyEvent(ofEvents().appSuspend, entryArgs);
+
+}
+
 void AngleAppMain::StartRenderLoop()
 {
 	// If the animation render loop is already running then do not start another thread.
@@ -53,6 +72,7 @@ void AngleAppMain::StartRenderLoop()
 	// Create a task that will be run on a background thread.
 	auto workItemHandler = ref new WorkItemHandler([this](IAsyncAction ^ action)
 	{
+        ofNotifyAppResume();
 		// Calculate the updated frame and render once per vertical blanking interval.
 		while (action->Status == AsyncStatus::Started)
 		{
@@ -69,7 +89,8 @@ void AngleAppMain::StartRenderLoop()
 
 void AngleAppMain::StopRenderLoop()
 {
-	m_renderLoopWorker->Cancel();
+    ofNotifyAppSuspend();
+    m_renderLoopWorker->Cancel();
 }
 
 // Updates the application state once per frame.
