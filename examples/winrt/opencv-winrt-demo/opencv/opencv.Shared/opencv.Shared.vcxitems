@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{d93cd4d3-32e7-4a75-9fed-81a5731dfe2d}</ItemsProjectGuid>
+    <ItemsRootNamespace>opencv</ItemsRootNamespace>
+    <ItemsProjectName>opencv.Shared</ItemsProjectName>
+    <SharedGUID>02b91ee5-c452-46d4-8504-4ed9eee8fde1</SharedGUID>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);src</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\ofApp.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\InputEvent.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\Renderer.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\ofApp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\InputEvent.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Renderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AngleAppMain.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AngleAppMain.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\AngleHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <_CustomResource Include="$(MSBuildThisFileDirectory)..\..\bin\data\**\*">
+      <Link>data\%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <DeploymentContent>true</DeploymentContent>
+    </_CustomResource>
+  </ItemGroup>
+  <Target Name="_CollectCustomResources" BeforeTargets="AssignTargetPaths">
+    <Message Text="Adding resource: %(_CustomResource.Identity) -&gt; %(_CustomResource.Link)" />
+    <ItemGroup>
+      <None Include="@(_CustomResource)" />
+    </ItemGroup>
+  </Target>
+</Project>
