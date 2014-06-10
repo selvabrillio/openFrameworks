@@ -104,8 +104,6 @@ void AngleAppMain::Update()
 	});
 }
 
-
-
 // Renders the current frame according to the current application state.
 // Returns true if the frame was rendered and is ready to be displayed.
 bool AngleAppMain::Render() 
