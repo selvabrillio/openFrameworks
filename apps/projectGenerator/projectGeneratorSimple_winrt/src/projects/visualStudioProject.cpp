@@ -152,7 +152,6 @@ bool visualStudioProject::createProjectFile(){
 	ofFile::copyFromTo(innerDirTemplate+"AngleAppMain.h",projectDir+innerDir+"AngleAppMain.h",false, true);
 	ofFile::copyFromTo(innerDirTemplate+"pch.cpp",projectDir+innerDir+"pch.cpp",false, true);
 	ofFile::copyFromTo(innerDirTemplate+"pch.h",projectDir+innerDir+"pch.h",false, true);
-	ofFile::copyFromTo(innerDirTemplate+"placeholderImage.bmp",projectDir+innerDir+"placeholderImage.bmp",false, true); //makes adding assets easier
 	ofDirectory(innerDirTemplate+"Common").copyTo(ofFilePath::join(projectDir, innerDir + "Common"));
 	
     findandreplaceInTexfile(project,"emptyExample",projectName);
@@ -196,8 +195,8 @@ bool visualStudioProject::createProjectFile(){
 	//}
 
 	//copy data folder up one directory from bin
-	ofDirectory dataFolder(projectDir + "bin/data");
-	dataFolder.copyTo(projectDir + innerDir + "data", false, true);
+	//ofDirectory dataFolder(projectDir + "bin/data");
+	//dataFolder.copyTo(projectDir + innerDir + "data", false, true);
 
 	//modify main for winrt
 	string mainFilePath = projectDir + "src/main.cpp";
@@ -295,26 +294,26 @@ bool visualStudioProject::loadProjectFile(){
 	//add assets to project file
 	if(bLoaded)
 	{
-		ofDirectory dataFolder(projectDir + "bin/data");
-		int assetCount = dataFolder.listDir();
-		if(assetCount > 1) //ignore if there's only the .gitkeep file in there
-		{
-			string tag = "//ItemGroup[Image]/Image";
-			pugi::xml_node node = doc.select_single_node(tag.c_str()).node().parent();
-			pugi::xml_node filterNode = filterXmlDoc.first_element_by_path("Project").append_child("ItemGroup");
-			for(int i = 0; i < assetCount; ++i)
-			{
-				node.append_child((string("Image Include=\"$(MSBuildThisFileDirectory)data\\") + dataFolder.getName(i) + "\"").c_str());
+		//ofDirectory dataFolder(projectDir + "bin/data");
+		//int assetCount = dataFolder.listDir();
+		//if(assetCount > 1) //ignore if there's only the .gitkeep file in there
+		//{
+		//	string tag = "//ItemGroup[Image]/Image";
+		//	pugi::xml_node node = doc.select_single_node(tag.c_str()).node().parent();
+		//	pugi::xml_node filterNode = filterXmlDoc.first_element_by_path("Project").append_child("ItemGroup");
+		//	for(int i = 0; i < assetCount; ++i)
+		//	{
+		//		node.append_child((string("Image Include=\"$(MSBuildThisFileDirectory)data\\") + dataFolder.getName(i) + "\"").c_str());
 
-				pugi::xml_node imageNode = filterNode.append_child("Image");
-				imageNode.append_attribute("Include").set_value((string("data\\") + dataFolder.getName(i)).c_str());
-				imageNode.append_child("Filter").append_child(pugi::node_pcdata).set_value("data");
-			}
-			//node = filterXmlDoc.select_single_node("//ItemGroup[Image]").node();
-			//pugi::xml_node nodeAdded = node.append_child("ClInclude");
-			//nodeAdded.append_attribute("Include").set_value(srcFile.c_str());
-			//nodeAdded.append_child("Filter").append_child(pugi::node_pcdata).set_value(folder.c_str());
-		}
+		//		pugi::xml_node imageNode = filterNode.append_child("Image");
+		//		imageNode.append_attribute("Include").set_value((string("data\\") + dataFolder.getName(i)).c_str());
+		//		imageNode.append_child("Filter").append_child(pugi::node_pcdata).set_value("data");
+		//	}
+		//	//node = filterXmlDoc.select_single_node("//ItemGroup[Image]").node();
+		//	//pugi::xml_node nodeAdded = node.append_child("ClInclude");
+		//	//nodeAdded.append_attribute("Include").set_value(srcFile.c_str());
+		//	//nodeAdded.append_child("Filter").append_child(pugi::node_pcdata).set_value(folder.c_str());
+		//}
 
 		//generate a new GUID for the project
 		GUID guid;
