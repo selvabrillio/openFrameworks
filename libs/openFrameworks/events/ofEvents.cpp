@@ -3,6 +3,7 @@
 #include "ofBaseApp.h"
 #include "ofUtils.h"
 #include "ofGraphics.h"
+#include "ofAppBaseWindow.h"
 #include <set>
 
 #ifdef TARGET_WP8
@@ -21,6 +22,7 @@ static unsigned long long	lastFrameTime = 0;
 static bool      			bFrameRateSet = 0;
 static int      			nFramesForFPS = 0;
 static int      			nFrameCount	  = 0;
+static unsigned long long   prevMicrosForFPS = 0;
 
 // core events instance & arguments
 ofCoreEvents & ofEvents(){
@@ -113,13 +115,6 @@ void ofSetEscapeQuitsApp(bool bQuitOnEsc){
 	bEscQuits = bQuitOnEsc;
 }
 
-void exitApp(){
-	ofLogVerbose("ofEvents") << "OF app is being terminated!";
-	OF_EXIT_APP(0);
-}
-
-
-
 //------------------------------------------
 void ofNotifySetup(){
 	ofNotifyEvent( ofEvents().setup, voidEventArgs );
@@ -130,15 +125,20 @@ void ofNotifyUpdate(){
 	// calculate sleep time to adjust to target fps
 	unsigned long long timeNow = ofGetElapsedTimeMicros();
 	if (nFrameCount != 0 && bFrameRateSet == true){
-		unsigned long long diffMicros = timeNow - timeThen;
+		unsigned long long diffMicros = timeNow - prevMicrosForFPS;
+		prevMicrosForFPS = timeNow;
 		if(diffMicros < microsForFrame){
 			unsigned long long waitMicros = microsForFrame - diffMicros;
+            // Theoretical value to compensate for the extra time that it might sleep
+			prevMicrosForFPS += waitMicros;
 			#if defined (TARGET_WIN32) || defined (TARGET_WINRT)
 				Sleep(waitMicros*MICROS_TO_MILLIS);
 			#else
 				usleep(waitMicros);
 			#endif
 		}
+	}else{
+		prevMicrosForFPS = timeNow;
 	}
 
 	// calculate fps
@@ -155,7 +155,10 @@ void ofNotifyUpdate(){
 			oneSec  = timeNow;
 			nFramesForFPS = 0;
 		}else{
-			fps = fps*.99 + nFramesForFPS/(oneSecDiff*MICROS_TO_SEC)*.01;
+			double deltaTime = ((double)oneSecDiff)*MICROS_TO_SEC;
+			if( deltaTime > 0.0 ){
+				fps = fps*0.99 + (nFramesForFPS/deltaTime)*0.01;
+			}
 		}
 		nFramesForFPS++;
 
@@ -180,7 +183,7 @@ void ofNotifyDraw(){
 }
 
 //------------------------------------------
-void ofNotifyKeyPressed(int key){
+void ofNotifyKeyPressed(int key, int keycode, int scancode, int codepoint){
 	static ofKeyEventArgs keyEventArgs;
 	// FIXME: modifiers are being reported twice, for generic and for left/right
 	// add operators to the arguments class so it can be checked for both
@@ -208,18 +211,21 @@ void ofNotifyKeyPressed(int key){
 	pressedKeys.insert(key);
 
 	keyEventArgs.key = key;
+	keyEventArgs.keycode = keycode;
+	keyEventArgs.scancode = scancode;
+	keyEventArgs.codepoint = codepoint;
 	ofNotifyEvent( ofEvents().keyPressed, keyEventArgs );
 	
 	
 	if (key == OF_KEY_ESC && bEscQuits == true){				// "escape"
-		exitApp();
-	}
+		ofGetWindowPtr()->windowShouldClose();
+    }
 	
 	
 }
 
 //------------------------------------------
-void ofNotifyKeyReleased(int key){
+void ofNotifyKeyReleased(int key, int keycode, int scancode, int codepoint){
 	static ofKeyEventArgs keyEventArgs;
 
 	// FIXME: modifiers are being reported twice, for generic and for left/right
@@ -248,6 +254,9 @@ void ofNotifyKeyReleased(int key){
 	pressedKeys.erase(key);
 	
 	keyEventArgs.key = key;
+	keyEventArgs.keycode = keycode;
+	keyEventArgs.scancode = scancode;
+	keyEventArgs.codepoint = codepoint;
 	ofNotifyEvent( ofEvents().keyReleased, keyEventArgs );
 }
 
