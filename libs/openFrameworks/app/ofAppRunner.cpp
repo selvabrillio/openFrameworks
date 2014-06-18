@@ -235,6 +235,7 @@ void ofExitCallback(){
 
 	ofNotifyExit();
 
+#if !defined(TARGET_WINRT)
 	ofURLFileLoaderShutdown();
 #endif
 

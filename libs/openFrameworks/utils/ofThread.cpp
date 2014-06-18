@@ -206,7 +206,7 @@ void ofThread::run(){
 
     _threadRunning = false;
 
-#if !defined(TARGET_WIN32) && !defined(TARGET_ANDROID)
+#if !defined(TARGET_WIN32) && !defined(TARGET_ANDROID) && !defined(TARGET_WINRT)
 	// FIXME: this won't be needed once we update POCO https://github.com/pocoproject/poco/issues/79
 	if(!threadBeingWaitedFor){ //if threadedFunction() ended and the thread is not being waited for, detach it before exiting.
 		pthread_detach(pthread_self());
