@@ -147,7 +147,7 @@ HRESULT ExceptionBoundary(Lambda&& lambda)
 
 namespace Media
 { 
-public ref class MediaSample sealed
+ref class MediaSample sealed
 {
 internal:
     MW::ComPtr<IMFSample> Sample;

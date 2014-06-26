@@ -16,13 +16,13 @@ namespace Media {
 
 class MediaSink;
 
-public enum class CaptureStreamType
+enum class CaptureStreamType
 {
     Preview = 0,
     Record
 };
 
-public ref class CaptureFrameGrabber sealed
+ref class CaptureFrameGrabber sealed
 {
 public:
 
