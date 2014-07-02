@@ -218,7 +218,7 @@ void testApp::setup(){
     button.bDrawLong = true;
     button.prefix = "Addons: ";
     button.secondaryText = "<< CLICK TO SELECT ADDONS";
-    button.bSelectable = true;
+    button.bSelectable = false;
     button.setText(addons);
 
     button.topLeftAnchor.set(button.topLeftAnchor.x, button.topLeftAnchor.y + button.rect.height + 20);
