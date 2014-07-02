@@ -85,7 +85,6 @@ DirectXPage::DirectXPage():
 	m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 
     m_main = std::unique_ptr<AngleApp::AngleAppMain>(new AngleApp::AngleAppMain(m_deviceResources));
-    m_main->StartRenderLoop();
 }
 
 DirectXPage::~DirectXPage()
