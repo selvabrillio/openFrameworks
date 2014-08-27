@@ -244,6 +244,8 @@ namespace AngleApp
         // natively-oriented width and height. If the window is not in the native
         // orientation, the dimensions must be reversed.
         DXGI_MODE_ROTATION displayRotation = ComputeDisplayRotation();
+        
+	    bool swapDimensions = false;//displayRotation == DXGI_MODE_ROTATION_ROTATE90 || displayRotation == DXGI_MODE_ROTATION_ROTATE270;
 
 
         // Set the proper orientation for the swap chain, and generate 2D and
@@ -289,7 +291,24 @@ namespace AngleApp
         if (SUCCEEDED(result))
         {
             //dimensions->SetWindowDimensions(m_outputSize.Width, m_outputSize.Height);
-            dimensions->SetWindowDimensions(static_cast<int>(m_logicalSize.Width), static_cast<int>(m_logicalSize.Height));
+            dimensions->SetWindowDimensions(lround(m_logicalSize.Width), lround(m_logicalSize.Height));
+        }
+        
+        ComPtr<IDXGISwapChain1> swapChain;
+        result = m_eglWindow->GetAngleSwapChain().As(&swapChain);
+        if (SUCCEEDED(result))
+        {
+            //swapChain->SetRotation(displayRotation);
+        }
+        ComPtr<IDXGISwapChain2> swapChain2;
+        result = m_eglWindow->GetAngleSwapChain().As(&swapChain2);
+        if (SUCCEEDED(result))
+        {
+	        // Setup inverse scale on the swap chain
+	        DXGI_MATRIX_3X2_F inverseScale = { 0 };
+	        inverseScale._11 = 1.0f ;// m_compositionScaleX;
+	        inverseScale._22 = 1.0f ;// m_compositionScaleY;
+            swapChain2->SetMatrixTransform(&inverseScale);
         }
     }
 
