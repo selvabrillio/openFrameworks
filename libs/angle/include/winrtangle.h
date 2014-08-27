@@ -36,6 +36,8 @@ struct __declspec(uuid("736E7573-FD24-433F-811E-893B36B7A078")) IWinrtEglWindow 
     virtual ANGLE_D3D_FEATURE_LEVEL __stdcall GetAngleD3DFeatureLevel() = 0;
     virtual Microsoft::WRL::ComPtr<IUnknown> __stdcall GetAngleD3DDevice() = 0;
     virtual void __stdcall SetAngleD3DDevice(Microsoft::WRL::ComPtr<IUnknown>) = 0;
+    virtual Microsoft::WRL::ComPtr<IUnknown> __stdcall GetAngleSwapChain() = 0;
+    virtual void __stdcall SetAngleSwapChain(Microsoft::WRL::ComPtr<IUnknown>) = 0;
     virtual Microsoft::WRL::ComPtr<IUnknown> __stdcall GetWindowInterface() = 0;
 };
 
