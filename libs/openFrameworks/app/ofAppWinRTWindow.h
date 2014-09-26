@@ -63,9 +63,9 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 		//#endif
 		void display();
 
-        void OnPointerPressed(Windows::UI::Core::PointerEventArgs^ args);
-        void OnPointerMoved(Windows::UI::Core::PointerEventArgs^ args);
-        void OnPointerReleased(Windows::UI::Core::PointerEventArgs^ args);
+        void OnPointerPressed(Windows::UI::Core::PointerEventArgs^ args, float dpi);
+        void OnPointerMoved(Windows::UI::Core::PointerEventArgs^ args, float dpi);
+        void OnPointerReleased(Windows::UI::Core::PointerEventArgs^ args, float dpi);
         void OnKeyPressed(Windows::UI::Core::KeyEventArgs^ args);
         void OnKeyReleased(Windows::UI::Core::KeyEventArgs^ args);
         void OnWindowSizeChanged(int width, int height);
@@ -76,7 +76,7 @@ class ofAppWinRTWindow : public ofAppBaseWindow, public ofThread{
 
 	private:
         void rotateMouseXY(ofOrientation orientation, double &x, double &y);
-        void NotifyTouchEvent(int id, ofEvent<ofTouchEventArgs>& touchEvents, Windows::UI::Core::PointerEventArgs^ args);
+        void NotifyTouchEvent(int id, ofEvent<ofTouchEventArgs>& touchEvents, Windows::UI::Core::PointerEventArgs^ args, float dpi);
             
         ofOrientation orientation;
 		ofBaseApp * ofAppPtr;

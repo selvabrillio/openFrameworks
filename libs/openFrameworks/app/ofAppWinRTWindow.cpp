@@ -316,15 +316,15 @@ void ofAppWinRTWindow::rotateMouseXY(ofOrientation orientation, double &x, doubl
     }
 }
 
-void ofAppWinRTWindow::NotifyTouchEvent(int id, ofEvent<ofTouchEventArgs>& touchEvents, PointerEventArgs^ args)
+void ofAppWinRTWindow::NotifyTouchEvent(int id, ofEvent<ofTouchEventArgs>& touchEvents, PointerEventArgs^ args, float dpi)
 {
     ofTouchEventArgs touchEventArgs;
     PointerPoint^ pointerPoint = args->CurrentPoint;
     Point point = pointerPoint->Position;
     PointerPointProperties^ props = pointerPoint->Properties;
 
-    touchEventArgs.x = point.X;
-    touchEventArgs.y = point.Y;
+    touchEventArgs.x = point.X * dpi;
+    touchEventArgs.y = point.Y * dpi;
     touchEventArgs.type = ofTouchEventArgs::doubleTap;
     touchEventArgs.id = id;
     touchEventArgs.pressure = props->Pressure;
@@ -333,7 +333,10 @@ void ofAppWinRTWindow::NotifyTouchEvent(int id, ofEvent<ofTouchEventArgs>& touch
     ofNotifyEvent(touchEvents, touchEventArgs);
 }
 
-void ofAppWinRTWindow::OnPointerPressed(PointerEventArgs^ args)
+extern float winrtDPIx;
+extern float winrtDPIy;
+
+void ofAppWinRTWindow::OnPointerPressed(PointerEventArgs^ args, float dpi)
 {
     bMousePressed = true;
     int button;
@@ -345,7 +348,7 @@ void ofAppWinRTWindow::OnPointerPressed(PointerEventArgs^ args)
         button = OF_MOUSE_BUTTON_RIGHT;
     else
         return;
-    ofNotifyMousePressed(ofGetMouseX(), ofGetMouseY(), button);
+    ofNotifyMousePressed(args->CurrentPoint->Position.X * dpi, args->CurrentPoint->Position.Y * dpi, button);
 
     int id;
     if (availableTouchIndices.empty())
@@ -359,10 +362,10 @@ void ofAppWinRTWindow::OnPointerPressed(PointerEventArgs^ args)
         availableTouchIndices.pop();
         touchInputTracker[args->CurrentPoint->PointerId] = id;
     }
-    NotifyTouchEvent(id, ofEvents().touchDown, args);
+    NotifyTouchEvent(id, ofEvents().touchDown, args, dpi);
 }
 
-void ofAppWinRTWindow::OnPointerReleased(PointerEventArgs^ args)
+void ofAppWinRTWindow::OnPointerReleased(PointerEventArgs^ args, float dpi)
 {
     int button;
     if (args->CurrentPoint->Properties->PointerUpdateKind == Windows::UI::Input::PointerUpdateKind::LeftButtonReleased)
@@ -373,28 +376,26 @@ void ofAppWinRTWindow::OnPointerReleased(PointerEventArgs^ args)
         button = OF_MOUSE_BUTTON_RIGHT;
     else
         return;
-    ofNotifyMouseReleased(ofGetMouseX(), ofGetMouseY(), button);
+    ofNotifyMouseReleased(args->CurrentPoint->Position.X * dpi, args->CurrentPoint->Position.Y * dpi, button);
     bMousePressed = false;
 
     int id = touchInputTracker[args->CurrentPoint->PointerId];
     availableTouchIndices.push(id); 
     touchInputTracker.erase(args->CurrentPoint->PointerId);
-    NotifyTouchEvent(id, ofEvents().touchUp, args);
+    NotifyTouchEvent(id, ofEvents().touchUp, args, dpi);
 }
 
-void ofAppWinRTWindow::OnPointerMoved(PointerEventArgs^ args)
+void ofAppWinRTWindow::OnPointerMoved(PointerEventArgs^ args, float dpi)
 {
-    //float scale = DisplayInformation::GetForCurrentView()->LogicalDpi / 96.0f;
-    float scale = 1.0;
-    double x = args->CurrentPoint->Position.X * scale;
-    double y = args->CurrentPoint->Position.Y * scale;
+    double x = args->CurrentPoint->Position.X * dpi;
+    double y = args->CurrentPoint->Position.Y * dpi;
     rotateMouseXY(ofGetOrientation(), x, y);
     if (bMousePressed)
         ofNotifyMouseDragged(x, y, mouseInUse);
     else
         ofNotifyMouseMoved(x, y);
 
-    NotifyTouchEvent(touchInputTracker[args->CurrentPoint->PointerId], ofEvents().touchMoved, args);
+    NotifyTouchEvent(touchInputTracker[args->CurrentPoint->PointerId], ofEvents().touchMoved, args, dpi);
 }
 
 static int TranslateWinrtKey(KeyEventArgs^ args)

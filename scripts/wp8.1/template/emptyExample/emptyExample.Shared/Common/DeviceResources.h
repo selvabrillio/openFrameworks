@@ -40,6 +40,7 @@ namespace AngleApp
 		// D3D Accessors.
 		DirectX::XMFLOAT4X4		GetOrientationTransform3D() const		{ return m_orientationTransform3D; }
 		D2D1::Matrix3x2F		GetOrientationTransform2D() const		{ return m_orientationTransform2D; }
+        float                   GetDpi() const                          { return m_compositionScaleX; }
 
         void aquireContext();
         void releaseContext();
