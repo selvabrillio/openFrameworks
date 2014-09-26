@@ -56,6 +56,7 @@ namespace AngleApp
 
 		// Cached device properties.
 		D3D_FEATURE_LEVEL								m_d3dFeatureLevel;
+		Windows::Foundation::Size						m_d3dRenderTargetSize;
 		Windows::Foundation::Size						m_outputSize;
 		Windows::Foundation::Size						m_logicalSize;
 		Windows::Graphics::Display::DisplayOrientations	m_nativeOrientation;
@@ -66,6 +67,7 @@ namespace AngleApp
 
         // EGL stuff
         bool m_bAngleInitialized;
+        EGLConfig m_eglConfig;
         EGLDisplay m_eglDisplay;
         EGLContext m_eglContext;
         EGLSurface m_eglSurface;

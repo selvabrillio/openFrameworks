@@ -2,6 +2,7 @@
 #include "DeviceResources.h"
 #include "AngleHelper.h"
 #include "ofConstants.h"
+#include "ofAppRunner.h"
 
 #include <windows.ui.xaml.media.dxinterop.h>
 #include <stdexcept>
@@ -127,188 +128,181 @@ namespace AngleApp
     // Configures the Direct3D device, and stores handles to it and the device context.
     void DeviceResources::CreateDeviceResources()
     {
-        Release();
+        //Release();
 
-        // setup EGL
-        EGLint configAttribList [] = {
-            EGL_RED_SIZE, 8,
-            EGL_GREEN_SIZE, 8,
-            EGL_BLUE_SIZE, 8,
-            EGL_ALPHA_SIZE, 8,
-            EGL_DEPTH_SIZE, 8,
-            EGL_STENCIL_SIZE, 8,
-            EGL_SAMPLE_BUFFERS, 0,
-            EGL_NONE
-        };
-        EGLint surfaceAttribList [] = {
-            EGL_NONE, EGL_NONE
-        };
-
-        EGLint numConfigs;
-        EGLint majorVersion;
-        EGLint minorVersion;
-        EGLDisplay display;
-        EGLContext context;
-        EGLSurface surface;
-        EGLConfig config;
-
-		ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_11_0;
+        ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_11_0;
         //ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
 
 #ifdef TARGET_WP8
         featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
 #endif
-
         HRESULT hr = CreateWinrtEglWindow(WINRT_EGL_IUNKNOWN(m_swapChainPanel), featureLevel, m_eglWindow.GetAddressOf());
         if (FAILED(hr)){
             throw std::runtime_error("DeviceResouces: couldn't create EGL window");
-            return;
         }
-
-        display = eglGetDisplay(m_eglWindow);
-        if (display == EGL_NO_DISPLAY){
+        m_eglDisplay = eglGetDisplay(m_eglWindow.Get());
+        if (m_eglDisplay == EGL_NO_DISPLAY)
+        {
             throw std::runtime_error("DeviceResouces: couldn't get EGL display");
-            return;
         }
 
-        if (!eglInitialize(display, &majorVersion, &minorVersion)){
+        EGLint majorVersion, minorVersion;
+        if (!eglInitialize(m_eglDisplay, &majorVersion, &minorVersion))
+        {
             throw std::runtime_error("DeviceResouces: failed to initialize EGL");
-            return;
         }
 
-        // Get configs
-        if (!eglGetConfigs(display, NULL, 0, &numConfigs)){
-            throw std::runtime_error("DeviceResouces: failed to get configurations");
-            return;
+        eglBindAPI(EGL_OPENGL_ES_API);
+        if (eglGetError() != EGL_SUCCESS)
+        {
+            throw std::runtime_error("DeviceResouces: failed to bind OpenGL ES API");
         }
 
-        // Choose config
-        if (!eglChooseConfig(display, configAttribList, &config, 1, &numConfigs)){
+        const EGLint configAttributes[] =
+        {
+            EGL_RED_SIZE,       8,
+            EGL_GREEN_SIZE,     8,
+            EGL_BLUE_SIZE,      8,
+            EGL_ALPHA_SIZE,     8,
+            EGL_DEPTH_SIZE,     24,
+            EGL_STENCIL_SIZE,   8,
+            EGL_SAMPLE_BUFFERS, EGL_DONT_CARE,
+            EGL_NONE
+        };
+
+        EGLint configCount;
+        if (!eglChooseConfig(m_eglDisplay, configAttributes, &m_eglConfig, 1, &configCount) || (configCount != 1))
+        {
             throw std::runtime_error("DeviceResouces: failed to choose configuration");
-            return;
         }
 
-        // Create a surface
-        surface = eglCreateWindowSurface(display, config, m_eglWindow, surfaceAttribList);
-        if (surface == EGL_NO_SURFACE){
+        const EGLint surfaceAttributes[] =
+        {
+            EGL_POST_SUB_BUFFER_SUPPORTED_NV, EGL_TRUE,
+            EGL_NONE, EGL_NONE,
+        };
+
+        m_eglSurface = eglCreateWindowSurface(m_eglDisplay, m_eglConfig, m_eglWindow, surfaceAttributes);
+        if (m_eglSurface == EGL_NO_SURFACE)
+        {
+            eglGetError(); // Clear error and try again
+            m_eglSurface = eglCreateWindowSurface(m_eglDisplay, m_eglConfig, NULL, NULL);
+        }
+
+        if (eglGetError() != EGL_SUCCESS)
+        {
             throw std::runtime_error("DeviceResouces: failed to create EGL window surface");
-            return;
         }
 
-        // Create a GL context
-        EGLint contextAttribs [] = { EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE, EGL_NONE };
-        context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
-        if (context == EGL_NO_CONTEXT){
-            EGLint contextAttribs [] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
-            context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
-            if (context == EGL_NO_CONTEXT){
+        EGLint contextAttibutes[] =
+        {
+            EGL_CONTEXT_CLIENT_VERSION, 3,
+            EGL_NONE
+        };
+        m_eglContext = eglCreateContext(m_eglDisplay, m_eglConfig, NULL, contextAttibutes);
+        if (eglGetError() != EGL_SUCCESS)
+        {
+            contextAttibutes[1] = 2;
+            m_eglContext = eglCreateContext(m_eglDisplay, m_eglConfig, NULL, contextAttibutes);
+            if(eglGetError() != EGL_SUCCESS)
+            {
                 throw std::runtime_error("DeviceResouces: failed to create EGL context");
-                return;
             }
         }
 
-        // Make the context current
-        if (!eglMakeCurrent(display, surface, surface, context)){
+        eglMakeCurrent(m_eglDisplay, m_eglSurface, m_eglSurface, m_eglContext);
+        if (eglGetError() != EGL_SUCCESS)
+        {
             throw std::runtime_error("DeviceResouces: failed to make EGL context current");
-            return;
         }
 
-        m_eglDisplay = display;
-        m_eglSurface = surface;
-        m_eglContext = context;
+        // Turn off vsync
+        //eglSwapInterval(mDisplay, 0);
+
         m_bAngleInitialized = true;
     }
 
     // These resources need to be recreated every time the window size is changed.
     void DeviceResources::CreateWindowSizeDependentResources()
     {
-        if (m_logicalSize.Width == 0)
-        {
-            m_logicalSize.Width = 1;
-        }
-
-        if (m_logicalSize.Height == 0)
-        {
-            m_logicalSize.Height = 1;
-        }
-
         // Calculate the necessary swap chain and render target size in pixels.
-        m_outputSize.Width = m_logicalSize.Width * m_compositionScaleX;
-        m_outputSize.Height = m_logicalSize.Height * m_compositionScaleY;
+	    m_outputSize.Width = m_logicalSize.Width * m_compositionScaleX;
+	    m_outputSize.Height = m_logicalSize.Height * m_compositionScaleY;
+	
+	    // Prevent zero size DirectX content from being created.
+	    m_outputSize.Width = max(m_outputSize.Width, 1);
+	    m_outputSize.Height = max(m_outputSize.Height, 1);
 
-        // Prevent zero size DirectX content from being created.
-        m_outputSize.Width = max(m_outputSize.Width, 1);
-        m_outputSize.Height = max(m_outputSize.Height, 1);
+	    // The width and height of the swap chain must be based on the window's
+	    // natively-oriented width and height. If the window is not in the native
+	    // orientation, the dimensions must be reversed.
+	    DXGI_MODE_ROTATION displayRotation = ComputeDisplayRotation();
 
-        // The width and height of the swap chain must be based on the window's
-        // natively-oriented width and height. If the window is not in the native
-        // orientation, the dimensions must be reversed.
-        DXGI_MODE_ROTATION displayRotation = ComputeDisplayRotation();
-        
-	    bool swapDimensions = false;//displayRotation == DXGI_MODE_ROTATION_ROTATE90 || displayRotation == DXGI_MODE_ROTATION_ROTATE270;
+	    bool swapDimensions = displayRotation == DXGI_MODE_ROTATION_ROTATE90 || displayRotation == DXGI_MODE_ROTATION_ROTATE270;
+	    m_d3dRenderTargetSize.Width = swapDimensions ? m_outputSize.Height : m_outputSize.Width;
+	    m_d3dRenderTargetSize.Height = swapDimensions ? m_outputSize.Width : m_outputSize.Height;
 
+	    // Set the proper orientation for the swap chain, and generate 2D and
+	    // 3D matrix transformations for rendering to the rotated swap chain.
+	    // Note the rotation angle for the 2D and 3D transforms are different.
+	    // This is due to the difference in coordinate spaces.  Additionally,
+	    // the 3D matrix is specified explicitly to avoid rounding errors.
 
-        // Set the proper orientation for the swap chain, and generate 2D and
-        // 3D matrix transformations for rendering to the rotated swap chain.
-        // Note the rotation angle for the 2D and 3D transforms are different.
-        // This is due to the difference in coordinate spaces.  Additionally,
-        // the 3D matrix is specified explicitly to avoid rounding errors.
+	    switch (displayRotation)
+	    {
+	    case DXGI_MODE_ROTATION_IDENTITY:
+		    m_orientationTransform2D = Matrix3x2F::Identity();
+		    m_orientationTransform3D = ScreenRotation::Rotation0;
+            ofSetOrientation(OF_ORIENTATION_DEFAULT);
+		    break;
 
-        switch (displayRotation)
-        {
-        case DXGI_MODE_ROTATION_IDENTITY:
-            m_orientationTransform2D = Matrix3x2F::Identity();
-            m_orientationTransform3D = ScreenRotation::Rotation0;
-            break;
+	    case DXGI_MODE_ROTATION_ROTATE90:
+		    m_orientationTransform2D = 
+			    Matrix3x2F::Rotation(90.0f) *
+			    Matrix3x2F::Translation(m_logicalSize.Height, 0.0f);
+		    m_orientationTransform3D = ScreenRotation::Rotation270;
+            ofSetOrientation(OF_ORIENTATION_90_LEFT);
+		    break;
 
-        case DXGI_MODE_ROTATION_ROTATE90:
-            m_orientationTransform2D =
-                Matrix3x2F::Rotation(90.0f) *
-                Matrix3x2F::Translation(m_logicalSize.Height, 0.0f);
-            m_orientationTransform3D = ScreenRotation::Rotation270;
-            break;
+	    case DXGI_MODE_ROTATION_ROTATE180:
+		    m_orientationTransform2D = 
+			    Matrix3x2F::Rotation(180.0f) *
+			    Matrix3x2F::Translation(m_logicalSize.Width, m_logicalSize.Height);
+		    m_orientationTransform3D = ScreenRotation::Rotation180;
+            ofSetOrientation(OF_ORIENTATION_180);
+		    break;
 
-        case DXGI_MODE_ROTATION_ROTATE180:
-            m_orientationTransform2D =
-                Matrix3x2F::Rotation(180.0f) *
-                Matrix3x2F::Translation(m_logicalSize.Width, m_logicalSize.Height);
-            m_orientationTransform3D = ScreenRotation::Rotation180;
-            break;
+	    case DXGI_MODE_ROTATION_ROTATE270:
+		    m_orientationTransform2D = 
+			    Matrix3x2F::Rotation(270.0f) *
+			    Matrix3x2F::Translation(0.0f, m_logicalSize.Width);
+		    m_orientationTransform3D = ScreenRotation::Rotation90;
+            ofSetOrientation(OF_ORIENTATION_90_RIGHT);
+		    break;
 
-        case DXGI_MODE_ROTATION_ROTATE270:
-            m_orientationTransform2D =
-                Matrix3x2F::Rotation(270.0f) *
-                Matrix3x2F::Translation(0.0f, m_logicalSize.Width);
-            m_orientationTransform3D = ScreenRotation::Rotation90;
-            break;
-
-        default:
-            throw ref new FailureException();
-        }
-
+	    default:
+		    throw ref new FailureException();
+	    }
+    
         ComPtr<IWinrtEglWindowDimensions> dimensions;
         HRESULT result = m_eglWindow.As(&dimensions);
         if (SUCCEEDED(result))
         {
-            //dimensions->SetWindowDimensions(m_outputSize.Width, m_outputSize.Height);
-            dimensions->SetWindowDimensions(lround(m_logicalSize.Width), lround(m_logicalSize.Height));
+            dimensions->SetWindowDimensions(lround(m_d3dRenderTargetSize.Width), lround(m_d3dRenderTargetSize.Height));
         }
-        
-        ComPtr<IDXGISwapChain1> swapChain;
-        result = m_eglWindow->GetAngleSwapChain().As(&swapChain);
-        if (SUCCEEDED(result))
-        {
-            //swapChain->SetRotation(displayRotation);
-        }
-        ComPtr<IDXGISwapChain2> swapChain2;
-        result = m_eglWindow->GetAngleSwapChain().As(&swapChain2);
-        if (SUCCEEDED(result))
-        {
+    
+	    ComPtr<IDXGISwapChain2> spSwapChain2;
+	    result = m_eglWindow->GetAngleSwapChain().As<IDXGISwapChain2>(&spSwapChain2);
+
+	    if (SUCCEEDED(result))
+		{
+            spSwapChain2->SetRotation(displayRotation);
+
 	        // Setup inverse scale on the swap chain
 	        DXGI_MATRIX_3X2_F inverseScale = { 0 };
-	        inverseScale._11 = 1.0f ;// m_compositionScaleX;
-	        inverseScale._22 = 1.0f ;// m_compositionScaleY;
-            swapChain2->SetMatrixTransform(&inverseScale);
+	        inverseScale._11 = 1.0f / m_compositionScaleX;
+	        inverseScale._22 = 1.0f / m_compositionScaleY;
+	        spSwapChain2->SetMatrixTransform(&inverseScale);
         }
     }
 
