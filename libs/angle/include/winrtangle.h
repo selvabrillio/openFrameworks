@@ -53,6 +53,7 @@ struct __declspec(uuid("6B70903A-0D55-45BA-A10E-CA2D428E4867")) IWinPhone8XamlD3
 
 
 HRESULT __stdcall CreateWinrtEglWindow(Microsoft::WRL::ComPtr<IUnknown> windowInterface, ANGLE_D3D_FEATURE_LEVEL featureLevel, IWinrtEglWindow ** result);
+HRESULT __stdcall CreateWinrtEglWindowWithDimensions(Microsoft::WRL::ComPtr<IUnknown> windowInterface, ANGLE_D3D_FEATURE_LEVEL featureLevel, unsigned int width, unsigned int height, IWinrtEglWindow ** result);
 HRESULT __stdcall CreateWinPhone8XamlWindow(IWinPhone8XamlD3DWindow ** result);
 
 #endif   // WINRT_ANGLE_H_

@@ -1768,14 +1768,6 @@ GL_APICALL void GL_APIENTRY glDrawBuffersNV (GLsizei n, const GLenum *bufs);
 typedef void (GL_APIENTRYP PFNGLDRAWBUFFERSNVPROC) (GLsizei n, const GLenum *bufs);
 #endif
 
-#ifndef GL_EXT_draw_buffers
-#define GL_EXT_draw_buffers 1
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY glDrawBuffersEXT (GLsizei n, const GLenum *bufs);
-#endif
-typedef void (GL_APIENTRYP PFNGLDRAWBUFFERSEXTPROC) (GLsizei n, const GLenum *bufs);
-#endif
-
 /* GL_EXT_draw_buffers */
 #ifndef GL_EXT_draw_buffers
 #define GL_EXT_draw_buffers 1
