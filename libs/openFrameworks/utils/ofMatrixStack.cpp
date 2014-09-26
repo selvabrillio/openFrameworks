@@ -120,14 +120,14 @@ bool ofMatrixStack::doesHWOrientation() const{
 }
 
 void ofMatrixStack::viewport(float x, float y, float width, float height, bool vflip){
-	if(!doesHWOrientation() && (orientation==OF_ORIENTATION_90_LEFT || orientation==OF_ORIENTATION_90_RIGHT)){
-		swap(width,height);
-		swap(x,y);
-	}
-
 	if(width < 0 || height < 0){
 		width = getRenderSurfaceWidth();
 		height = getRenderSurfaceHeight();
+	}
+    
+	if(!doesHWOrientation() && (orientation==OF_ORIENTATION_90_LEFT || orientation==OF_ORIENTATION_90_RIGHT)){
+		swap(width,height);
+		swap(x,y);
 	}
 
 	if (vflip){
