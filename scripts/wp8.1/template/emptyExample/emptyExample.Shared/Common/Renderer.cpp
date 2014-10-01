@@ -35,12 +35,12 @@ void Renderer::CreateWindowSizeDependentResources()
     auto window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
     if (!m_setupComplete)
     {
-        window->winrtSetupComplete(logicalSize.Width, logicalSize.Height);
+        window->winrtSetupComplete(outputSize.Width, outputSize.Height);
         m_setupComplete = true;
     }
     else
     {
-        window->OnWindowSizeChanged(logicalSize.Width, logicalSize.Height);
+        window->OnWindowSizeChanged(outputSize.Width, outputSize.Height);
     }
     m_deviceResources->releaseContext();
 
@@ -55,19 +55,19 @@ void Renderer::Update(AngleApp::StepTimer const& timer)
 void Renderer::OnPointerPressed(PointerEventArgs^ e)
 {
     ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
-    window->OnPointerPressed(e);
+    window->OnPointerPressed(e, m_deviceResources->GetDpi());
 }
 
 void Renderer::OnPointerMoved(PointerEventArgs^ e)
 {
     ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
-    window->OnPointerMoved(e);
+    window->OnPointerMoved(e, m_deviceResources->GetDpi());
 }
 
 void Renderer::OnPointerReleased(PointerEventArgs^ e)
 {
     ofAppWinRTWindow* window = reinterpret_cast<ofAppWinRTWindow*>(ofGetWindowPtr());
-    window->OnPointerReleased(e);
+    window->OnPointerReleased(e, m_deviceResources->GetDpi());
 }
 
 void Renderer::OnKeyPressed(Windows::UI::Core::KeyEventArgs^ e)
